@@ -1,13 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Image as ImageIcon, DollarSign, Truck, Sparkles, ScrollText } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, DollarSign, Truck, Sparkles, ScrollText, Send } from "lucide-react";
 import { ProductAssetsTab } from "@/components/product-assets-tab";
 import { ProductPricingTab } from "@/components/product-pricing-tab";
 import { ProductSuppliersTab } from "@/components/product-suppliers-tab";
 import { ProductAIReviewTab } from "@/components/product-ai-review-tab";
+import { submitForApproval } from "@/lib/approvals.functions";
+import { toast } from "sonner";
 
 
 export const Route = createFileRoute("/_authenticated/products/$id")({
@@ -17,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/products/$id")({
 
 function ProductDetails() {
   const { id } = Route.useParams();
+  const qc = useQueryClient();
   const { data: p, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
@@ -24,6 +29,18 @@ function ProductDetails() {
       if (error) throw error;
       return data;
     },
+  });
+
+  const submitFn = useServerFn(submitForApproval);
+  const submit = useMutation({
+    mutationFn: () => submitFn({ data: {
+      entityType: "product", entityId: id, title: p?.name_ar ?? "طلب اعتماد منتج", priority: "normal",
+    } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["product", id] });
+      toast.success("تم إرسال البند للاعتماد");
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   if (isLoading) return <div className="p-6 text-muted-foreground">جاري التحميل...</div>;
@@ -42,7 +59,21 @@ function ProductDetails() {
             <h1 className="text-2xl font-bold mt-1">{p.name_ar}</h1>
             <div className="text-sm text-muted-foreground mt-0.5" dir="ltr">{p.name_en}</div>
           </div>
-          <StatusBadge status={p.status} />
+          <div className="flex items-center gap-2">
+            {p.status !== "approved" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                onClick={() => submit.mutate()}
+                disabled={submit.isPending}
+              >
+                <Send className="size-3.5" />
+                إرسال للاعتماد
+              </Button>
+            )}
+            <StatusBadge status={p.status} />
+          </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-4 border-t text-sm">
           <Field label="EGS Code" value={p.egs_code} mono />

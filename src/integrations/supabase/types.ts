@@ -101,6 +101,95 @@ export type Database = {
         }
         Relationships: []
       }
+      approval_history: {
+        Row: {
+          action: string
+          actor: string | null
+          approval_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          stage: Database["public"]["Enums"]["approval_stage"]
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          approval_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          stage: Database["public"]["Enums"]["approval_stage"]
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          approval_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          stage?: Database["public"]["Enums"]["approval_stage"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_history_approval_id_fkey"
+            columns: ["approval_id"]
+            isOneToOne: false
+            referencedRelation: "approvals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      approvals: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          current_stage: Database["public"]["Enums"]["approval_stage"]
+          decided_at: string | null
+          decided_by: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          notes: string | null
+          priority: string
+          requested_by: string | null
+          status: Database["public"]["Enums"]["approval_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          current_stage?: Database["public"]["Enums"]["approval_stage"]
+          decided_at?: string | null
+          decided_by?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          notes?: string | null
+          priority?: string
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["approval_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          current_stage?: Database["public"]["Enums"]["approval_stage"]
+          decided_at?: string | null
+          decided_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          notes?: string | null
+          priority?: string
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["approval_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       assets: {
         Row: {
           created_at: string
@@ -402,6 +491,45 @@ export type Database = {
           status?: string
           total_rows?: number | null
           valid_rows?: number | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          kind: string
+          link: string | null
+          related_entity_id: string | null
+          related_entity_type: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          kind?: string
+          link?: string | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          kind?: string
+          link?: string | null
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1016,6 +1144,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
+      approval_stage: "content_review" | "manager_review" | "final_approval"
+      approval_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "changes_requested"
+        | "cancelled"
       asset_role:
         | "main_image"
         | "gallery"
@@ -1189,6 +1324,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "viewer"],
+      approval_stage: ["content_review", "manager_review", "final_approval"],
+      approval_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "changes_requested",
+        "cancelled",
+      ],
       asset_role: [
         "main_image",
         "gallery",
