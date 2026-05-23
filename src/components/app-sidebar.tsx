@@ -75,6 +75,7 @@ const sections = [
       { title: "التكاملات والتوصيلات", to: "/integrations", icon: Network, phase: 5 },
       { title: "مراجعة المحتوى AI", to: "/content-review", icon: Sparkles, phase: 5 },
       { title: "مساعد AI", to: "/ai-review", icon: Sparkles, phase: 1 },
+      { title: "الموافقات", to: "/approvals", icon: CheckCircle2, phase: 6 },
 
     ],
   },
