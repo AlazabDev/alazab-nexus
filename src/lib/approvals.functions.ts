@@ -107,7 +107,7 @@ export const decideApproval = createServerFn({ method: "POST" })
     const { error: e2 } = await supabase
       .from("approvals")
       .update({
-        status: newStatus,
+        status: newStatus as "approved" | "rejected" | "changes_requested" | "pending" | "cancelled",
         current_stage: newStage,
         decided_at: decidedAt,
         decided_by: decidedBy,
