@@ -59,7 +59,21 @@ function ProductDetails() {
             <h1 className="text-2xl font-bold mt-1">{p.name_ar}</h1>
             <div className="text-sm text-muted-foreground mt-0.5" dir="ltr">{p.name_en}</div>
           </div>
-          <StatusBadge status={p.status} />
+          <div className="flex items-center gap-2">
+            {p.status !== "approved" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5"
+                onClick={() => submit.mutate()}
+                disabled={submit.isPending}
+              >
+                <Send className="size-3.5" />
+                إرسال للاعتماد
+              </Button>
+            )}
+            <StatusBadge status={p.status} />
+          </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-4 border-t text-sm">
           <Field label="EGS Code" value={p.egs_code} mono />
