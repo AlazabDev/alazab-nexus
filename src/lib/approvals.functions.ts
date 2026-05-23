@@ -10,7 +10,8 @@ function nextStage(s: Stage): Stage | null {
   return i >= 0 && i < STAGES.length - 1 ? STAGES[i + 1] : null;
 }
 
-async function notify(supabase: ReturnType<typeof requireSupabaseAuth> extends never ? never : any, userId: string | null, title: string, body: string, link?: string, kind = "info") {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function notify(supabase: any, userId: string | null, title: string, body: string, link?: string, kind = "info") {
   if (!userId) return;
   await supabase.from("notifications").insert({ user_id: userId, title, body, link, kind });
 }
