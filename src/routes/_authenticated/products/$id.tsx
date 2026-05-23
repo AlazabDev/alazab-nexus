@@ -1,13 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Image as ImageIcon, DollarSign, Truck, Sparkles, ScrollText } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, DollarSign, Truck, Sparkles, ScrollText, Send } from "lucide-react";
 import { ProductAssetsTab } from "@/components/product-assets-tab";
 import { ProductPricingTab } from "@/components/product-pricing-tab";
 import { ProductSuppliersTab } from "@/components/product-suppliers-tab";
 import { ProductAIReviewTab } from "@/components/product-ai-review-tab";
+import { submitForApproval } from "@/lib/approvals.functions";
+import { toast } from "sonner";
 
 
 export const Route = createFileRoute("/_authenticated/products/$id")({
