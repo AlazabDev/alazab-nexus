@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/products/$id")({
 
 function ProductDetails() {
   const { id } = Route.useParams();
+  const qc = useQueryClient();
   const { data: p, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
@@ -28,6 +29,18 @@ function ProductDetails() {
       if (error) throw error;
       return data;
     },
+  });
+
+  const submitFn = useServerFn(submitForApproval);
+  const submit = useMutation({
+    mutationFn: () => submitFn({ data: {
+      entityType: "product", entityId: id, title: p?.name_ar ?? "طلب اعتماد منتج", priority: "normal",
+    } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["product", id] });
+      toast.success("تم إرسال البند للاعتماد");
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   if (isLoading) return <div className="p-6 text-muted-foreground">جاري التحميل...</div>;
