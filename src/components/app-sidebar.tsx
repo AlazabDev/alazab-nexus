@@ -21,6 +21,7 @@ import {
   Download,
   Network,
   Sparkles,
+  CheckCircle2,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
