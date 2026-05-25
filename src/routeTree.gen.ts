@@ -25,12 +25,14 @@ import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedRequestsIndexRouteImport } from './routes/_authenticated/requests/index'
 import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products/index'
 import { Route as AuthenticatedPricingIndexRouteImport } from './routes/_authenticated/pricing/index'
+import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_authenticated/notifications/index'
 import { Route as AuthenticatedImportIndexRouteImport } from './routes/_authenticated/import/index'
 import { Route as AuthenticatedExportIndexRouteImport } from './routes/_authenticated/export/index'
 import { Route as AuthenticatedDuplicatesIndexRouteImport } from './routes/_authenticated/duplicates/index'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets/index'
 import { Route as AuthenticatedApprovalsIndexRouteImport } from './routes/_authenticated/approvals/index'
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
+import { Route as AuthenticatedAnalyticsIndexRouteImport } from './routes/_authenticated/analytics/index'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
 import { Route as AuthenticatedAssetsDuplicatesRouteImport } from './routes/_authenticated/assets/duplicates'
@@ -132,6 +134,12 @@ const AuthenticatedPricingIndexRoute =
     path: '/pricing/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedNotificationsIndexRoute =
+  AuthenticatedNotificationsIndexRouteImport.update({
+    id: '/notifications/',
+    path: '/notifications/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedImportIndexRoute =
   AuthenticatedImportIndexRouteImport.update({
     id: '/import/',
@@ -166,6 +174,12 @@ const AuthenticatedApiCenterIndexRoute =
   AuthenticatedApiCenterIndexRouteImport.update({
     id: '/api-center/',
     path: '/api-center/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAnalyticsIndexRoute =
+  AuthenticatedAnalyticsIndexRouteImport.update({
+    id: '/analytics/',
+    path: '/analytics/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedProductsIdRoute = AuthenticatedProductsIdRouteImport.update({
@@ -248,12 +262,14 @@ export interface FileRoutesByFullPath {
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
+  '/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/approvals/': typeof AuthenticatedApprovalsIndexRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
   '/duplicates/': typeof AuthenticatedDuplicatesIndexRoute
   '/export/': typeof AuthenticatedExportIndexRoute
   '/import/': typeof AuthenticatedImportIndexRoute
+  '/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/pricing/': typeof AuthenticatedPricingIndexRoute
   '/products/': typeof AuthenticatedProductsIndexRoute
   '/requests/': typeof AuthenticatedRequestsIndexRoute
@@ -283,12 +299,14 @@ export interface FileRoutesByTo {
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
+  '/analytics': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
   '/approvals': typeof AuthenticatedApprovalsIndexRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
   '/duplicates': typeof AuthenticatedDuplicatesIndexRoute
   '/export': typeof AuthenticatedExportIndexRoute
   '/import': typeof AuthenticatedImportIndexRoute
+  '/notifications': typeof AuthenticatedNotificationsIndexRoute
   '/pricing': typeof AuthenticatedPricingIndexRoute
   '/products': typeof AuthenticatedProductsIndexRoute
   '/requests': typeof AuthenticatedRequestsIndexRoute
@@ -320,12 +338,14 @@ export interface FileRoutesById {
   '/_authenticated/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
+  '/_authenticated/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/_authenticated/approvals/': typeof AuthenticatedApprovalsIndexRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
   '/_authenticated/duplicates/': typeof AuthenticatedDuplicatesIndexRoute
   '/_authenticated/export/': typeof AuthenticatedExportIndexRoute
   '/_authenticated/import/': typeof AuthenticatedImportIndexRoute
+  '/_authenticated/notifications/': typeof AuthenticatedNotificationsIndexRoute
   '/_authenticated/pricing/': typeof AuthenticatedPricingIndexRoute
   '/_authenticated/products/': typeof AuthenticatedProductsIndexRoute
   '/_authenticated/requests/': typeof AuthenticatedRequestsIndexRoute
@@ -357,12 +377,14 @@ export interface FileRouteTypes {
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
+    | '/analytics/'
     | '/api-center/'
     | '/approvals/'
     | '/assets/'
     | '/duplicates/'
     | '/export/'
     | '/import/'
+    | '/notifications/'
     | '/pricing/'
     | '/products/'
     | '/requests/'
@@ -392,12 +414,14 @@ export interface FileRouteTypes {
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
+    | '/analytics'
     | '/api-center'
     | '/approvals'
     | '/assets'
     | '/duplicates'
     | '/export'
     | '/import'
+    | '/notifications'
     | '/pricing'
     | '/products'
     | '/requests'
@@ -428,12 +452,14 @@ export interface FileRouteTypes {
     | '/_authenticated/assets/duplicates'
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
+    | '/_authenticated/analytics/'
     | '/_authenticated/api-center/'
     | '/_authenticated/approvals/'
     | '/_authenticated/assets/'
     | '/_authenticated/duplicates/'
     | '/_authenticated/export/'
     | '/_authenticated/import/'
+    | '/_authenticated/notifications/'
     | '/_authenticated/pricing/'
     | '/_authenticated/products/'
     | '/_authenticated/requests/'
@@ -576,6 +602,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPricingIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/notifications/': {
+      id: '/_authenticated/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications/'
+      preLoaderRoute: typeof AuthenticatedNotificationsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/import/': {
       id: '/_authenticated/import/'
       path: '/import'
@@ -616,6 +649,13 @@ declare module '@tanstack/react-router' {
       path: '/api-center'
       fullPath: '/api-center/'
       preLoaderRoute: typeof AuthenticatedApiCenterIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/analytics/': {
+      id: '/_authenticated/analytics/'
+      path: '/analytics'
+      fullPath: '/analytics/'
+      preLoaderRoute: typeof AuthenticatedAnalyticsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/products/$id': {
@@ -718,12 +758,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAssetsDuplicatesRoute: typeof AuthenticatedAssetsDuplicatesRoute
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
+  AuthenticatedAnalyticsIndexRoute: typeof AuthenticatedAnalyticsIndexRoute
   AuthenticatedApiCenterIndexRoute: typeof AuthenticatedApiCenterIndexRoute
   AuthenticatedApprovalsIndexRoute: typeof AuthenticatedApprovalsIndexRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
   AuthenticatedDuplicatesIndexRoute: typeof AuthenticatedDuplicatesIndexRoute
   AuthenticatedExportIndexRoute: typeof AuthenticatedExportIndexRoute
   AuthenticatedImportIndexRoute: typeof AuthenticatedImportIndexRoute
+  AuthenticatedNotificationsIndexRoute: typeof AuthenticatedNotificationsIndexRoute
   AuthenticatedPricingIndexRoute: typeof AuthenticatedPricingIndexRoute
   AuthenticatedProductsIndexRoute: typeof AuthenticatedProductsIndexRoute
   AuthenticatedRequestsIndexRoute: typeof AuthenticatedRequestsIndexRoute
@@ -744,12 +786,14 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAssetsDuplicatesRoute: AuthenticatedAssetsDuplicatesRoute,
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
+  AuthenticatedAnalyticsIndexRoute: AuthenticatedAnalyticsIndexRoute,
   AuthenticatedApiCenterIndexRoute: AuthenticatedApiCenterIndexRoute,
   AuthenticatedApprovalsIndexRoute: AuthenticatedApprovalsIndexRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
   AuthenticatedDuplicatesIndexRoute: AuthenticatedDuplicatesIndexRoute,
   AuthenticatedExportIndexRoute: AuthenticatedExportIndexRoute,
   AuthenticatedImportIndexRoute: AuthenticatedImportIndexRoute,
+  AuthenticatedNotificationsIndexRoute: AuthenticatedNotificationsIndexRoute,
   AuthenticatedPricingIndexRoute: AuthenticatedPricingIndexRoute,
   AuthenticatedProductsIndexRoute: AuthenticatedProductsIndexRoute,
   AuthenticatedRequestsIndexRoute: AuthenticatedRequestsIndexRoute,

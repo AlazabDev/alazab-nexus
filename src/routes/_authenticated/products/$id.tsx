@@ -5,11 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Image as ImageIcon, DollarSign, Truck, Sparkles, ScrollText, Send } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, DollarSign, Truck, Sparkles, ScrollText, Send, Languages } from "lucide-react";
 import { ProductAssetsTab } from "@/components/product-assets-tab";
 import { ProductPricingTab } from "@/components/product-pricing-tab";
 import { ProductSuppliersTab } from "@/components/product-suppliers-tab";
 import { ProductAIReviewTab } from "@/components/product-ai-review-tab";
+import { ProductTranslationTab } from "@/components/product-translation-tab";
 import { submitForApproval } from "@/lib/approvals.functions";
 import { toast } from "sonner";
 
@@ -91,6 +92,7 @@ function ProductDetails() {
           <TabsTrigger value="pricing"><DollarSign className="size-3.5 ml-1" />التسعير</TabsTrigger>
           <TabsTrigger value="suppliers"><Truck className="size-3.5 ml-1" />الموردون</TabsTrigger>
           <TabsTrigger value="ai"><Sparkles className="size-3.5 ml-1" />AI</TabsTrigger>
+          <TabsTrigger value="translate"><Languages className="size-3.5 ml-1" />الترجمة</TabsTrigger>
           <TabsTrigger value="audit"><ScrollText className="size-3.5 ml-1" />سجل التدقيق</TabsTrigger>
         </TabsList>
 
@@ -138,6 +140,11 @@ function ProductDetails() {
         <TabsContent value="ai" className="mt-4">
           <ProductAIReviewTab productId={p.id} />
         </TabsContent>
+
+        <TabsContent value="translate" className="mt-4">
+          <ProductTranslationTab productId={p.id} />
+        </TabsContent>
+
 
         <TabsContent value="audit" className="mt-4">
           <Card className="p-12 surface-elevated border-0 text-center">

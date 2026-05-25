@@ -22,6 +22,7 @@ import {
   Network,
   Sparkles,
   CheckCircle2,
+  Bell,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -36,6 +37,8 @@ const sections = [
     label: "نظرة عامة",
     items: [
       { title: "لوحة التحكم", to: "/dashboard", icon: LayoutDashboard, phase: 1 },
+      { title: "التحليلات", to: "/analytics", icon: BarChart3, phase: 7 },
+      { title: "الإشعارات والنشاط", to: "/notifications", icon: Bell, phase: 7 },
     ],
   },
   {
@@ -121,7 +124,7 @@ export function AppSidebar() {
               <SidebarMenu>
                 {sec.items.map((item) => {
                   const active = currentPath === item.to || currentPath.startsWith(item.to + "/");
-                  const built = item.phase <= 4;
+                  const built = item.phase <= 7;
                   return (
                     <SidebarMenuItem key={item.to}>
                       <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
