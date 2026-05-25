@@ -139,7 +139,7 @@ export const applyTranslations = createServerFn({ method: "POST" })
     }
     if (Object.keys(updates).length === 0) return { applied: 0 };
 
-    const { error } = await supabase.from("products").update(updates).eq("id", data.productId);
+    const { error } = await supabase.from("products").update(updates as never).eq("id", data.productId);
     if (error) throw new Error(error.message);
 
     await supabase.from("audit_logs").insert({

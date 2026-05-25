@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/rea
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { NotificationBell } from "@/components/notification-bell";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -24,7 +25,10 @@ function AuthLayout() {
               <SidebarTrigger />
               <div className="text-xs text-muted-foreground num" dir="ltr">/ {crumb}</div>
             </div>
-            <div className="text-xs text-muted-foreground">منصة العزب — مركز إدارة الأصول والمنتجات</div>
+            <div className="flex items-center gap-3">
+              <div className="text-xs text-muted-foreground hidden md:block">منصة العزب — مركز إدارة الأصول والمنتجات</div>
+              <NotificationBell />
+            </div>
           </header>
           <main className="flex-1 overflow-auto"><Outlet /></main>
         </div>
