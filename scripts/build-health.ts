@@ -101,30 +101,35 @@ function main() {
   const lineRe = /^(.+?)\((\d+),(\d+)\):\s+(error|warning)\s+(TS\d+):\s+(.+)$/;
   let current: Issue | null = null;
 
+  const finalize = (it: Issue) => {
+    const { category, suggestion } = suggest(it.code, it.message, it.file);
+    it.category = category;
+    it.suggestion = suggestion;
+    issues.push(it);
+  };
+
   for (const raw of out.split(/\r?\n/)) {
     const match = raw.match(lineRe);
     if (match) {
-      if (current) issues.push(current);
+      if (current) finalize(current);
       const [, file, line, col, sev, code, msg] = match;
-      const { category, suggestion } = suggest(code, msg, file);
       current = {
         file,
         line: Number(line),
         column: Number(col),
         code,
         message: msg,
-        category,
+        category: "",
         severity: sev as "error" | "warning",
-        suggestion,
+        suggestion: "",
       };
     } else if (current && raw.trim()) {
-      // continuation lines from tsc — append to message (truncated)
-      if (current.message.length < 600) {
+      if (current.message.length < 800) {
         current.message += " " + raw.trim();
       }
     }
   }
-  if (current) issues.push(current);
+  if (current) finalize(current);
 
   // group counts by category
   const byCategory: Record<string, number> = {};
