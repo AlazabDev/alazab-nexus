@@ -23,7 +23,10 @@ import {
   Sparkles,
   CheckCircle2,
   Bell,
+  Wrench,
 } from "lucide-react";
+
+
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter,
@@ -85,6 +88,7 @@ const sections = [
   {
     label: "النظام",
     items: [
+      { title: "Build Health", to: "/build-health", icon: Wrench, phase: 7 },
       { title: "الإعدادات", to: "/settings", icon: Settings, phase: 1 },
     ],
   },
