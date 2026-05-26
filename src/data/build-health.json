@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-05-26T03:13:31.645Z",
+  "generatedAt": "2026-05-26T03:14:15.847Z",
   "totalErrors": 120,
   "totalWarnings": 0,
   "byCategory": {
-    "عدم تطابق الأنواع": 28,
+    "جدول غير موجود في Schema": 38,
     "وحدة مفقودة": 1,
     "تحويل قيمة غير صالح": 27,
     "حقل غير موجود": 45,
-    "جدول غير موجود في Schema": 13,
-    "خطأ TypeScript": 6
+    "خطأ TypeScript": 6,
+    "عدم تطابق الأنواع": 3
   },
   "byFile": {
     "src/components/request-form.tsx": 1,
@@ -28,10 +28,10 @@
       "line": 63,
       "column": 15,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"product_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"product_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/components/request-form.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"product_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/components/request-form.tsx."
     },
     {
       "file": "src/lib/azure-integrations.ts",
@@ -278,10 +278,10 @@
       "line": 279,
       "column": 13,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"pricing_rules\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"pricing_rules\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/lib/pricing-engine.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"pricing_rules\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/lib/pricing-engine.ts."
     },
     {
       "file": "src/lib/pricing-engine.ts",
@@ -298,20 +298,20 @@
       "line": 109,
       "column": 15,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"integration_configs\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"integration_configs\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/integrations.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"integration_configs\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/integrations.tsx."
     },
     {
       "file": "src/routes/_authenticated/integrations.tsx",
       "line": 140,
       "column": 15,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"integration_configs\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"integration_configs\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/integrations.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"integration_configs\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/integrations.tsx."
     },
     {
       "file": "src/routes/_authenticated/integrations.tsx",
@@ -328,10 +328,10 @@
       "line": 374,
       "column": 45,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"integration_configs\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"integration_configs\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/integrations.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"integration_configs\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/integrations.tsx."
     },
     {
       "file": "src/routes/_authenticated/integrations.tsx",
@@ -348,10 +348,10 @@
       "line": 57,
       "column": 11,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/manufacturing-orders.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"manufacturing_orders\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/manufacturing-orders.tsx."
     },
     {
       "file": "src/routes/_authenticated/manufacturing-orders.tsx",
@@ -368,30 +368,30 @@
       "line": 78,
       "column": 40,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/manufacturing-orders.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"manufacturing_orders\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/manufacturing-orders.tsx."
     },
     {
       "file": "src/routes/_authenticated/manufacturing-orders.tsx",
       "line": 117,
       "column": 15,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/manufacturing-orders.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"manufacturing_orders\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/manufacturing-orders.tsx."
     },
     {
       "file": "src/routes/_authenticated/quote-requests.tsx",
       "line": 47,
       "column": 11,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/quote-requests.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/quote-requests.tsx."
     },
     {
       "file": "src/routes/_authenticated/quote-requests.tsx",
@@ -408,20 +408,20 @@
       "line": 64,
       "column": 40,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/quote-requests.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/quote-requests.tsx."
     },
     {
       "file": "src/routes/_authenticated/requests/index.tsx",
       "line": 49,
       "column": 15,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"product_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"product_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/_authenticated/requests/index.tsx:No overload matches this call.…"
+      "suggestion": "الجدول \"product_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/_authenticated/requests/index.tsx."
     },
     {
       "file": "src/routes/_authenticated/requests/index.tsx",
@@ -458,10 +458,10 @@
       "line": 33,
       "column": 17,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/order-status.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"manufacturing_orders\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/order-status.ts."
     },
     {
       "file": "src/routes/api/agent/v1/order-status.ts",
@@ -488,10 +488,10 @@
       "line": 132,
       "column": 42,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/order-status.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"manufacturing_orders\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/order-status.ts."
     },
     {
       "file": "src/routes/api/agent/v1/order-status.ts",
@@ -508,10 +508,10 @@
       "line": 147,
       "column": 38,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/order-status.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"chatbot_interactions\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/order-status.ts."
     },
     {
       "file": "src/routes/api/agent/v1/order-status.ts",
@@ -598,17 +598,17 @@
       "line": 87,
       "column": 19,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-request.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-request.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-request.ts",
       "line": 88,
       "column": 21,
       "code": "TS2345",
-      "message": "Argument of type '{ request_id: any; chatbot_session_id: any; customer_id: any; customer_name: any; customer_phone: any; customer_email: any; design_file_url: any; design_file_type: any; design_data: DesignData; ... 18 more ...; special_requirements: any; }' is not assignable to parameter of type 'RejectExcessProperties<{ allowed_endpoints?: string[] | null | undefined; api_key: string; channel: string; created_at?: string | undefined; created_by?: string | null | undefined; id?: string | undefined; ... 6 more ...; updated_at?: string | undefined; } | ... 20 more ... | { ...; }, { ...; } | ... 20 more ... | {...'.",
+      "message": "Argument of type '{ request_id: any; chatbot_session_id: any; customer_id: any; customer_name: any; customer_phone: any; customer_email: any; design_file_url: any; design_file_type: any; design_data: DesignData; ... 18 more ...; special_requirements: any; }' is not assignable to parameter of type 'RejectExcessProperties<{ allowed_endpoints?: string[] | null | undefined; api_key: string; channel: string; created_at?: string | undefined; created_by?: string | null | undefined; id?: string | undefined; ... 6 more ...; updated_at?: string | undefined; } | ... 20 more ... | { ...; }, { ...; } | ... 20 more ... | {...'. Type '{ request_id: any; chatbot_session_id: any; customer_id: any; customer_name: any; customer_phone: any; customer_email: any; design_file_url: any; design_file_type: any; design_data: DesignData; ... 18 more ...; special_requirements: any; }' is not assignable to type '({ allowed_endpoints?: string[] | null | undefined; api_key: string; channel: string; created_at?: string | undefined; created_by?: string | null | undefined; id?: string | undefined; ... 6 more ...; updated_at?: string | undefined; } & {}) | ... 19 more ... | RejectExcessProperties<...>[]'.",
       "category": "عدم تطابق الأنواع",
       "severity": "error",
       "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-request.ts:Argument of type '{ request_id: any; chatbot_session_id: any; customer_id: any; …"
@@ -618,10 +618,10 @@
       "line": 106,
       "column": 36,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-request.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"chatbot_interactions\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-request.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-request.ts",
@@ -698,10 +698,10 @@
       "line": 181,
       "column": 40,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-request.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-request.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-request.ts",
@@ -788,10 +788,10 @@
       "line": 53,
       "column": 42,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
@@ -838,10 +838,10 @@
       "line": 76,
       "column": 21,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
@@ -858,10 +858,10 @@
       "line": 84,
       "column": 19,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"quote_requests\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"quote_requests\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
@@ -908,10 +908,10 @@
       "line": 94,
       "column": 36,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"chatbot_interactions\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
@@ -1068,17 +1068,17 @@
       "line": 140,
       "column": 21,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"manufacturing_orders\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"manufacturing_orders\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
       "line": 141,
       "column": 23,
       "code": "TS2345",
-      "message": "Argument of type '{ quote_request_id: string; order_number: string | number; customer_id: any; customer_name: any; customer_phone: any; delivery_address: any; design_data: any; specifications: { dimensions: any; materials: any; components: any; finishes: any; accessories: any; }; ... 11 more ...; production_notes: any; }' is not assignable to parameter of type 'RejectExcessProperties<{ allowed_endpoints?: string[] | null | undefined; api_key: string; channel: string; created_at?: string | undefined; created_by?: string | null | undefined; id?: string | undefined; ... 6 more ...; updated_at?: string | undefined; } | ... 20 more ... | { ...; }, { ...; } | ... 20 more ... | {...'.",
+      "message": "Argument of type '{ quote_request_id: string; order_number: string | number; customer_id: any; customer_name: any; customer_phone: any; delivery_address: any; design_data: any; specifications: { dimensions: any; materials: any; components: any; finishes: any; accessories: any; }; ... 11 more ...; production_notes: any; }' is not assignable to parameter of type 'RejectExcessProperties<{ allowed_endpoints?: string[] | null | undefined; api_key: string; channel: string; created_at?: string | undefined; created_by?: string | null | undefined; id?: string | undefined; ... 6 more ...; updated_at?: string | undefined; } | ... 20 more ... | { ...; }, { ...; } | ... 20 more ... | {...'. Type '{ quote_request_id: string; order_number: string | number; customer_id: any; customer_name: any; customer_phone: any; delivery_address: any; design_data: any; specifications: { dimensions: any; materials: any; components: any; finishes: any; accessories: any; }; ... 11 more ...; production_notes: any; }' is not assignable to type '({ allowed_endpoints?: string[] | null | undefined; api_key: string; channel: string; created_at?: string | undefined; created_by?: string | null | undefined; id?: string | undefined; ... 6 more ...; updated_at?: string | undefined; } & {}) | ... 19 more ... | RejectExcessProperties<...>[]'.",
       "category": "عدم تطابق الأنواع",
       "severity": "error",
       "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:Argument of type '{ quote_request_id: string; order_number: string | number; cus…"
@@ -1098,10 +1098,10 @@
       "line": 158,
       "column": 21,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"material_requisitions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"material_requisitions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"material_requisitions\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
@@ -1138,10 +1138,10 @@
       "line": 190,
       "column": 42,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"material_requisition_items\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"material_requisition_items\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"material_requisition_items\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
@@ -1158,10 +1158,10 @@
       "line": 195,
       "column": 38,
       "code": "TS2769",
-      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'.",
-      "category": "عدم تطابق الأنواع",
+      "message": "No overload matches this call. Overload 1 of 2, '(relation: \"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | ... 10 more ... | \"webhook_logs\"): PostgrestQueryBuilder<...>', gave the following error. Argument of type '\"chatbot_interactions\"' is not assignable to parameter of type '\"approvals\" | \"categories\" | \"duplicate_groups\" | \"products\" | \"suppliers\" | \"assets\" | \"families\" | \"units\" | \"api_consumers\" | \"api_integrations\" | \"approval_history\" | \"audit_logs\" | ... 9 more ... | \"webhook_logs\"'. Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: \"14.5\"; }, { Tables: { api_consumers: { Row: { allowed_endpoints: string[] | null; api_key: string; channel: string; created_at: string; created_by: string | null; ... 7 more ...; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 20 more ...; webhook_logs: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.",
+      "category": "جدول غير موجود في Schema",
       "severity": "error",
-      "suggestion": "راجع توقيع الدالة في src/routes/api/agent/v1/quote-response.ts:No overload matches this call.…"
+      "suggestion": "الجدول \"chatbot_interactions\" غير معرّف في src/integrations/supabase/types.ts. أنشئ هجرة migration لإضافة الجدول أو احذف الكود المرجعي القديم في src/routes/api/agent/v1/quote-response.ts."
     },
     {
       "file": "src/routes/api/agent/v1/quote-response.ts",
