@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -10,13 +11,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Search, Download, Filter, X, FileSpreadsheet, FileJson } from "lucide-react";
+import { Search, Download, Filter, X, FileSpreadsheet, FileJson, Sparkles, Loader2 } from "lucide-react";
 import { ProductCreateDialog } from "@/components/product-create-dialog";
+import { generateProductImages } from "@/lib/product-image-gen.functions";
 
 export const Route = createFileRoute("/_authenticated/products/")({
   head: () => ({ meta: [{ title: "المنتجات والخدمات — Alazab PAOP" }] }),
   component: ProductsList,
 });
+
 
 const PAGE = 50;
 
