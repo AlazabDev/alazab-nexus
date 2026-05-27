@@ -47,6 +47,10 @@ function ProductsList() {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "az_code", "name_ar", "name_en", "status", "gpc_family", "sector_ar"
   ]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [genLoading, setGenLoading] = useState(false);
+  const genFn = useServerFn(generateProductImages);
+
 
   // Fetch filter options
   const { data: filterOptions } = useQuery({
