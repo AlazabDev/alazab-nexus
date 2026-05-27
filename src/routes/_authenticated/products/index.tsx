@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -10,13 +11,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Search, Download, Filter, X, FileSpreadsheet, FileJson } from "lucide-react";
+import { Search, Download, Filter, X, FileSpreadsheet, FileJson, Sparkles, Loader2 } from "lucide-react";
 import { ProductCreateDialog } from "@/components/product-create-dialog";
+import { generateProductImages } from "@/lib/product-image-gen.functions";
 
 export const Route = createFileRoute("/_authenticated/products/")({
   head: () => ({ meta: [{ title: "المنتجات والخدمات — Alazab PAOP" }] }),
   component: ProductsList,
 });
+
 
 const PAGE = 50;
 
@@ -44,6 +47,10 @@ function ProductsList() {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "az_code", "name_ar", "name_en", "status", "gpc_family", "sector_ar"
   ]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [genLoading, setGenLoading] = useState(false);
+  const genFn = useServerFn(generateProductImages);
+
 
   // Fetch filter options
   const { data: filterOptions } = useQuery({
@@ -362,11 +369,63 @@ function ProductsList() {
         </div>
       </Card>
 
+      {selectedIds.size > 0 && (
+        <Card className="p-3 border-accent/40 bg-accent/5 flex items-center gap-3 flex-wrap">
+          <div className="text-sm font-medium">
+            <span className="num">{selectedIds.size}</span> بند محدد
+          </div>
+          <div className="mr-auto flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setSelectedIds(new Set())}
+              disabled={genLoading}
+            >
+              مسح التحديد
+            </Button>
+            <Button
+              size="sm"
+              disabled={genLoading || selectedIds.size > 20}
+              onClick={async () => {
+                if (selectedIds.size > 20) { toast.error("الحد الأقصى 20 بند في المرة"); return; }
+                setGenLoading(true);
+                try {
+                  const res = await genFn({ data: { productIds: Array.from(selectedIds) } });
+                  toast.success(`تم توليد ${res.totalGenerated} صورة (${res.totalFailed} فشل)`);
+                  setSelectedIds(new Set());
+                } catch (e: any) {
+                  toast.error(e?.message ?? "فشل التوليد");
+                } finally {
+                  setGenLoading(false);
+                }
+              }}
+            >
+              {genLoading ? <Loader2 className="size-4 ml-1 animate-spin" /> : <Sparkles className="size-4 ml-1" />}
+              توليد 3 صور لكل بند
+            </Button>
+          </div>
+        </Card>
+      )}
+
       <Card className="surface-elevated border-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-xs uppercase">
               <tr>
+                <th className="p-3 w-10">
+                  <Checkbox
+                    checked={
+                      (data?.rows.length ?? 0) > 0 &&
+                      data!.rows.every((r: any) => selectedIds.has(r.id))
+                    }
+                    onCheckedChange={(checked) => {
+                      const next = new Set(selectedIds);
+                      if (checked) data?.rows.forEach((r: any) => next.add(r.id));
+                      else data?.rows.forEach((r: any) => next.delete(r.id));
+                      setSelectedIds(next);
+                    }}
+                  />
+                </th>
                 <th className="text-right p-3 font-semibold">AZ Code</th>
                 <th className="text-right p-3 font-semibold">الاسم بالعربي</th>
                 <th className="text-right p-3 font-semibold">Name EN</th>
@@ -377,12 +436,22 @@ function ProductsList() {
               </tr>
             </thead>
             <tbody>
-              {isLoading && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">جاري التحميل...</td></tr>}
+              {isLoading && <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">جاري التحميل...</td></tr>}
               {!isLoading && data?.rows.length === 0 && (
-                <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">لا توجد نتائج</td></tr>
+                <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">لا توجد نتائج</td></tr>
               )}
               {data?.rows.map((p: any) => (
-                <tr key={p.id} className="border-t hover:bg-secondary/30 cursor-pointer">
+                <tr key={p.id} className={`border-t hover:bg-secondary/30 ${selectedIds.has(p.id) ? "bg-accent/5" : ""}`}>
+                  <td className="p-3">
+                    <Checkbox
+                      checked={selectedIds.has(p.id)}
+                      onCheckedChange={(checked) => {
+                        const next = new Set(selectedIds);
+                        if (checked) next.add(p.id); else next.delete(p.id);
+                        setSelectedIds(next);
+                      }}
+                    />
+                  </td>
                   <td className="p-3 num text-xs" dir="ltr">
                     <Link to="/products/$id" params={{ id: p.id }} className="text-accent hover:underline">{p.az_code}</Link>
                   </td>
@@ -408,6 +477,7 @@ function ProductsList() {
             </tbody>
           </table>
         </div>
+
 
         <div className="flex items-center justify-between p-3 border-t bg-secondary/30 text-xs">
           <div className="text-muted-foreground num" dir="ltr">
