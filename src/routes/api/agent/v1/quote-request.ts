@@ -1,7 +1,7 @@
 /**
  * Alazab PAOP - Chatbot Agent API
  * نقطة نهاية استقبال طلبات التسعير من الشات بوت
- * 
+ *
  * POST /api/agent/v1/quote-request
  * - استقبال ملف التصميم وبيانات العميل
  * - تحليل المكونات والخامات
@@ -18,39 +18,42 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
   server: {
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
-      
+
       // POST - استقبال طلب تسعير جديد
       POST: async ({ request }) => {
         const started = Date.now();
-        const auth = await requireApiKey(request);
+        const auth = await requireApiKey(request, "/api/agent/v1/quote-request");
         if ("error" in auth) {
-          await logCall({ 
-            consumer: null, 
-            request, 
-            endpoint: "/api/agent/v1/quote-request", 
-            status: 401, 
-            startedAt: started, 
-            error: "auth" 
+          await logCall({
+            consumer: null,
+            request,
+            endpoint: "/api/agent/v1/quote-request",
+            status: 401,
+            startedAt: started,
+            error: "auth",
           });
           return auth.error;
         }
 
         try {
           const body = await request.json();
-          
+
           // التحقق من البيانات المطلوبة
           if (!body.request_id || !body.design_data) {
-            return json({ 
-              success: false, 
-              error: "Missing required fields: request_id, design_data" 
-            }, 400);
+            return json(
+              {
+                success: false,
+                error: "Missing required fields: request_id, design_data",
+              },
+              400,
+            );
           }
 
           const designData: DesignData = body.design_data;
-          
+
           // حساب التسعير
           const pricing = await calculateQuotePrice(designData, body.quantity || 1);
-          
+
           // انشاء سجل الطلب
           const quoteRequest = {
             request_id: body.request_id,
@@ -63,12 +66,12 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
             design_file_type: body.design_file_type || "json",
             design_data: designData,
             design_preview_url: body.design_preview_url,
-            dimensions: designData.dimensions,
-            materials: pricing.materials_breakdown,
-            components: designData.components,
-            finishes: designData.finishes,
-            accessories: designData.accessories,
-            pricing_breakdown: pricing.breakdown,
+            dimensions: designData.dimensions as never,
+            materials: pricing.materials_breakdown as never,
+            components: designData.components as never,
+            finishes: (designData.finishes ?? null) as never,
+            accessories: (designData.accessories ?? null) as never,
+            pricing_breakdown: pricing.breakdown as never,
             materials_cost: pricing.materials_cost,
             labor_cost: pricing.labor_cost,
             overhead_cost: pricing.overhead_cost,
@@ -80,24 +83,24 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
             quoted_at: new Date().toISOString(),
             quote_valid_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
             customer_notes: body.customer_notes,
-            special_requirements: body.special_requirements,
+            special_requirements: body.special_requirements as never,
           };
 
           const { data, error } = await supabaseAdmin
             .from("quote_requests")
-            .insert(quoteRequest)
+            .insert(quoteRequest as never)
             .select()
             .single();
 
           if (error) {
             console.error("Failed to create quote request:", error);
-            await logCall({ 
-              consumer: auth.consumer, 
-              request, 
-              endpoint: "/api/agent/v1/quote-request", 
-              status: 500, 
-              startedAt: started, 
-              error: error.message 
+            await logCall({
+              consumer: auth.consumer,
+              request,
+              endpoint: "/api/agent/v1/quote-request",
+              status: 500,
+              startedAt: started,
+              error: error.message,
             });
             return json({ success: false, error: "Failed to create quote" }, 500);
           }
@@ -107,22 +110,22 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
             quote_request_id: data.id,
             interaction_type: "quote_sent",
             direction: "outbound",
-            payload: body,
+            payload: body as never,
             response_payload: {
               quote_id: data.id,
-              pricing: pricing,
-            },
+              pricing: pricing as unknown,
+            } as never,
             status: "sent",
             sent_at: new Date().toISOString(),
           });
 
-          await logCall({ 
-            consumer: auth.consumer, 
-            request, 
-            endpoint: "/api/agent/v1/quote-request", 
-            status: 200, 
+          await logCall({
+            consumer: auth.consumer,
+            request,
+            endpoint: "/api/agent/v1/quote-request",
+            status: 200,
             startedAt: started,
-            payload: { request_id: body.request_id }
+            payload: { request_id: body.request_id },
           });
 
           // ارجاع عرض السعر للشات بوت
@@ -147,18 +150,17 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
               },
               message_ar: `عرض السعر: ${pricing.selling_price.toLocaleString()} ${data.currency}`,
               message_en: `Quote: ${pricing.selling_price.toLocaleString()} ${data.currency}`,
-            }
+            },
           });
-
         } catch (err) {
           console.error("Quote request error:", err);
-          await logCall({ 
-            consumer: auth.consumer, 
-            request, 
-            endpoint: "/api/agent/v1/quote-request", 
-            status: 500, 
-            startedAt: started, 
-            error: String(err) 
+          await logCall({
+            consumer: auth.consumer,
+            request,
+            endpoint: "/api/agent/v1/quote-request",
+            status: 500,
+            startedAt: started,
+            error: String(err),
           });
           return json({ success: false, error: "Internal server error" }, 500);
         }
@@ -167,7 +169,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
       // GET - الحصول على حالة طلب
       GET: async ({ request }) => {
         const started = Date.now();
-        const auth = await requireApiKey(request);
+        const auth = await requireApiKey(request, "/api/agent/v1/quote-request");
         if ("error" in auth) return auth.error;
 
         const url = new URL(request.url);
@@ -191,12 +193,12 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
           return json({ success: false, error: "Quote not found" }, 404);
         }
 
-        await logCall({ 
-          consumer: auth.consumer, 
-          request, 
-          endpoint: "/api/agent/v1/quote-request", 
-          status: 200, 
-          startedAt: started 
+        await logCall({
+          consumer: auth.consumer,
+          request,
+          endpoint: "/api/agent/v1/quote-request",
+          status: 200,
+          startedAt: started,
         });
 
         return json({
@@ -214,7 +216,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
               quoted_at: data.quoted_at,
               valid_until: data.quote_valid_until,
             },
-          }
+          },
         });
       },
     },
