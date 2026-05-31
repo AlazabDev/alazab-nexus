@@ -125,7 +125,7 @@ export async function batchMatchImages(
     const results: ImageAnalysisResult[] = [];
 
     for (const image of images) {
-      const result = await analyzeAndMatchImage(imageUrl, productName, productDescription, productCategory);
+      const result = await analyzeAndMatchImage(image.url, productName, productDescription, productCategory);
       results.push(result);
       // Add delay between requests
       await new Promise((resolve) => setTimeout(resolve, 1000));

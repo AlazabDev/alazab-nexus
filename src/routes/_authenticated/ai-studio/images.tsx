@@ -14,7 +14,6 @@ function ImagesPage() {
       <PageHeader
         title="Image Fetcher & Matcher"
         description="Find professional images and match them to your products"
-        backButton
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

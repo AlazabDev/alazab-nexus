@@ -14,7 +14,6 @@ function DatasheetPage() {
       <PageHeader
         title="Datasheet Generator"
         description="Create professional technical datasheets with AI"
-        backButton
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

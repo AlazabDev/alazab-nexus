@@ -14,7 +14,6 @@ function OptimizePage() {
       <PageHeader
         title="Content Optimization"
         description="Enhance product names, descriptions, and metadata with AI"
-        backButton
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

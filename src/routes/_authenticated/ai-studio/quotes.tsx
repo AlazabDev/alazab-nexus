@@ -14,7 +14,6 @@ function QuotesPage() {
       <PageHeader
         title="Quote Generator"
         description="Create professional quotes with AI-powered intelligent pricing"
-        backButton
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

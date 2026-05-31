@@ -186,7 +186,7 @@ CREATE INDEX idx_api_quotes_created ON public.api_quotes(created_at);
 CREATE TABLE IF NOT EXISTS public.ai_optimization_jobs (
   id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   job_id                TEXT UNIQUE NOT NULL,
-  user_id               UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  consumer_id           UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   optimization_type     TEXT NOT NULL,  -- content|datasheet|images|all
   optimization_level    TEXT DEFAULT 'standard',  -- basic|standard|premium
   product_ids           UUID[] NOT NULL,
@@ -210,18 +210,19 @@ GRANT ALL ON public.ai_optimization_jobs TO service_role;
 ALTER TABLE public.ai_optimization_jobs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "auth read own ai_optimization_jobs" ON public.ai_optimization_jobs
-  FOR SELECT TO authenticated USING (user_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role));
+  FOR SELECT TO authenticated USING (consumer_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role));
 CREATE POLICY "auth ins ai_optimization_jobs" ON public.ai_optimization_jobs
-  FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+  FOR INSERT TO authenticated
+  WITH CHECK (has_role(auth.uid(), 'editor'::app_role) OR has_role(auth.uid(), 'admin'::app_role));
 CREATE POLICY "auth upd own ai_optimization_jobs" ON public.ai_optimization_jobs
   FOR UPDATE TO authenticated
-  USING (user_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role));
+  USING (consumer_id = auth.uid() OR has_role(auth.uid(), 'admin'::app_role));
 
 CREATE TRIGGER trg_ai_optimization_jobs_updated
   BEFORE UPDATE ON public.ai_optimization_jobs
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE INDEX idx_ai_optimization_jobs_user ON public.ai_optimization_jobs(user_id);
+CREATE INDEX idx_ai_optimization_jobs_consumer ON public.ai_optimization_jobs(consumer_id);
 CREATE INDEX idx_ai_optimization_jobs_status ON public.ai_optimization_jobs(status);
 CREATE INDEX idx_ai_optimization_jobs_created ON public.ai_optimization_jobs(created_at);
 
