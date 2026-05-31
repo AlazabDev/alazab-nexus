@@ -324,7 +324,7 @@ function IntegrationsPage() {
               راجع دليل التكاملات الشامل لفهم كيفية توصيل كل نظام والتعامل مع الأخطاء.
             </p>
             <Link
-              to="/docs/INTEGRATIONS"
+              to="/integrations"
               className="text-accent hover:underline font-medium text-sm"
             >
               اقرأ دليل التكاملات الكامل →

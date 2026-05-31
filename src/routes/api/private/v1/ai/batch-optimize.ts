@@ -33,7 +33,7 @@ export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
 
           // Create optimization job record
           const { data: job, error: jobError } = await supabaseAdmin
-            .from('ai_optimization_jobs')
+            .from('ai_optimization_jobs' as any)
             .insert({
               job_id: jobId,
               consumer_id: consumer?.id ?? null,

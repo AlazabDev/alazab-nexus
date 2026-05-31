@@ -37,6 +37,8 @@ import { Route as AuthenticatedApprovalsIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
 import { Route as AuthenticatedAnalyticsIndexRouteImport } from './routes/_authenticated/analytics/index'
 import { Route as AuthenticatedAiStudioIndexRouteImport } from './routes/_authenticated/ai-studio/index'
+import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers/$supplierId'
+import { Route as AuthenticatedRequestsRequestIdRouteImport } from './routes/_authenticated/requests/$requestId'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products/new'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
@@ -220,6 +222,18 @@ const AuthenticatedAiStudioIndexRoute =
     path: '/ai-studio/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSuppliersSupplierIdRoute =
+  AuthenticatedSuppliersSupplierIdRouteImport.update({
+    id: '/suppliers/$supplierId',
+    path: '/suppliers/$supplierId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedRequestsRequestIdRoute =
+  AuthenticatedRequestsRequestIdRouteImport.update({
+    id: '/requests/$requestId',
+    path: '/requests/$requestId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProductsNewRoute =
   AuthenticatedProductsNewRouteImport.update({
     id: '/products/new',
@@ -372,6 +386,8 @@ export interface FileRoutesByFullPath {
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
+  '/requests/$requestId': typeof AuthenticatedRequestsRequestIdRoute
+  '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
   '/ai-studio/': typeof AuthenticatedAiStudioIndexRoute
   '/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
@@ -424,6 +440,8 @@ export interface FileRoutesByTo {
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
+  '/requests/$requestId': typeof AuthenticatedRequestsRequestIdRoute
+  '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
   '/ai-studio': typeof AuthenticatedAiStudioIndexRoute
   '/analytics': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
@@ -478,6 +496,8 @@ export interface FileRoutesById {
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
+  '/_authenticated/requests/$requestId': typeof AuthenticatedRequestsRequestIdRoute
+  '/_authenticated/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
   '/_authenticated/ai-studio/': typeof AuthenticatedAiStudioIndexRoute
   '/_authenticated/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
@@ -532,6 +552,8 @@ export interface FileRouteTypes {
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/new'
+    | '/requests/$requestId'
+    | '/suppliers/$supplierId'
     | '/ai-studio/'
     | '/analytics/'
     | '/api-center/'
@@ -584,6 +606,8 @@ export interface FileRouteTypes {
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/new'
+    | '/requests/$requestId'
+    | '/suppliers/$supplierId'
     | '/ai-studio'
     | '/analytics'
     | '/api-center'
@@ -637,6 +661,8 @@ export interface FileRouteTypes {
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
     | '/_authenticated/products/new'
+    | '/_authenticated/requests/$requestId'
+    | '/_authenticated/suppliers/$supplierId'
     | '/_authenticated/ai-studio/'
     | '/_authenticated/analytics/'
     | '/_authenticated/api-center/'
@@ -884,6 +910,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiStudioIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/suppliers/$supplierId': {
+      id: '/_authenticated/suppliers/$supplierId'
+      path: '/suppliers/$supplierId'
+      fullPath: '/suppliers/$supplierId'
+      preLoaderRoute: typeof AuthenticatedSuppliersSupplierIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/requests/$requestId': {
+      id: '/_authenticated/requests/$requestId'
+      path: '/requests/$requestId'
+      fullPath: '/requests/$requestId'
+      preLoaderRoute: typeof AuthenticatedRequestsRequestIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/products/new': {
       id: '/_authenticated/products/new'
       path: '/products/new'
@@ -1069,6 +1109,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
+  AuthenticatedRequestsRequestIdRoute: typeof AuthenticatedRequestsRequestIdRoute
+  AuthenticatedSuppliersSupplierIdRoute: typeof AuthenticatedSuppliersSupplierIdRoute
   AuthenticatedAiStudioIndexRoute: typeof AuthenticatedAiStudioIndexRoute
   AuthenticatedAnalyticsIndexRoute: typeof AuthenticatedAnalyticsIndexRoute
   AuthenticatedApiCenterIndexRoute: typeof AuthenticatedApiCenterIndexRoute
@@ -1106,6 +1148,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,
+  AuthenticatedRequestsRequestIdRoute: AuthenticatedRequestsRequestIdRoute,
+  AuthenticatedSuppliersSupplierIdRoute: AuthenticatedSuppliersSupplierIdRoute,
   AuthenticatedAiStudioIndexRoute: AuthenticatedAiStudioIndexRoute,
   AuthenticatedAnalyticsIndexRoute: AuthenticatedAnalyticsIndexRoute,
   AuthenticatedApiCenterIndexRoute: AuthenticatedApiCenterIndexRoute,
