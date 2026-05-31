@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireAuth } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
 import { generateProductDatasheet, generatePDFDatasheet } from '@/lib/ai/datasheet-generator';
 import { z } from 'zod';
 
