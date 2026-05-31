@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireAuth } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
 import { z } from 'zod';
 
 const BatchOptimizeRequestSchema = z.object({
@@ -18,10 +18,11 @@ export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
         const started = Date.now();
 
         // Verify authentication
-        const auth = await requireAuth(request);
-        if (!auth.success) {
-          return json({ error: 'Unauthorized' }, 401);
+        const authResult = await requireApiKey(request, '/api/private/v1/ai/batch-optimize');
+        if (authResult.error) {
+          return authResult.error;
         }
+        const consumer = authResult.consumer;
 
         try {
           const body = await request.json();
@@ -35,7 +36,7 @@ export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
             .from('ai_optimization_jobs')
             .insert({
               job_id: jobId,
-              user_id: auth.userId,
+              consumer_id: consumer?.id ?? null,
               optimization_type: validated.optimizationType,
               optimization_level: validated.optimizationLevel,
               product_ids: validated.productIds,
@@ -57,22 +58,17 @@ export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
             validated.productIds,
             validated.optimizationLevel,
             validated.optimizationType,
-            auth.userId
+            consumer?.id ?? null
           );
 
-          // Log audit
-          await supabaseAdmin.from('ai_audit_logs').insert({
-            user_id: auth.userId,
-            action: 'batch_optimize',
-            entity_type: 'job',
-            entity_id: job!.id,
-            details: {
-              job_id: jobId,
-              product_count: validated.productIds.length,
-              optimization_type: validated.optimizationType,
-            },
-            status: 'success',
-            duration_ms: Date.now() - started,
+          // Log the API call
+          await logCall({
+            consumer,
+            request,
+            endpoint: '/api/private/v1/ai/batch-optimize',
+            status: 202,
+            startedAt: started,
+            payload: validated,
           });
 
           return json(
@@ -85,27 +81,25 @@ export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
                 estimated_duration: Math.ceil((validated.productIds.length * 5) / 1000) + ' seconds',
               },
             },
-            202,
-            { headers: CORS }
+            202
           );
         } catch (error) {
           console.error('[v0] Batch optimization error:', error);
 
-          await supabaseAdmin.from('ai_audit_logs').insert({
-            user_id: auth.userId,
-            action: 'batch_optimize',
-            entity_type: 'job',
-            status: 'error',
-            error_message: error instanceof Error ? error.message : String(error),
-            duration_ms: Date.now() - started,
+          await logCall({
+            consumer: null,
+            request,
+            endpoint: '/api/private/v1/ai/batch-optimize',
+            status: 500,
+            startedAt: started,
+            error: error instanceof Error ? error.message : String(error),
           });
 
           return json(
             {
               error: error instanceof Error ? error.message : 'Batch optimization failed',
             },
-            500,
-            { headers: CORS }
+            500
           );
         }
       },
@@ -119,7 +113,7 @@ async function scheduleBackgroundOptimization(
   productIds: string[],
   optimizationLevel: string,
   optimizationType: string,
-  userId: string
+  consumerId: string | null
 ) {
   // This would typically push to a message queue (Redis, RabbitMQ, etc.)
   // For now, we'll just log it

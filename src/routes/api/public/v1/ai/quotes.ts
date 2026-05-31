@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
 import { generateQuoteFromRequest, generateQuoteId } from '@/lib/ai/quote-generator';
 import { z } from 'zod';
 import crypto from 'crypto';
@@ -33,10 +33,11 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
         const started = Date.now();
 
         // Check API key
-        const auth = await requireApiKey(request, '/api/public/v1/ai/quotes');
-        if ('error' in auth) {
-          return json({ error: 'Unauthorized' }, 401);
+        const authResult = await requireApiKey(request, '/api/public/v1/ai/quotes');
+        if (authResult.error) {
+          return authResult.error;
         }
+        const consumer = authResult.consumer;
 
         try {
           const body = await request.json();
@@ -110,7 +111,7 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
               generated_at: new Date().toISOString(),
               api_endpoint: '/api/public/v1/ai/quotes',
               quote_token: quoteToken,
-              api_key_id: auth.apiKeyId,
+              consumer_id: consumer?.id ?? null,
             })
             .select()
             .single();
@@ -119,13 +120,14 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
             throw new Error(`Failed to store quote: ${insertError.message}`);
           }
 
-          // Log API call
-          await supabaseAdmin.from('api_audit_logs').insert({
-            action: 'generate_quote',
-            entity_type: 'quote',
-            entity_id: savedQuote!.id,
-            status: 'success',
-            duration_ms: Date.now() - started,
+          // Log the API call
+          await logCall({
+            consumer,
+            request,
+            endpoint: '/api/public/v1/ai/quotes',
+            status: 200,
+            startedAt: started,
+            payload: validated,
           });
 
           return json(
@@ -145,26 +147,25 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
                 notes: generatedQuote.notes,
               },
             },
-            200,
-            { headers: CORS }
+            200
           );
         } catch (error) {
           console.error('[v0] Quote generation error:', error);
 
-          await supabaseAdmin.from('ai_audit_logs').insert({
-            action: 'generate_quote',
-            entity_type: 'quote',
-            status: 'error',
-            error_message: error instanceof Error ? error.message : String(error),
-            duration_ms: Date.now() - started,
+          await logCall({
+            consumer: null,
+            request,
+            endpoint: '/api/public/v1/ai/quotes',
+            status: 500,
+            startedAt: started,
+            error: error instanceof Error ? error.message : String(error),
           });
 
           return json(
             {
               error: error instanceof Error ? error.message : 'Quote generation failed',
             },
-            500,
-            { headers: CORS }
+            500
           );
         }
       },

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireAuth } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
 import { z } from 'zod';
 
 const StatusRequestSchema = z.object({
@@ -12,18 +12,29 @@ export const Route = createFileRoute('/api/private/v1/ai/job-status')({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
       GET: async ({ request }) => {
+        const started = Date.now();
+
         // Verify authentication
-        const auth = await requireAuth(request);
-        if (!auth.success) {
-          return json({ error: 'Unauthorized' }, 401);
+        const authResult = await requireApiKey(request, '/api/private/v1/ai/job-status');
+        if (authResult.error) {
+          return authResult.error;
         }
+        const consumer = authResult.consumer;
 
         try {
           const url = new URL(request.url);
           const jobId = url.searchParams.get('jobId');
 
           if (!jobId) {
-            return json({ error: 'jobId query parameter required' }, 400, { headers: CORS });
+            await logCall({
+              consumer,
+              request,
+              endpoint: '/api/private/v1/ai/job-status',
+              status: 400,
+              startedAt: started,
+              error: 'Missing jobId parameter',
+            });
+            return json({ error: 'jobId query parameter required' }, 400);
           }
 
           // Fetch job status
@@ -31,15 +42,31 @@ export const Route = createFileRoute('/api/private/v1/ai/job-status')({
             .from('ai_optimization_jobs')
             .select('*')
             .eq('job_id', jobId)
-            .eq('user_id', auth.userId)
+            .eq('consumer_id', consumer?.id)
             .maybeSingle();
 
           if (jobError) {
-            return json({ error: 'Job not found' }, 404, { headers: CORS });
+            await logCall({
+              consumer,
+              request,
+              endpoint: '/api/private/v1/ai/job-status',
+              status: 404,
+              startedAt: started,
+              error: 'Job not found',
+            });
+            return json({ error: 'Job not found' }, 404);
           }
 
           if (!job) {
-            return json({ error: 'Unauthorized: Job not found or access denied' }, 403, { headers: CORS });
+            await logCall({
+              consumer,
+              request,
+              endpoint: '/api/private/v1/ai/job-status',
+              status: 403,
+              startedAt: started,
+              error: 'Access denied to job',
+            });
+            return json({ error: 'Unauthorized: Job not found or access denied' }, 403);
           }
 
           // Calculate time remaining
@@ -70,17 +97,25 @@ export const Route = createFileRoute('/api/private/v1/ai/job-status')({
                 results: job.results || {},
               },
             },
-            200,
-            { headers: CORS }
+            200
           );
         } catch (error) {
           console.error('[v0] Job status error:', error);
+          
+          await logCall({
+            consumer: null,
+            request,
+            endpoint: '/api/private/v1/ai/job-status',
+            status: 500,
+            startedAt: started,
+            error: error instanceof Error ? error.message : String(error),
+          });
+
           return json(
             {
               error: error instanceof Error ? error.message : 'Failed to fetch job status',
             },
-            500,
-            { headers: CORS }
+            500
           );
         }
       },
