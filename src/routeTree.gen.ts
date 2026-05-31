@@ -42,7 +42,10 @@ import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
 import { Route as AuthenticatedAssetsDuplicatesRouteImport } from './routes/_authenticated/assets/duplicates'
 import { Route as AuthenticatedAssetsBulkUploadRouteImport } from './routes/_authenticated/assets/bulk-upload'
+import { Route as AuthenticatedAiStudioQuotesRouteImport } from './routes/_authenticated/ai-studio/quotes'
 import { Route as AuthenticatedAiStudioOptimizeRouteImport } from './routes/_authenticated/ai-studio/optimize'
+import { Route as AuthenticatedAiStudioImagesRouteImport } from './routes/_authenticated/ai-studio/images'
+import { Route as AuthenticatedAiStudioDatasheetsRouteImport } from './routes/_authenticated/ai-studio/datasheets'
 import { Route as ApiPublicV1SuppliersRouteImport } from './routes/api/public/v1/suppliers'
 import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/products'
 import { Route as ApiPublicV1PricingRouteImport } from './routes/api/public/v1/pricing'
@@ -246,10 +249,28 @@ const AuthenticatedAssetsBulkUploadRoute =
     path: '/assets/bulk-upload',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAiStudioQuotesRoute =
+  AuthenticatedAiStudioQuotesRouteImport.update({
+    id: '/ai-studio/quotes',
+    path: '/ai-studio/quotes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAiStudioOptimizeRoute =
   AuthenticatedAiStudioOptimizeRouteImport.update({
     id: '/ai-studio/optimize',
     path: '/ai-studio/optimize',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAiStudioImagesRoute =
+  AuthenticatedAiStudioImagesRouteImport.update({
+    id: '/ai-studio/images',
+    path: '/ai-studio/images',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAiStudioDatasheetsRoute =
+  AuthenticatedAiStudioDatasheetsRouteImport.update({
+    id: '/ai-studio/datasheets',
+    path: '/ai-studio/datasheets',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const ApiPublicV1SuppliersRoute = ApiPublicV1SuppliersRouteImport.update({
@@ -342,7 +363,10 @@ export interface FileRoutesByFullPath {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
+  '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
   '/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
+  '/ai-studio/quotes': typeof AuthenticatedAiStudioQuotesRoute
   '/assets/bulk-upload': typeof AuthenticatedAssetsBulkUploadRoute
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
@@ -391,7 +415,10 @@ export interface FileRoutesByTo {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
+  '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
   '/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
+  '/ai-studio/quotes': typeof AuthenticatedAiStudioQuotesRoute
   '/assets/bulk-upload': typeof AuthenticatedAssetsBulkUploadRoute
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
@@ -442,7 +469,10 @@ export interface FileRoutesById {
   '/_authenticated/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/_authenticated/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
+  '/_authenticated/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
   '/_authenticated/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
+  '/_authenticated/ai-studio/quotes': typeof AuthenticatedAiStudioQuotesRoute
   '/_authenticated/assets/bulk-upload': typeof AuthenticatedAssetsBulkUploadRoute
   '/_authenticated/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
@@ -493,7 +523,10 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/ai-studio/datasheets'
+    | '/ai-studio/images'
     | '/ai-studio/optimize'
+    | '/ai-studio/quotes'
     | '/assets/bulk-upload'
     | '/assets/duplicates'
     | '/assets/unlinked'
@@ -542,7 +575,10 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/ai-studio/datasheets'
+    | '/ai-studio/images'
     | '/ai-studio/optimize'
+    | '/ai-studio/quotes'
     | '/assets/bulk-upload'
     | '/assets/duplicates'
     | '/assets/unlinked'
@@ -592,7 +628,10 @@ export interface FileRouteTypes {
     | '/_authenticated/quote-requests'
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
+    | '/_authenticated/ai-studio/datasheets'
+    | '/_authenticated/ai-studio/images'
     | '/_authenticated/ai-studio/optimize'
+    | '/_authenticated/ai-studio/quotes'
     | '/_authenticated/assets/bulk-upload'
     | '/_authenticated/assets/duplicates'
     | '/_authenticated/assets/unlinked'
@@ -880,11 +919,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssetsBulkUploadRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/ai-studio/quotes': {
+      id: '/_authenticated/ai-studio/quotes'
+      path: '/ai-studio/quotes'
+      fullPath: '/ai-studio/quotes'
+      preLoaderRoute: typeof AuthenticatedAiStudioQuotesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/ai-studio/optimize': {
       id: '/_authenticated/ai-studio/optimize'
       path: '/ai-studio/optimize'
       fullPath: '/ai-studio/optimize'
       preLoaderRoute: typeof AuthenticatedAiStudioOptimizeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-studio/images': {
+      id: '/_authenticated/ai-studio/images'
+      path: '/ai-studio/images'
+      fullPath: '/ai-studio/images'
+      preLoaderRoute: typeof AuthenticatedAiStudioImagesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-studio/datasheets': {
+      id: '/_authenticated/ai-studio/datasheets'
+      path: '/ai-studio/datasheets'
+      fullPath: '/ai-studio/datasheets'
+      preLoaderRoute: typeof AuthenticatedAiStudioDatasheetsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/api/public/v1/suppliers': {
@@ -1000,7 +1060,10 @@ interface AuthenticatedRouteChildren {
   AuthenticatedQuoteRequestsRoute: typeof AuthenticatedQuoteRequestsRoute
   AuthenticatedSupplierInventoryRoute: typeof AuthenticatedSupplierInventoryRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
+  AuthenticatedAiStudioDatasheetsRoute: typeof AuthenticatedAiStudioDatasheetsRoute
+  AuthenticatedAiStudioImagesRoute: typeof AuthenticatedAiStudioImagesRoute
   AuthenticatedAiStudioOptimizeRoute: typeof AuthenticatedAiStudioOptimizeRoute
+  AuthenticatedAiStudioQuotesRoute: typeof AuthenticatedAiStudioQuotesRoute
   AuthenticatedAssetsBulkUploadRoute: typeof AuthenticatedAssetsBulkUploadRoute
   AuthenticatedAssetsDuplicatesRoute: typeof AuthenticatedAssetsDuplicatesRoute
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
@@ -1034,7 +1097,10 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedQuoteRequestsRoute: AuthenticatedQuoteRequestsRoute,
   AuthenticatedSupplierInventoryRoute: AuthenticatedSupplierInventoryRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
+  AuthenticatedAiStudioDatasheetsRoute: AuthenticatedAiStudioDatasheetsRoute,
+  AuthenticatedAiStudioImagesRoute: AuthenticatedAiStudioImagesRoute,
   AuthenticatedAiStudioOptimizeRoute: AuthenticatedAiStudioOptimizeRoute,
+  AuthenticatedAiStudioQuotesRoute: AuthenticatedAiStudioQuotesRoute,
   AuthenticatedAssetsBulkUploadRoute: AuthenticatedAssetsBulkUploadRoute,
   AuthenticatedAssetsDuplicatesRoute: AuthenticatedAssetsDuplicatesRoute,
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
