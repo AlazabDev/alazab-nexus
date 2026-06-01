@@ -29,6 +29,7 @@ import { Route as AuthenticatedExportIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDuplicatesIndexRouteImport } from './routes/_authenticated/duplicates/index'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets/index'
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
+import { Route as AuthenticatedProductsCreateRouteImport } from './routes/_authenticated/products/create'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
 import { Route as AuthenticatedAssetsDuplicatesRouteImport } from './routes/_authenticated/assets/duplicates'
@@ -154,6 +155,12 @@ const AuthenticatedApiCenterIndexRoute =
     path: '/api-center/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedProductsCreateRoute =
+  AuthenticatedProductsCreateRouteImport.update({
+    id: '/products/create',
+    path: '/products/create',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProductsIdRoute = AuthenticatedProductsIdRouteImport.update({
   id: '/products/$id',
   path: '/products/$id',
@@ -233,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
+  '/products/create': typeof AuthenticatedProductsCreateRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
   '/duplicates/': typeof AuthenticatedDuplicatesIndexRoute
@@ -266,6 +274,7 @@ export interface FileRoutesByTo {
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
+  '/products/create': typeof AuthenticatedProductsCreateRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
   '/duplicates': typeof AuthenticatedDuplicatesIndexRoute
@@ -301,6 +310,7 @@ export interface FileRoutesById {
   '/_authenticated/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
+  '/_authenticated/products/create': typeof AuthenticatedProductsCreateRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
   '/_authenticated/duplicates/': typeof AuthenticatedDuplicatesIndexRoute
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
+    | '/products/create'
     | '/api-center/'
     | '/assets/'
     | '/duplicates/'
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
+    | '/products/create'
     | '/api-center'
     | '/assets'
     | '/duplicates'
@@ -403,6 +415,7 @@ export interface FileRouteTypes {
     | '/_authenticated/assets/duplicates'
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
+    | '/_authenticated/products/create'
     | '/_authenticated/api-center/'
     | '/_authenticated/assets/'
     | '/_authenticated/duplicates/'
@@ -578,6 +591,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedApiCenterIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/products/create': {
+      id: '/_authenticated/products/create'
+      path: '/products/create'
+      fullPath: '/products/create'
+      preLoaderRoute: typeof AuthenticatedProductsCreateRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/products/$id': {
       id: '/_authenticated/products/$id'
       path: '/products/$id'
@@ -677,6 +697,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAssetsDuplicatesRoute: typeof AuthenticatedAssetsDuplicatesRoute
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
+  AuthenticatedProductsCreateRoute: typeof AuthenticatedProductsCreateRoute
   AuthenticatedApiCenterIndexRoute: typeof AuthenticatedApiCenterIndexRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
   AuthenticatedDuplicatesIndexRoute: typeof AuthenticatedDuplicatesIndexRoute
@@ -701,6 +722,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAssetsDuplicatesRoute: AuthenticatedAssetsDuplicatesRoute,
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
+  AuthenticatedProductsCreateRoute: AuthenticatedProductsCreateRoute,
   AuthenticatedApiCenterIndexRoute: AuthenticatedApiCenterIndexRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
   AuthenticatedDuplicatesIndexRoute: AuthenticatedDuplicatesIndexRoute,
