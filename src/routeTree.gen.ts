@@ -29,6 +29,8 @@ import { Route as AuthenticatedExportIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDuplicatesIndexRouteImport } from './routes/_authenticated/duplicates/index'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets/index'
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
+import { Route as AuthenticatedSuppliersIdRouteImport } from './routes/_authenticated/suppliers/$id'
+import { Route as AuthenticatedRequestsIdRouteImport } from './routes/_authenticated/requests/$id'
 import { Route as AuthenticatedProductsCreateRouteImport } from './routes/_authenticated/products/create'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
@@ -155,6 +157,17 @@ const AuthenticatedApiCenterIndexRoute =
     path: '/api-center/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSuppliersIdRoute =
+  AuthenticatedSuppliersIdRouteImport.update({
+    id: '/suppliers/$id',
+    path: '/suppliers/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedRequestsIdRoute = AuthenticatedRequestsIdRouteImport.update({
+  id: '/requests/$id',
+  path: '/requests/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedProductsCreateRoute =
   AuthenticatedProductsCreateRouteImport.update({
     id: '/products/create',
@@ -241,6 +254,8 @@ export interface FileRoutesByFullPath {
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/create': typeof AuthenticatedProductsCreateRoute
+  '/requests/$id': typeof AuthenticatedRequestsIdRoute
+  '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
   '/duplicates/': typeof AuthenticatedDuplicatesIndexRoute
@@ -275,6 +290,8 @@ export interface FileRoutesByTo {
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/create': typeof AuthenticatedProductsCreateRoute
+  '/requests/$id': typeof AuthenticatedRequestsIdRoute
+  '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
   '/duplicates': typeof AuthenticatedDuplicatesIndexRoute
@@ -311,6 +328,8 @@ export interface FileRoutesById {
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
   '/_authenticated/products/create': typeof AuthenticatedProductsCreateRoute
+  '/_authenticated/requests/$id': typeof AuthenticatedRequestsIdRoute
+  '/_authenticated/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
   '/_authenticated/duplicates/': typeof AuthenticatedDuplicatesIndexRoute
@@ -347,6 +366,8 @@ export interface FileRouteTypes {
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/create'
+    | '/requests/$id'
+    | '/suppliers/$id'
     | '/api-center/'
     | '/assets/'
     | '/duplicates/'
@@ -381,6 +402,8 @@ export interface FileRouteTypes {
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/create'
+    | '/requests/$id'
+    | '/suppliers/$id'
     | '/api-center'
     | '/assets'
     | '/duplicates'
@@ -416,6 +439,8 @@ export interface FileRouteTypes {
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
     | '/_authenticated/products/create'
+    | '/_authenticated/requests/$id'
+    | '/_authenticated/suppliers/$id'
     | '/_authenticated/api-center/'
     | '/_authenticated/assets/'
     | '/_authenticated/duplicates/'
@@ -591,6 +616,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedApiCenterIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/suppliers/$id': {
+      id: '/_authenticated/suppliers/$id'
+      path: '/suppliers/$id'
+      fullPath: '/suppliers/$id'
+      preLoaderRoute: typeof AuthenticatedSuppliersIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/requests/$id': {
+      id: '/_authenticated/requests/$id'
+      path: '/requests/$id'
+      fullPath: '/requests/$id'
+      preLoaderRoute: typeof AuthenticatedRequestsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/products/create': {
       id: '/_authenticated/products/create'
       path: '/products/create'
@@ -698,6 +737,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
   AuthenticatedProductsCreateRoute: typeof AuthenticatedProductsCreateRoute
+  AuthenticatedRequestsIdRoute: typeof AuthenticatedRequestsIdRoute
+  AuthenticatedSuppliersIdRoute: typeof AuthenticatedSuppliersIdRoute
   AuthenticatedApiCenterIndexRoute: typeof AuthenticatedApiCenterIndexRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
   AuthenticatedDuplicatesIndexRoute: typeof AuthenticatedDuplicatesIndexRoute
@@ -723,6 +764,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
   AuthenticatedProductsCreateRoute: AuthenticatedProductsCreateRoute,
+  AuthenticatedRequestsIdRoute: AuthenticatedRequestsIdRoute,
+  AuthenticatedSuppliersIdRoute: AuthenticatedSuppliersIdRoute,
   AuthenticatedApiCenterIndexRoute: AuthenticatedApiCenterIndexRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
   AuthenticatedDuplicatesIndexRoute: AuthenticatedDuplicatesIndexRoute,
