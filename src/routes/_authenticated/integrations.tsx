@@ -328,7 +328,7 @@ function IntegrationsPage() {
               className="text-accent hover:underline font-medium text-sm"
             >
               اقرأ دليل التكاملات الكامل →
-            </a>
+            </Link>
           </div>
         </div>
       </Card>
