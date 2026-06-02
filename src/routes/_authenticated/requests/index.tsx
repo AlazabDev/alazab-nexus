@@ -221,7 +221,7 @@ function RequestsPage() {
                 <tr key={req.id} className="border-t hover:bg-secondary/30 cursor-pointer">
                   <td className="p-3">
                     <Link
-                      to={`/requests/${req.id}`}
+                      to={`/requests/${req.id}` as any}
                       className="text-accent hover:underline font-medium"
                     >
                       {req.title}

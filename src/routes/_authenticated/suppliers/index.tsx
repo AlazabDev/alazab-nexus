@@ -130,12 +130,12 @@ function SuppliersList() {
                   <tr key={s.id} className="border-t hover:bg-secondary/30">
                     <td className="p-3">
                       <Link
-                        to={`/suppliers/${s.id}`}
+                        to={`/suppliers/${s.id}` as any}
                         className="text-accent hover:underline font-medium"
                       >
-                        {s.name_ar}
+                        {s.name}
                       </Link>
-                      <div className="text-xs text-muted-foreground mt-0.5">{s.name_en}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{s.supplier_type}</div>
                     </td>
                     <td className="p-3 text-xs num" dir="ltr">
                       {s.supplier_code || "—"}
