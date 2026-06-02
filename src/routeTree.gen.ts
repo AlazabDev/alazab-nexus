@@ -36,11 +36,18 @@ import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedApprovalsIndexRouteImport } from './routes/_authenticated/approvals/index'
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
 import { Route as AuthenticatedAnalyticsIndexRouteImport } from './routes/_authenticated/analytics/index'
+import { Route as AuthenticatedAiStudioIndexRouteImport } from './routes/_authenticated/ai-studio/index'
+import { Route as AuthenticatedSuppliersSupplierIdRouteImport } from './routes/_authenticated/suppliers/$supplierId'
+import { Route as AuthenticatedRequestsRequestIdRouteImport } from './routes/_authenticated/requests/$requestId'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products/new'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
 import { Route as AuthenticatedAssetsDuplicatesRouteImport } from './routes/_authenticated/assets/duplicates'
 import { Route as AuthenticatedAssetsBulkUploadRouteImport } from './routes/_authenticated/assets/bulk-upload'
+import { Route as AuthenticatedAiStudioQuotesRouteImport } from './routes/_authenticated/ai-studio/quotes'
+import { Route as AuthenticatedAiStudioOptimizeRouteImport } from './routes/_authenticated/ai-studio/optimize'
+import { Route as AuthenticatedAiStudioImagesRouteImport } from './routes/_authenticated/ai-studio/images'
+import { Route as AuthenticatedAiStudioDatasheetsRouteImport } from './routes/_authenticated/ai-studio/datasheets'
 import { Route as ApiPublicV1SuppliersRouteImport } from './routes/api/public/v1/suppliers'
 import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/products'
 import { Route as ApiPublicV1PricingRouteImport } from './routes/api/public/v1/pricing'
@@ -50,6 +57,11 @@ import { Route as ApiAgentV1QuoteRequestRouteImport } from './routes/api/agent/v
 import { Route as ApiAgentV1OrderStatusRouteImport } from './routes/api/agent/v1/order-status'
 import { Route as ApiAgentV1InternalApprovalRouteImport } from './routes/api/agent/v1/internal-approval'
 import { Route as ApiPublicV1ProductsAzCodeRouteImport } from './routes/api/public/v1/products/$azCode'
+import { Route as ApiPublicV1AiQuotesRouteImport } from './routes/api/public/v1/ai/quotes'
+import { Route as ApiPrivateV1AiOptimizeProductRouteImport } from './routes/api/private/v1/ai/optimize-product'
+import { Route as ApiPrivateV1AiJobStatusRouteImport } from './routes/api/private/v1/ai/job-status'
+import { Route as ApiPrivateV1AiGenerateDatasheetRouteImport } from './routes/api/private/v1/ai/generate-datasheet'
+import { Route as ApiPrivateV1AiBatchOptimizeRouteImport } from './routes/api/private/v1/ai/batch-optimize'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -204,6 +216,24 @@ const AuthenticatedAnalyticsIndexRoute =
     path: '/analytics/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAiStudioIndexRoute =
+  AuthenticatedAiStudioIndexRouteImport.update({
+    id: '/ai-studio/',
+    path: '/ai-studio/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSuppliersSupplierIdRoute =
+  AuthenticatedSuppliersSupplierIdRouteImport.update({
+    id: '/suppliers/$supplierId',
+    path: '/suppliers/$supplierId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedRequestsRequestIdRoute =
+  AuthenticatedRequestsRequestIdRouteImport.update({
+    id: '/requests/$requestId',
+    path: '/requests/$requestId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProductsNewRoute =
   AuthenticatedProductsNewRouteImport.update({
     id: '/products/new',
@@ -231,6 +261,30 @@ const AuthenticatedAssetsBulkUploadRoute =
   AuthenticatedAssetsBulkUploadRouteImport.update({
     id: '/assets/bulk-upload',
     path: '/assets/bulk-upload',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAiStudioQuotesRoute =
+  AuthenticatedAiStudioQuotesRouteImport.update({
+    id: '/ai-studio/quotes',
+    path: '/ai-studio/quotes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAiStudioOptimizeRoute =
+  AuthenticatedAiStudioOptimizeRouteImport.update({
+    id: '/ai-studio/optimize',
+    path: '/ai-studio/optimize',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAiStudioImagesRoute =
+  AuthenticatedAiStudioImagesRouteImport.update({
+    id: '/ai-studio/images',
+    path: '/ai-studio/images',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAiStudioDatasheetsRoute =
+  AuthenticatedAiStudioDatasheetsRouteImport.update({
+    id: '/ai-studio/datasheets',
+    path: '/ai-studio/datasheets',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const ApiPublicV1SuppliersRoute = ApiPublicV1SuppliersRouteImport.update({
@@ -280,6 +334,34 @@ const ApiPublicV1ProductsAzCodeRoute =
     path: '/$azCode',
     getParentRoute: () => ApiPublicV1ProductsRoute,
   } as any)
+const ApiPublicV1AiQuotesRoute = ApiPublicV1AiQuotesRouteImport.update({
+  id: '/api/public/v1/ai/quotes',
+  path: '/api/public/v1/ai/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPrivateV1AiOptimizeProductRoute =
+  ApiPrivateV1AiOptimizeProductRouteImport.update({
+    id: '/api/private/v1/ai/optimize-product',
+    path: '/api/private/v1/ai/optimize-product',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPrivateV1AiJobStatusRoute = ApiPrivateV1AiJobStatusRouteImport.update({
+  id: '/api/private/v1/ai/job-status',
+  path: '/api/private/v1/ai/job-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPrivateV1AiGenerateDatasheetRoute =
+  ApiPrivateV1AiGenerateDatasheetRouteImport.update({
+    id: '/api/private/v1/ai/generate-datasheet',
+    path: '/api/private/v1/ai/generate-datasheet',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPrivateV1AiBatchOptimizeRoute =
+  ApiPrivateV1AiBatchOptimizeRouteImport.update({
+    id: '/api/private/v1/ai/batch-optimize',
+    path: '/api/private/v1/ai/batch-optimize',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -295,11 +377,18 @@ export interface FileRoutesByFullPath {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
+  '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
+  '/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
+  '/ai-studio/quotes': typeof AuthenticatedAiStudioQuotesRoute
   '/assets/bulk-upload': typeof AuthenticatedAssetsBulkUploadRoute
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
+  '/requests/$requestId': typeof AuthenticatedRequestsRequestIdRoute
+  '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
+  '/ai-studio/': typeof AuthenticatedAiStudioIndexRoute
   '/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/approvals/': typeof AuthenticatedApprovalsIndexRoute
@@ -321,6 +410,11 @@ export interface FileRoutesByFullPath {
   '/api/public/v1/pricing': typeof ApiPublicV1PricingRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
   '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRoute
+  '/api/private/v1/ai/batch-optimize': typeof ApiPrivateV1AiBatchOptimizeRoute
+  '/api/private/v1/ai/generate-datasheet': typeof ApiPrivateV1AiGenerateDatasheetRoute
+  '/api/private/v1/ai/job-status': typeof ApiPrivateV1AiJobStatusRoute
+  '/api/private/v1/ai/optimize-product': typeof ApiPrivateV1AiOptimizeProductRoute
+  '/api/public/v1/ai/quotes': typeof ApiPublicV1AiQuotesRoute
   '/api/public/v1/products/$azCode': typeof ApiPublicV1ProductsAzCodeRoute
 }
 export interface FileRoutesByTo {
@@ -337,11 +431,18 @@ export interface FileRoutesByTo {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
+  '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
+  '/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
+  '/ai-studio/quotes': typeof AuthenticatedAiStudioQuotesRoute
   '/assets/bulk-upload': typeof AuthenticatedAssetsBulkUploadRoute
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
+  '/requests/$requestId': typeof AuthenticatedRequestsRequestIdRoute
+  '/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
+  '/ai-studio': typeof AuthenticatedAiStudioIndexRoute
   '/analytics': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
   '/approvals': typeof AuthenticatedApprovalsIndexRoute
@@ -363,6 +464,11 @@ export interface FileRoutesByTo {
   '/api/public/v1/pricing': typeof ApiPublicV1PricingRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
   '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRoute
+  '/api/private/v1/ai/batch-optimize': typeof ApiPrivateV1AiBatchOptimizeRoute
+  '/api/private/v1/ai/generate-datasheet': typeof ApiPrivateV1AiGenerateDatasheetRoute
+  '/api/private/v1/ai/job-status': typeof ApiPrivateV1AiJobStatusRoute
+  '/api/private/v1/ai/optimize-product': typeof ApiPrivateV1AiOptimizeProductRoute
+  '/api/public/v1/ai/quotes': typeof ApiPublicV1AiQuotesRoute
   '/api/public/v1/products/$azCode': typeof ApiPublicV1ProductsAzCodeRoute
 }
 export interface FileRoutesById {
@@ -381,11 +487,18 @@ export interface FileRoutesById {
   '/_authenticated/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/_authenticated/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
+  '/_authenticated/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
+  '/_authenticated/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
+  '/_authenticated/ai-studio/quotes': typeof AuthenticatedAiStudioQuotesRoute
   '/_authenticated/assets/bulk-upload': typeof AuthenticatedAssetsBulkUploadRoute
   '/_authenticated/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
+  '/_authenticated/requests/$requestId': typeof AuthenticatedRequestsRequestIdRoute
+  '/_authenticated/suppliers/$supplierId': typeof AuthenticatedSuppliersSupplierIdRoute
+  '/_authenticated/ai-studio/': typeof AuthenticatedAiStudioIndexRoute
   '/_authenticated/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/_authenticated/approvals/': typeof AuthenticatedApprovalsIndexRoute
@@ -407,6 +520,11 @@ export interface FileRoutesById {
   '/api/public/v1/pricing': typeof ApiPublicV1PricingRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
   '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRoute
+  '/api/private/v1/ai/batch-optimize': typeof ApiPrivateV1AiBatchOptimizeRoute
+  '/api/private/v1/ai/generate-datasheet': typeof ApiPrivateV1AiGenerateDatasheetRoute
+  '/api/private/v1/ai/job-status': typeof ApiPrivateV1AiJobStatusRoute
+  '/api/private/v1/ai/optimize-product': typeof ApiPrivateV1AiOptimizeProductRoute
+  '/api/public/v1/ai/quotes': typeof ApiPublicV1AiQuotesRoute
   '/api/public/v1/products/$azCode': typeof ApiPublicV1ProductsAzCodeRoute
 }
 export interface FileRouteTypes {
@@ -425,11 +543,18 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/ai-studio/datasheets'
+    | '/ai-studio/images'
+    | '/ai-studio/optimize'
+    | '/ai-studio/quotes'
     | '/assets/bulk-upload'
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/new'
+    | '/requests/$requestId'
+    | '/suppliers/$supplierId'
+    | '/ai-studio/'
     | '/analytics/'
     | '/api-center/'
     | '/approvals/'
@@ -451,6 +576,11 @@ export interface FileRouteTypes {
     | '/api/public/v1/pricing'
     | '/api/public/v1/products'
     | '/api/public/v1/suppliers'
+    | '/api/private/v1/ai/batch-optimize'
+    | '/api/private/v1/ai/generate-datasheet'
+    | '/api/private/v1/ai/job-status'
+    | '/api/private/v1/ai/optimize-product'
+    | '/api/public/v1/ai/quotes'
     | '/api/public/v1/products/$azCode'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -467,11 +597,18 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/ai-studio/datasheets'
+    | '/ai-studio/images'
+    | '/ai-studio/optimize'
+    | '/ai-studio/quotes'
     | '/assets/bulk-upload'
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/new'
+    | '/requests/$requestId'
+    | '/suppliers/$supplierId'
+    | '/ai-studio'
     | '/analytics'
     | '/api-center'
     | '/approvals'
@@ -493,6 +630,11 @@ export interface FileRouteTypes {
     | '/api/public/v1/pricing'
     | '/api/public/v1/products'
     | '/api/public/v1/suppliers'
+    | '/api/private/v1/ai/batch-optimize'
+    | '/api/private/v1/ai/generate-datasheet'
+    | '/api/private/v1/ai/job-status'
+    | '/api/private/v1/ai/optimize-product'
+    | '/api/public/v1/ai/quotes'
     | '/api/public/v1/products/$azCode'
   id:
     | '__root__'
@@ -510,11 +652,18 @@ export interface FileRouteTypes {
     | '/_authenticated/quote-requests'
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
+    | '/_authenticated/ai-studio/datasheets'
+    | '/_authenticated/ai-studio/images'
+    | '/_authenticated/ai-studio/optimize'
+    | '/_authenticated/ai-studio/quotes'
     | '/_authenticated/assets/bulk-upload'
     | '/_authenticated/assets/duplicates'
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
     | '/_authenticated/products/new'
+    | '/_authenticated/requests/$requestId'
+    | '/_authenticated/suppliers/$supplierId'
+    | '/_authenticated/ai-studio/'
     | '/_authenticated/analytics/'
     | '/_authenticated/api-center/'
     | '/_authenticated/approvals/'
@@ -536,6 +685,11 @@ export interface FileRouteTypes {
     | '/api/public/v1/pricing'
     | '/api/public/v1/products'
     | '/api/public/v1/suppliers'
+    | '/api/private/v1/ai/batch-optimize'
+    | '/api/private/v1/ai/generate-datasheet'
+    | '/api/private/v1/ai/job-status'
+    | '/api/private/v1/ai/optimize-product'
+    | '/api/public/v1/ai/quotes'
     | '/api/public/v1/products/$azCode'
   fileRoutesById: FileRoutesById
 }
@@ -551,6 +705,11 @@ export interface RootRouteChildren {
   ApiPublicV1PricingRoute: typeof ApiPublicV1PricingRoute
   ApiPublicV1ProductsRoute: typeof ApiPublicV1ProductsRouteWithChildren
   ApiPublicV1SuppliersRoute: typeof ApiPublicV1SuppliersRoute
+  ApiPrivateV1AiBatchOptimizeRoute: typeof ApiPrivateV1AiBatchOptimizeRoute
+  ApiPrivateV1AiGenerateDatasheetRoute: typeof ApiPrivateV1AiGenerateDatasheetRoute
+  ApiPrivateV1AiJobStatusRoute: typeof ApiPrivateV1AiJobStatusRoute
+  ApiPrivateV1AiOptimizeProductRoute: typeof ApiPrivateV1AiOptimizeProductRoute
+  ApiPublicV1AiQuotesRoute: typeof ApiPublicV1AiQuotesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -744,6 +903,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalyticsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/ai-studio/': {
+      id: '/_authenticated/ai-studio/'
+      path: '/ai-studio'
+      fullPath: '/ai-studio/'
+      preLoaderRoute: typeof AuthenticatedAiStudioIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/suppliers/$supplierId': {
+      id: '/_authenticated/suppliers/$supplierId'
+      path: '/suppliers/$supplierId'
+      fullPath: '/suppliers/$supplierId'
+      preLoaderRoute: typeof AuthenticatedSuppliersSupplierIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/requests/$requestId': {
+      id: '/_authenticated/requests/$requestId'
+      path: '/requests/$requestId'
+      fullPath: '/requests/$requestId'
+      preLoaderRoute: typeof AuthenticatedRequestsRequestIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/products/new': {
       id: '/_authenticated/products/new'
       path: '/products/new'
@@ -777,6 +957,34 @@ declare module '@tanstack/react-router' {
       path: '/assets/bulk-upload'
       fullPath: '/assets/bulk-upload'
       preLoaderRoute: typeof AuthenticatedAssetsBulkUploadRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-studio/quotes': {
+      id: '/_authenticated/ai-studio/quotes'
+      path: '/ai-studio/quotes'
+      fullPath: '/ai-studio/quotes'
+      preLoaderRoute: typeof AuthenticatedAiStudioQuotesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-studio/optimize': {
+      id: '/_authenticated/ai-studio/optimize'
+      path: '/ai-studio/optimize'
+      fullPath: '/ai-studio/optimize'
+      preLoaderRoute: typeof AuthenticatedAiStudioOptimizeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-studio/images': {
+      id: '/_authenticated/ai-studio/images'
+      path: '/ai-studio/images'
+      fullPath: '/ai-studio/images'
+      preLoaderRoute: typeof AuthenticatedAiStudioImagesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-studio/datasheets': {
+      id: '/_authenticated/ai-studio/datasheets'
+      path: '/ai-studio/datasheets'
+      fullPath: '/ai-studio/datasheets'
+      preLoaderRoute: typeof AuthenticatedAiStudioDatasheetsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/api/public/v1/suppliers': {
@@ -842,6 +1050,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicV1ProductsAzCodeRouteImport
       parentRoute: typeof ApiPublicV1ProductsRoute
     }
+    '/api/public/v1/ai/quotes': {
+      id: '/api/public/v1/ai/quotes'
+      path: '/api/public/v1/ai/quotes'
+      fullPath: '/api/public/v1/ai/quotes'
+      preLoaderRoute: typeof ApiPublicV1AiQuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/private/v1/ai/optimize-product': {
+      id: '/api/private/v1/ai/optimize-product'
+      path: '/api/private/v1/ai/optimize-product'
+      fullPath: '/api/private/v1/ai/optimize-product'
+      preLoaderRoute: typeof ApiPrivateV1AiOptimizeProductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/private/v1/ai/job-status': {
+      id: '/api/private/v1/ai/job-status'
+      path: '/api/private/v1/ai/job-status'
+      fullPath: '/api/private/v1/ai/job-status'
+      preLoaderRoute: typeof ApiPrivateV1AiJobStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/private/v1/ai/generate-datasheet': {
+      id: '/api/private/v1/ai/generate-datasheet'
+      path: '/api/private/v1/ai/generate-datasheet'
+      fullPath: '/api/private/v1/ai/generate-datasheet'
+      preLoaderRoute: typeof ApiPrivateV1AiGenerateDatasheetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/private/v1/ai/batch-optimize': {
+      id: '/api/private/v1/ai/batch-optimize'
+      path: '/api/private/v1/ai/batch-optimize'
+      fullPath: '/api/private/v1/ai/batch-optimize'
+      preLoaderRoute: typeof ApiPrivateV1AiBatchOptimizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -857,11 +1100,18 @@ interface AuthenticatedRouteChildren {
   AuthenticatedQuoteRequestsRoute: typeof AuthenticatedQuoteRequestsRoute
   AuthenticatedSupplierInventoryRoute: typeof AuthenticatedSupplierInventoryRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
+  AuthenticatedAiStudioDatasheetsRoute: typeof AuthenticatedAiStudioDatasheetsRoute
+  AuthenticatedAiStudioImagesRoute: typeof AuthenticatedAiStudioImagesRoute
+  AuthenticatedAiStudioOptimizeRoute: typeof AuthenticatedAiStudioOptimizeRoute
+  AuthenticatedAiStudioQuotesRoute: typeof AuthenticatedAiStudioQuotesRoute
   AuthenticatedAssetsBulkUploadRoute: typeof AuthenticatedAssetsBulkUploadRoute
   AuthenticatedAssetsDuplicatesRoute: typeof AuthenticatedAssetsDuplicatesRoute
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
+  AuthenticatedRequestsRequestIdRoute: typeof AuthenticatedRequestsRequestIdRoute
+  AuthenticatedSuppliersSupplierIdRoute: typeof AuthenticatedSuppliersSupplierIdRoute
+  AuthenticatedAiStudioIndexRoute: typeof AuthenticatedAiStudioIndexRoute
   AuthenticatedAnalyticsIndexRoute: typeof AuthenticatedAnalyticsIndexRoute
   AuthenticatedApiCenterIndexRoute: typeof AuthenticatedApiCenterIndexRoute
   AuthenticatedApprovalsIndexRoute: typeof AuthenticatedApprovalsIndexRoute
@@ -889,11 +1139,18 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedQuoteRequestsRoute: AuthenticatedQuoteRequestsRoute,
   AuthenticatedSupplierInventoryRoute: AuthenticatedSupplierInventoryRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
+  AuthenticatedAiStudioDatasheetsRoute: AuthenticatedAiStudioDatasheetsRoute,
+  AuthenticatedAiStudioImagesRoute: AuthenticatedAiStudioImagesRoute,
+  AuthenticatedAiStudioOptimizeRoute: AuthenticatedAiStudioOptimizeRoute,
+  AuthenticatedAiStudioQuotesRoute: AuthenticatedAiStudioQuotesRoute,
   AuthenticatedAssetsBulkUploadRoute: AuthenticatedAssetsBulkUploadRoute,
   AuthenticatedAssetsDuplicatesRoute: AuthenticatedAssetsDuplicatesRoute,
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,
+  AuthenticatedRequestsRequestIdRoute: AuthenticatedRequestsRequestIdRoute,
+  AuthenticatedSuppliersSupplierIdRoute: AuthenticatedSuppliersSupplierIdRoute,
+  AuthenticatedAiStudioIndexRoute: AuthenticatedAiStudioIndexRoute,
   AuthenticatedAnalyticsIndexRoute: AuthenticatedAnalyticsIndexRoute,
   AuthenticatedApiCenterIndexRoute: AuthenticatedApiCenterIndexRoute,
   AuthenticatedApprovalsIndexRoute: AuthenticatedApprovalsIndexRoute,
@@ -936,7 +1193,22 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicV1PricingRoute: ApiPublicV1PricingRoute,
   ApiPublicV1ProductsRoute: ApiPublicV1ProductsRouteWithChildren,
   ApiPublicV1SuppliersRoute: ApiPublicV1SuppliersRoute,
+  ApiPrivateV1AiBatchOptimizeRoute: ApiPrivateV1AiBatchOptimizeRoute,
+  ApiPrivateV1AiGenerateDatasheetRoute: ApiPrivateV1AiGenerateDatasheetRoute,
+  ApiPrivateV1AiJobStatusRoute: ApiPrivateV1AiJobStatusRoute,
+  ApiPrivateV1AiOptimizeProductRoute: ApiPrivateV1AiOptimizeProductRoute,
+  ApiPublicV1AiQuotesRoute: ApiPublicV1AiQuotesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
