@@ -36,6 +36,8 @@ import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedApprovalsIndexRouteImport } from './routes/_authenticated/approvals/index'
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
 import { Route as AuthenticatedAnalyticsIndexRouteImport } from './routes/_authenticated/analytics/index'
+import { Route as AuthenticatedSuppliersIdRouteImport } from './routes/_authenticated/suppliers/$id'
+import { Route as AuthenticatedRequestsIdRouteImport } from './routes/_authenticated/requests/$id'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products/new'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
 import { Route as AuthenticatedAssetsUnlinkedRouteImport } from './routes/_authenticated/assets/unlinked'
@@ -204,6 +206,17 @@ const AuthenticatedAnalyticsIndexRoute =
     path: '/analytics/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSuppliersIdRoute =
+  AuthenticatedSuppliersIdRouteImport.update({
+    id: '/suppliers/$id',
+    path: '/suppliers/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedRequestsIdRoute = AuthenticatedRequestsIdRouteImport.update({
+  id: '/requests/$id',
+  path: '/requests/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedProductsNewRoute =
   AuthenticatedProductsNewRouteImport.update({
     id: '/products/new',
@@ -300,6 +313,8 @@ export interface FileRoutesByFullPath {
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
+  '/requests/$id': typeof AuthenticatedRequestsIdRoute
+  '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
   '/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/approvals/': typeof AuthenticatedApprovalsIndexRoute
@@ -342,6 +357,8 @@ export interface FileRoutesByTo {
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
+  '/requests/$id': typeof AuthenticatedRequestsIdRoute
+  '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
   '/analytics': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
   '/approvals': typeof AuthenticatedApprovalsIndexRoute
@@ -386,6 +403,8 @@ export interface FileRoutesById {
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
+  '/_authenticated/requests/$id': typeof AuthenticatedRequestsIdRoute
+  '/_authenticated/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
   '/_authenticated/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
   '/_authenticated/approvals/': typeof AuthenticatedApprovalsIndexRoute
@@ -430,6 +449,8 @@ export interface FileRouteTypes {
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/new'
+    | '/requests/$id'
+    | '/suppliers/$id'
     | '/analytics/'
     | '/api-center/'
     | '/approvals/'
@@ -472,6 +493,8 @@ export interface FileRouteTypes {
     | '/assets/unlinked'
     | '/products/$id'
     | '/products/new'
+    | '/requests/$id'
+    | '/suppliers/$id'
     | '/analytics'
     | '/api-center'
     | '/approvals'
@@ -515,6 +538,8 @@ export interface FileRouteTypes {
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
     | '/_authenticated/products/new'
+    | '/_authenticated/requests/$id'
+    | '/_authenticated/suppliers/$id'
     | '/_authenticated/analytics/'
     | '/_authenticated/api-center/'
     | '/_authenticated/approvals/'
@@ -744,6 +769,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalyticsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/suppliers/$id': {
+      id: '/_authenticated/suppliers/$id'
+      path: '/suppliers/$id'
+      fullPath: '/suppliers/$id'
+      preLoaderRoute: typeof AuthenticatedSuppliersIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/requests/$id': {
+      id: '/_authenticated/requests/$id'
+      path: '/requests/$id'
+      fullPath: '/requests/$id'
+      preLoaderRoute: typeof AuthenticatedRequestsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/products/new': {
       id: '/_authenticated/products/new'
       path: '/products/new'
@@ -862,6 +901,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
+  AuthenticatedRequestsIdRoute: typeof AuthenticatedRequestsIdRoute
+  AuthenticatedSuppliersIdRoute: typeof AuthenticatedSuppliersIdRoute
   AuthenticatedAnalyticsIndexRoute: typeof AuthenticatedAnalyticsIndexRoute
   AuthenticatedApiCenterIndexRoute: typeof AuthenticatedApiCenterIndexRoute
   AuthenticatedApprovalsIndexRoute: typeof AuthenticatedApprovalsIndexRoute
@@ -894,6 +935,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,
+  AuthenticatedRequestsIdRoute: AuthenticatedRequestsIdRoute,
+  AuthenticatedSuppliersIdRoute: AuthenticatedSuppliersIdRoute,
   AuthenticatedAnalyticsIndexRoute: AuthenticatedAnalyticsIndexRoute,
   AuthenticatedApiCenterIndexRoute: AuthenticatedApiCenterIndexRoute,
   AuthenticatedApprovalsIndexRoute: AuthenticatedApprovalsIndexRoute,
