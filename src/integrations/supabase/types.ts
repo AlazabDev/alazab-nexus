@@ -52,50 +52,74 @@ export type Database = {
       }
       ai_optimization_jobs: {
         Row: {
+          completed_at: string | null
           consumer_id: string | null
           created_at: string
           error: string | null
+          errors: Json | null
+          estimated_completion: string | null
+          failed_count: number | null
           id: string
           job_id: string
           optimization_level: string | null
           optimization_type: string | null
+          processed_count: number | null
           processed_products: number | null
           product_ids: Json | null
           progress_percent: number | null
           result: Json | null
+          results: Json | null
+          started_at: string | null
           status: string
+          success_count: number | null
           total_products: number | null
           updated_at: string
         }
         Insert: {
+          completed_at?: string | null
           consumer_id?: string | null
           created_at?: string
           error?: string | null
+          errors?: Json | null
+          estimated_completion?: string | null
+          failed_count?: number | null
           id?: string
           job_id: string
           optimization_level?: string | null
           optimization_type?: string | null
+          processed_count?: number | null
           processed_products?: number | null
           product_ids?: Json | null
           progress_percent?: number | null
           result?: Json | null
+          results?: Json | null
+          started_at?: string | null
           status?: string
+          success_count?: number | null
           total_products?: number | null
           updated_at?: string
         }
         Update: {
+          completed_at?: string | null
           consumer_id?: string | null
           created_at?: string
           error?: string | null
+          errors?: Json | null
+          estimated_completion?: string | null
+          failed_count?: number | null
           id?: string
           job_id?: string
           optimization_level?: string | null
           optimization_type?: string | null
+          processed_count?: number | null
           processed_products?: number | null
           product_ids?: Json | null
           progress_percent?: number | null
           result?: Json | null
+          results?: Json | null
+          started_at?: string | null
           status?: string
+          success_count?: number | null
           total_products?: number | null
           updated_at?: string
         }
@@ -103,7 +127,12 @@ export type Database = {
       }
       ai_optimization_logs: {
         Row: {
+          action: string | null
           created_at: string
+          details: Json | null
+          duration_ms: number | null
+          entity_id: string | null
+          entity_type: string | null
           id: string
           metadata: Json | null
           optimization_type: string | null
@@ -112,7 +141,12 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          action?: string | null
           created_at?: string
+          details?: Json | null
+          duration_ms?: number | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
           metadata?: Json | null
           optimization_type?: string | null
@@ -121,7 +155,12 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          action?: string | null
           created_at?: string
+          details?: Json | null
+          duration_ms?: number | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
           metadata?: Json | null
           optimization_type?: string | null
@@ -310,6 +349,7 @@ export type Database = {
           id: string
           notes: string | null
           priority: string
+          rejection_reason: string | null
           requested_by: string | null
           status: Database["public"]["Enums"]["approval_status"]
           title: string
@@ -326,6 +366,7 @@ export type Database = {
           id?: string
           notes?: string | null
           priority?: string
+          rejection_reason?: string | null
           requested_by?: string | null
           status?: Database["public"]["Enums"]["approval_status"]
           title: string
@@ -342,6 +383,7 @@ export type Database = {
           id?: string
           notes?: string | null
           priority?: string
+          rejection_reason?: string | null
           requested_by?: string | null
           status?: Database["public"]["Enums"]["approval_status"]
           title?: string
@@ -474,6 +516,7 @@ export type Database = {
       chatbot_interactions: {
         Row: {
           created_at: string
+          delivered_at: string | null
           direction: string | null
           id: string
           interaction_type: string
@@ -481,9 +524,11 @@ export type Database = {
           payload: Json | null
           quote_request_id: string | null
           response_payload: Json | null
+          status: string | null
         }
         Insert: {
           created_at?: string
+          delivered_at?: string | null
           direction?: string | null
           id?: string
           interaction_type: string
@@ -491,9 +536,11 @@ export type Database = {
           payload?: Json | null
           quote_request_id?: string | null
           response_payload?: Json | null
+          status?: string | null
         }
         Update: {
           created_at?: string
+          delivered_at?: string | null
           direction?: string | null
           id?: string
           interaction_type?: string
@@ -501,6 +548,7 @@ export type Database = {
           payload?: Json | null
           quote_request_id?: string | null
           response_payload?: Json | null
+          status?: string | null
         }
         Relationships: [
           {
@@ -743,8 +791,10 @@ export type Database = {
           customer_name: string | null
           customer_phone: string | null
           delivery_date: string | null
+          delivery_notes: string | null
           design_data: Json | null
           discount_amount: number | null
+          estimated_completion: string | null
           estimated_completion_date: string | null
           estimated_start_date: string | null
           final_price: number | null
@@ -752,6 +802,8 @@ export type Database = {
           order_number: string
           payment_status: string | null
           priority: string
+          production_notes: string | null
+          quality_notes: string | null
           quantity: number | null
           quote_request_id: string | null
           specifications: Json | null
@@ -771,8 +823,10 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           delivery_date?: string | null
+          delivery_notes?: string | null
           design_data?: Json | null
           discount_amount?: number | null
+          estimated_completion?: string | null
           estimated_completion_date?: string | null
           estimated_start_date?: string | null
           final_price?: number | null
@@ -780,6 +834,8 @@ export type Database = {
           order_number: string
           payment_status?: string | null
           priority?: string
+          production_notes?: string | null
+          quality_notes?: string | null
           quantity?: number | null
           quote_request_id?: string | null
           specifications?: Json | null
@@ -799,8 +855,10 @@ export type Database = {
           customer_name?: string | null
           customer_phone?: string | null
           delivery_date?: string | null
+          delivery_notes?: string | null
           design_data?: Json | null
           discount_amount?: number | null
+          estimated_completion?: string | null
           estimated_completion_date?: string | null
           estimated_start_date?: string | null
           final_price?: number | null
@@ -808,6 +866,8 @@ export type Database = {
           order_number?: string
           payment_status?: string | null
           priority?: string
+          production_notes?: string | null
+          quality_notes?: string | null
           quantity?: number | null
           quote_request_id?: string | null
           specifications?: Json | null
@@ -1285,6 +1345,7 @@ export type Database = {
           category: string | null
           category_id: string | null
           confidence_level: string | null
+          content_optimization_score: number | null
           created_at: string
           created_by: string | null
           datasheet_generated: boolean | null
@@ -1333,6 +1394,7 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           confidence_level?: string | null
+          content_optimization_score?: number | null
           created_at?: string
           created_by?: string | null
           datasheet_generated?: boolean | null
@@ -1381,6 +1443,7 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           confidence_level?: string | null
+          content_optimization_score?: number | null
           created_at?: string
           created_by?: string | null
           datasheet_generated?: boolean | null
@@ -1455,6 +1518,7 @@ export type Database = {
       }
       quote_requests: {
         Row: {
+          accepted_at: string | null
           accessories: Json | null
           chatbot_session_id: string | null
           components: Json | null
@@ -1465,6 +1529,8 @@ export type Database = {
           customer_name: string | null
           customer_notes: string | null
           customer_phone: string | null
+          customer_response: string | null
+          customer_response_at: string | null
           design_data: Json | null
           design_file_type: string | null
           design_file_url: string | null
@@ -1489,6 +1555,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          accepted_at?: string | null
           accessories?: Json | null
           chatbot_session_id?: string | null
           components?: Json | null
@@ -1499,6 +1566,8 @@ export type Database = {
           customer_name?: string | null
           customer_notes?: string | null
           customer_phone?: string | null
+          customer_response?: string | null
+          customer_response_at?: string | null
           design_data?: Json | null
           design_file_type?: string | null
           design_file_url?: string | null
@@ -1523,6 +1592,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          accepted_at?: string | null
           accessories?: Json | null
           chatbot_session_id?: string | null
           components?: Json | null
@@ -1533,6 +1603,8 @@ export type Database = {
           customer_name?: string | null
           customer_notes?: string | null
           customer_phone?: string | null
+          customer_response?: string | null
+          customer_response_at?: string | null
           design_data?: Json | null
           design_file_type?: string | null
           design_file_url?: string | null
@@ -1802,6 +1874,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_order_number: { Args: never; Returns: string }
+      generate_requisition_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1819,7 +1893,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
-      approval_stage: "content_review" | "manager_review" | "final_approval"
+      approval_stage:
+        | "content_review"
+        | "manager_review"
+        | "final_approval"
+        | "internal_review"
       approval_status:
         | "pending"
         | "approved"
@@ -1999,7 +2077,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "viewer"],
-      approval_stage: ["content_review", "manager_review", "final_approval"],
+      approval_stage: [
+        "content_review",
+        "manager_review",
+        "final_approval",
+        "internal_review",
+      ],
       approval_status: [
         "pending",
         "approved",
