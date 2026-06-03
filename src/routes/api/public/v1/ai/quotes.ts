@@ -80,7 +80,7 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
             .maybeSingle();
 
           // Generate quote using AI
-          const generatedQuote = await generateQuoteFromRequest(requestData, pricingRules || undefined);
+          const generatedQuote = await generateQuoteFromRequest(requestData as any, (pricingRules || undefined) as any);
 
           // Generate secure token for external access
           const quoteToken = crypto.randomBytes(32).toString('hex');
@@ -94,7 +94,7 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
                 products: validated.products,
                 customer: validated.customer,
                 special_requirements: validated.special_requirements,
-              },
+              } as never,
               generated_quote: {
                 items: generatedQuote.items,
                 subtotal: generatedQuote.subtotal,
@@ -105,7 +105,7 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
                 validity_days: generatedQuote.validity_days,
                 terms_conditions: generatedQuote.terms_conditions,
                 notes: generatedQuote.notes,
-              },
+              } as never,
               status: 'approved',
               generated_by: 'google/gemini-2.5-flash',
               generated_at: new Date().toISOString(),
