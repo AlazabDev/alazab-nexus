@@ -116,7 +116,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
               pricing: pricing as unknown,
             } as never,
             status: "sent",
-            sent_at: new Date().toISOString(),
+            delivered_at: new Date().toISOString(),
           });
 
           await logCall({

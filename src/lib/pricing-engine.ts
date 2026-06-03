@@ -355,7 +355,7 @@ export async function calculateQuotePrice(
         finishes: materialsCost.categories.finishes,
       },
       labor: laborCost.breakdown,
-      applied_rules: rules.map((r) => r.name),
+      applied_rules: rules.map((r) => r.name).filter((n): n is string => !!n),
       discounts: {
         volume: volumeDiscount,
         special: 0,

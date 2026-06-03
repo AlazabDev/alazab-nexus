@@ -66,11 +66,11 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
           // Generate datasheet content
           const datasheetContent = await generateProductDatasheet({
             id: product.id,
-            name: product.name_en || product.name_ar,
-            description: product.short_description_en || product.short_description_ar,
-            category: product.category,
-            specifications: product.specifications,
-            materials: product.materials,
+            name: product.name_en || product.name_ar || "",
+            description: product.short_description_en || product.short_description_ar || "",
+            category: product.category ?? undefined,
+            specifications: (product.specifications as Record<string, any> | null) ?? undefined,
+            materials: (product.materials as unknown as string[] | null) ?? undefined,
           });
 
           // Store datasheet
@@ -78,7 +78,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
             .from('product_datasheets')
             .insert({
               product_id: validated.productId,
-              content: datasheetContent,
+              content: datasheetContent as never,
               status: 'generated',
               language: validated.language,
               format: validated.format,
@@ -96,7 +96,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
           // Generate PDF if requested
           let pdfUrl: string | null = null;
           if (validated.format === 'pdf' || validated.format === 'html') {
-            const fileFormat = validated.format === 'pdf' ? 'html' : validated.format;
+            const fileFormat: 'pdf' | 'html' = validated.format === 'pdf' ? 'html' : 'html';
             const fileContent = await generatePDFDatasheet(datasheetContent, fileFormat);
 
             // Upload to Supabase Storage
@@ -104,7 +104,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
             const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
               .from('product-assets')
               .upload(filename, Buffer.from(fileContent), {
-                contentType: fileFormat === 'pdf' ? 'application/pdf' : 'text/html',
+                contentType: 'text/html',
               });
 
             if (!uploadError && uploadData) {
@@ -152,7 +152,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
             action: 'generate_datasheet',
             entity_type: 'datasheet',
             status: 'error',
-            error_message: error instanceof Error ? error.message : String(error),
+            metadata: { error: error instanceof Error ? error.message : String(error) },
             duration_ms: Date.now() - started,
           });
 
