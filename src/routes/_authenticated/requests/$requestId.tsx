@@ -6,7 +6,6 @@ import { Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authenticated/requests/$requestId')({
   component: RequestDetailPage,
-  preload: 'intent',
 });
 
 function RequestDetailPage() {

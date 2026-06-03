@@ -4,7 +4,6 @@ import { PageHeader } from '@/components/page-header';
 
 export const Route = createFileRoute('/_authenticated/ai-studio/')({
   component: AIStudioPage,
-  preload: 'intent',
 });
 
 function AIStudioPage() {

@@ -19,7 +19,9 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
         const started = Date.now();
 
         // Verify authentication
-        const auth = await requireAuth(request);
+        const authResult = await requireApiKey(request);
+        if (authResult.error) return authResult.error;
+        const auth = { success: true, userId: authResult.consumer?.id ?? null };
         if (!auth.success) {
           return json({ error: 'Unauthorized' }, 401);
         }
