@@ -51,10 +51,10 @@ export function json(
   status = 200,
   extra: Record<string, string> | { headers?: Record<string, string> } = {},
 ) {
-  const extraHeaders =
+  const extraHeaders: Record<string, string> =
     extra && typeof extra === "object" && "headers" in extra && extra.headers
-      ? extra.headers
-      : (extra as Record<string, string>);
+      ? (extra.headers as Record<string, string>)
+      : ((extra as Record<string, string>) ?? {});
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json", ...CORS, ...extraHeaders },
