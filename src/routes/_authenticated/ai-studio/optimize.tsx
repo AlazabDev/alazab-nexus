@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export const Route = createFileRoute('/_authenticated/ai-studio/optimize')({
   component: OptimizePage,
-  preload: 'intent',
 });
 
 function OptimizePage() {

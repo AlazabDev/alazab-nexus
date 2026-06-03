@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const Route = createFileRoute('/_authenticated/ai-studio/datasheets')({
   component: DatasheetPage,
-  preload: 'intent',
 });
 
 function DatasheetPage() {

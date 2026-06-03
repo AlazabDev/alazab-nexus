@@ -6,7 +6,6 @@ import { Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authenticated/suppliers/$supplierId')({
   component: SupplierDetailPage,
-  preload: 'intent',
 });
 
 function SupplierDetailPage() {
