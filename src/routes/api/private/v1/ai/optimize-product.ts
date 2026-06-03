@@ -45,10 +45,10 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
           const optimizationResult = await optimizeProductContent(
             {
               id: product.id,
-              name: product.name_en || product.name_ar,
-              description: product.short_description_en || product.short_description_ar,
-              category: product.category,
-              specifications: product.specifications,
+              name: product.name_en || product.name_ar || "",
+              description: product.short_description_en || product.short_description_ar || "",
+              category: product.category ?? undefined,
+              specifications: (product.specifications as Record<string, any> | null) ?? undefined,
             },
             validated.optimizationLevel
           );
@@ -80,8 +80,7 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
                 short_description_en: optimizationResult.optimized_description_en,
                 short_description_ar: optimizationResult.optimized_description_ar,
                 content_optimization_score: optimizationResult.contentQualityScore,
-                ai_optimization_applied_at: new Date().toISOString(),
-              })
+              } as never)
               .eq('id', validated.productId);
           }
 
@@ -101,7 +100,7 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
             action: 'optimize_content',
             entity_type: 'product',
             status: 'error',
-            error_message: error instanceof Error ? error.message : String(error),
+            metadata: { error: error instanceof Error ? error.message : String(error) },
             duration_ms: Date.now() - started,
           });
 

@@ -46,10 +46,18 @@ export const CORS = {
   "Access-Control-Max-Age": "86400",
 } as const;
 
-export function json(body: unknown, status = 200, extra: Record<string, string> = {}) {
+export function json(
+  body: unknown,
+  status = 200,
+  extra: Record<string, string> | { headers?: Record<string, string> } = {},
+) {
+  const extraHeaders: Record<string, string> =
+    extra && typeof extra === "object" && "headers" in extra && extra.headers
+      ? (extra.headers as Record<string, string>)
+      : ((extra as Record<string, string>) ?? {});
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...CORS, ...extra },
+    headers: { "Content-Type": "application/json", ...CORS, ...extraHeaders },
   });
 }
 
