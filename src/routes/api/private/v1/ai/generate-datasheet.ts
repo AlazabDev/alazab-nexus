@@ -68,7 +68,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
             id: product.id,
             name: product.name_en || product.name_ar || "",
             description: product.short_description_en || product.short_description_ar || "",
-            category: product.category ?? undefined,
+            category: product.category ?? "",
             specifications: (product.specifications as Record<string, any> | null) ?? undefined,
             materials: (product.materials as unknown as string[] | null) ?? undefined,
           });
