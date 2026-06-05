@@ -62,6 +62,7 @@ function ProductsList() {
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [view, setView] = useState<"grid" | "table">("grid");
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "az_code",
     "name_ar",
