@@ -58,14 +58,14 @@
 }
 
 :root {
-  --radius: 0.5rem;
-  /* Cream/parchment surfaces */
-  --background: oklch(0.985 0.008 85);
-  --foreground: oklch(0.18 0.03 260);
+  --radius: 0.75rem;
+  /* Light surfaces #F2F2F2 / #FFFFFF */
+  --background: oklch(0.97 0.002 250);
+  --foreground: oklch(0.20 0.14 268);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.03 260);
+  --card-foreground: oklch(0.20 0.14 268);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 260);
+  --popover-foreground: oklch(0.20 0.14 268);
   /* Deep navy #030957 */
   --primary: oklch(0.20 0.14 268);
   --primary-foreground: oklch(0.98 0.005 85);
