@@ -474,6 +474,25 @@ function ProductsList() {
               مسح الفلاتر
             </Button>
           )}
+
+          <div className="mr-auto inline-flex rounded-md border bg-card p-0.5">
+            <button
+              type="button"
+              onClick={() => setView("grid")}
+              aria-label="عرض شبكي"
+              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <LayoutGrid className="size-3.5" /> بطاقات
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("table")}
+              aria-label="عرض جدول"
+              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <ListIcon className="size-3.5" /> جدول
+            </button>
+          </div>
         </div>
       </Card>
 
