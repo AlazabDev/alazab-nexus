@@ -27,9 +27,12 @@ import {
   Sparkles,
   Loader2,
   Plus,
+  LayoutGrid,
+  List as ListIcon,
 } from "lucide-react";
 import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { PageHeader } from "@/components/page-header";
+import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/_authenticated/products/")({
   head: () => ({ meta: [{ title: "المنتجات والخدمات — Alazab PAOP" }] }),
@@ -59,6 +62,7 @@ function ProductsList() {
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
+  const [view, setView] = useState<"grid" | "table">("grid");
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "az_code",
     "name_ar",
@@ -116,6 +120,28 @@ function ProductsList() {
       const { data, count, error } = await query;
       if (error) throw error;
       return { rows: data ?? [], count: count ?? 0 };
+    },
+  });
+
+  // Fetch cover images for visible products
+  const visibleIds = (data?.rows ?? []).map((r: any) => r.id);
+  const { data: coverMap } = useQuery({
+    queryKey: ["product-covers", visibleIds],
+    enabled: visibleIds.length > 0,
+    queryFn: async () => {
+      const { data: links } = await supabase
+        .from("product_assets")
+        .select("product_id, asset_role, asset:assets(file_url)")
+        .in("product_id", visibleIds);
+      const map: Record<string, string> = {};
+      (links ?? []).forEach((l: any) => {
+        const url = l?.asset?.file_url;
+        if (!url) return;
+        if (l.asset_role === "main_image" || !map[l.product_id]) {
+          map[l.product_id] = url;
+        }
+      });
+      return map;
     },
   });
 
@@ -448,6 +474,25 @@ function ProductsList() {
               مسح الفلاتر
             </Button>
           )}
+
+          <div className="mr-auto inline-flex rounded-md border bg-card p-0.5">
+            <button
+              type="button"
+              onClick={() => setView("grid")}
+              aria-label="عرض شبكي"
+              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <LayoutGrid className="size-3.5" /> بطاقات
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("table")}
+              aria-label="عرض جدول"
+              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <ListIcon className="size-3.5" /> جدول
+            </button>
+          </div>
         </div>
       </Card>
 
@@ -496,6 +541,70 @@ function ProductsList() {
         </Card>
       )}
 
+      {view === "grid" ? (
+        <div>
+          {isLoading && (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="product-card animate-pulse"
+                >
+                  <div className="thumb aspect-[4/3]" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-3 w-16 bg-secondary rounded" />
+                    <div className="h-4 w-3/4 bg-secondary rounded" />
+                    <div className="h-3 w-1/2 bg-secondary rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {!isLoading && data?.rows.length === 0 && (
+            <Card className="p-12 text-center text-muted-foreground surface-elevated border-0">
+              لا توجد نتائج تطابق الفلاتر الحالية
+            </Card>
+          )}
+          {!isLoading && (data?.rows.length ?? 0) > 0 && (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {data!.rows.map((p: any) => (
+                <ProductCard
+                  key={p.id}
+                  p={{ ...p, cover_url: coverMap?.[p.id] ?? null }}
+                  selected={selectedIds.has(p.id)}
+                  onToggle={(checked) => {
+                    const next = new Set(selectedIds);
+                    if (checked) next.add(p.id);
+                    else next.delete(p.id);
+                    setSelectedIds(next);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          <div className="flex items-center justify-between mt-4 text-xs">
+            <div className="text-muted-foreground num" dir="ltr">
+              Page {page + 1} / {pages || 1} — {total.toLocaleString("en-US")} rows
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(Math.max(0, page - 1))}
+                disabled={page === 0}
+                className="px-3 py-1.5 rounded-md border bg-card disabled:opacity-50"
+              >
+                السابق
+              </button>
+              <button
+                onClick={() => setPage(Math.min(pages - 1, page + 1))}
+                disabled={page >= pages - 1}
+                className="px-3 py-1.5 rounded-md border bg-card disabled:opacity-50"
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
       <Card className="surface-elevated border-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -603,6 +712,7 @@ function ProductsList() {
           </table>
         </div>
 
+
         <div className="flex items-center justify-between p-3 border-t bg-secondary/30 text-xs">
           <div className="text-muted-foreground num" dir="ltr">
             Page {page + 1} / {pages || 1} - {total.toLocaleString("en-US")} rows
@@ -625,6 +735,7 @@ function ProductsList() {
           </div>
         </div>
       </Card>
+      )}
       </div>
     </>
   );

@@ -40,6 +40,20 @@ function ProductDetails() {
     },
   });
 
+  const { data: coverUrl } = useQuery({
+    queryKey: ["product-cover", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data: links } = await supabase
+        .from("product_assets")
+        .select("asset_role, asset:assets(file_url)")
+        .eq("product_id", id);
+      const main = (links ?? []).find((l: any) => l.asset_role === "main_image");
+      const any = (links ?? [])[0];
+      return (main?.asset as any)?.file_url ?? (any?.asset as any)?.file_url ?? null;
+    },
+  });
+
   const submitFn = useServerFn(submitForApproval);
   const submit = useMutation({
     mutationFn: () =>
@@ -62,7 +76,7 @@ function ProductDetails() {
   if (!p) return <div className="p-6 text-muted-foreground">البند غير موجود</div>;
 
   return (
-    <div className="p-6 space-y-4 max-w-[1400px] mx-auto">
+    <div className="p-4 md:p-6 space-y-5 max-w-[1400px] mx-auto">
       <Link
         to="/products"
         className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
@@ -70,39 +84,57 @@ function ProductDetails() {
         <ArrowRight className="size-3" /> العودة للقائمة
       </Link>
 
-      <Card className="p-6 surface-elevated border-0">
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="num text-xs text-accent font-semibold" dir="ltr">
+      <Card className="surface-elevated border-0 overflow-hidden">
+        <div className="grid md:grid-cols-[280px_1fr] gap-0">
+          <div className="hero-banner relative aspect-square md:aspect-auto grid place-items-center overflow-hidden">
+            {coverUrl ? (
+              <img
+                src={coverUrl}
+                alt={p.name_ar ?? ""}
+                className="size-full object-cover"
+              />
+            ) : (
+              <div className="text-center text-primary-foreground/70 p-6">
+                <ImageIcon className="size-12 mx-auto opacity-50" />
+                <div className="text-xs mt-2 opacity-70">لا توجد صورة رئيسية</div>
+              </div>
+            )}
+            <div className="absolute top-3 right-3">
+              <StatusBadge status={p.status} />
+            </div>
+          </div>
+
+          <div className="p-6 flex flex-col">
+            <div className="num text-xs text-accent font-semibold tracking-wider" dir="ltr">
               {p.az_code}
             </div>
-            <h1 className="text-2xl font-bold mt-1">{p.name_ar}</h1>
-            <div className="text-sm text-muted-foreground mt-0.5" dir="ltr">
+            <h1 className="font-display text-3xl font-bold mt-1 leading-tight">{p.name_ar}</h1>
+            <div className="text-sm text-muted-foreground mt-1" dir="ltr">
               {p.name_en}
             </div>
+
+            <div className="mt-auto pt-6 flex items-center gap-2 flex-wrap">
+              {p.status !== "approved" && (
+                <Button
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => submit.mutate()}
+                  disabled={submit.isPending}
+                >
+                  <Send className="size-3.5" />
+                  إرسال للاعتماد
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-4 border-t text-sm">
+              <Field label="EGS Code" value={p.egs_code} mono />
+              <Field label="النوع" value={p.item_type} />
+              <Field label="GPC Brick" value={p.gs1_gpc_brick} mono />
+              <Field label="العائلة" value={p.gpc_family} />
+              <Field label="مستوى الثقة" value={p.confidence_level} />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {p.status !== "approved" && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1.5"
-                onClick={() => submit.mutate()}
-                disabled={submit.isPending}
-              >
-                <Send className="size-3.5" />
-                إرسال للاعتماد
-              </Button>
-            )}
-            <StatusBadge status={p.status} />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-4 border-t text-sm">
-          <Field label="EGS Code" value={p.egs_code} mono />
-          <Field label="النوع" value={p.item_type} />
-          <Field label="GPC Brick" value={p.gs1_gpc_brick} mono />
-          <Field label="العائلة" value={p.gpc_family} />
-          <Field label="مستوى الثقة" value={p.confidence_level} />
         </div>
       </Card>
 
