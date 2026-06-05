@@ -182,7 +182,7 @@ export const Route = createFileRoute("/api/public/v1/suppliers/webhook")({
           records_processed: processed,
           records_updated: updated,
           records_failed: failed,
-          payload: parsed as unknown as Record<string, unknown>,
+          payload: parsed as never,
           error_message: errors.slice(0, 5).join("; ") || null,
           ip_address: ip,
         });

@@ -56,6 +56,7 @@ import { Route as ApiAgentV1QuoteResponseRouteImport } from './routes/api/agent/
 import { Route as ApiAgentV1QuoteRequestRouteImport } from './routes/api/agent/v1/quote-request'
 import { Route as ApiAgentV1OrderStatusRouteImport } from './routes/api/agent/v1/order-status'
 import { Route as ApiAgentV1InternalApprovalRouteImport } from './routes/api/agent/v1/internal-approval'
+import { Route as ApiPublicV1SuppliersWebhookRouteImport } from './routes/api/public/v1/suppliers/webhook'
 import { Route as ApiPublicV1ProductsAzCodeRouteImport } from './routes/api/public/v1/products/$azCode'
 import { Route as ApiPublicV1AiQuotesRouteImport } from './routes/api/public/v1/ai/quotes'
 import { Route as ApiPrivateV1AiOptimizeProductRouteImport } from './routes/api/private/v1/ai/optimize-product'
@@ -327,6 +328,12 @@ const ApiAgentV1InternalApprovalRoute =
     path: '/api/agent/v1/internal-approval',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicV1SuppliersWebhookRoute =
+  ApiPublicV1SuppliersWebhookRouteImport.update({
+    id: '/webhook',
+    path: '/webhook',
+    getParentRoute: () => ApiPublicV1SuppliersRoute,
+  } as any)
 const ApiPublicV1ProductsAzCodeRoute =
   ApiPublicV1ProductsAzCodeRouteImport.update({
     id: '/$azCode',
@@ -408,13 +415,14 @@ export interface FileRoutesByFullPath {
   '/api/public/v1/assets': typeof ApiPublicV1AssetsRoute
   '/api/public/v1/pricing': typeof ApiPublicV1PricingRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
-  '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRoute
+  '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRouteWithChildren
   '/api/private/v1/ai/batch-optimize': typeof ApiPrivateV1AiBatchOptimizeRoute
   '/api/private/v1/ai/generate-datasheet': typeof ApiPrivateV1AiGenerateDatasheetRoute
   '/api/private/v1/ai/job-status': typeof ApiPrivateV1AiJobStatusRoute
   '/api/private/v1/ai/optimize-product': typeof ApiPrivateV1AiOptimizeProductRoute
   '/api/public/v1/ai/quotes': typeof ApiPublicV1AiQuotesRoute
   '/api/public/v1/products/$azCode': typeof ApiPublicV1ProductsAzCodeRoute
+  '/api/public/v1/suppliers/webhook': typeof ApiPublicV1SuppliersWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -462,13 +470,14 @@ export interface FileRoutesByTo {
   '/api/public/v1/assets': typeof ApiPublicV1AssetsRoute
   '/api/public/v1/pricing': typeof ApiPublicV1PricingRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
-  '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRoute
+  '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRouteWithChildren
   '/api/private/v1/ai/batch-optimize': typeof ApiPrivateV1AiBatchOptimizeRoute
   '/api/private/v1/ai/generate-datasheet': typeof ApiPrivateV1AiGenerateDatasheetRoute
   '/api/private/v1/ai/job-status': typeof ApiPrivateV1AiJobStatusRoute
   '/api/private/v1/ai/optimize-product': typeof ApiPrivateV1AiOptimizeProductRoute
   '/api/public/v1/ai/quotes': typeof ApiPublicV1AiQuotesRoute
   '/api/public/v1/products/$azCode': typeof ApiPublicV1ProductsAzCodeRoute
+  '/api/public/v1/suppliers/webhook': typeof ApiPublicV1SuppliersWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -518,13 +527,14 @@ export interface FileRoutesById {
   '/api/public/v1/assets': typeof ApiPublicV1AssetsRoute
   '/api/public/v1/pricing': typeof ApiPublicV1PricingRoute
   '/api/public/v1/products': typeof ApiPublicV1ProductsRouteWithChildren
-  '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRoute
+  '/api/public/v1/suppliers': typeof ApiPublicV1SuppliersRouteWithChildren
   '/api/private/v1/ai/batch-optimize': typeof ApiPrivateV1AiBatchOptimizeRoute
   '/api/private/v1/ai/generate-datasheet': typeof ApiPrivateV1AiGenerateDatasheetRoute
   '/api/private/v1/ai/job-status': typeof ApiPrivateV1AiJobStatusRoute
   '/api/private/v1/ai/optimize-product': typeof ApiPrivateV1AiOptimizeProductRoute
   '/api/public/v1/ai/quotes': typeof ApiPublicV1AiQuotesRoute
   '/api/public/v1/products/$azCode': typeof ApiPublicV1ProductsAzCodeRoute
+  '/api/public/v1/suppliers/webhook': typeof ApiPublicV1SuppliersWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -581,6 +591,7 @@ export interface FileRouteTypes {
     | '/api/private/v1/ai/optimize-product'
     | '/api/public/v1/ai/quotes'
     | '/api/public/v1/products/$azCode'
+    | '/api/public/v1/suppliers/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -635,6 +646,7 @@ export interface FileRouteTypes {
     | '/api/private/v1/ai/optimize-product'
     | '/api/public/v1/ai/quotes'
     | '/api/public/v1/products/$azCode'
+    | '/api/public/v1/suppliers/webhook'
   id:
     | '__root__'
     | '/'
@@ -690,6 +702,7 @@ export interface FileRouteTypes {
     | '/api/private/v1/ai/optimize-product'
     | '/api/public/v1/ai/quotes'
     | '/api/public/v1/products/$azCode'
+    | '/api/public/v1/suppliers/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -703,7 +716,7 @@ export interface RootRouteChildren {
   ApiPublicV1AssetsRoute: typeof ApiPublicV1AssetsRoute
   ApiPublicV1PricingRoute: typeof ApiPublicV1PricingRoute
   ApiPublicV1ProductsRoute: typeof ApiPublicV1ProductsRouteWithChildren
-  ApiPublicV1SuppliersRoute: typeof ApiPublicV1SuppliersRoute
+  ApiPublicV1SuppliersRoute: typeof ApiPublicV1SuppliersRouteWithChildren
   ApiPrivateV1AiBatchOptimizeRoute: typeof ApiPrivateV1AiBatchOptimizeRoute
   ApiPrivateV1AiGenerateDatasheetRoute: typeof ApiPrivateV1AiGenerateDatasheetRoute
   ApiPrivateV1AiJobStatusRoute: typeof ApiPrivateV1AiJobStatusRoute
@@ -1042,6 +1055,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentV1InternalApprovalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/suppliers/webhook': {
+      id: '/api/public/v1/suppliers/webhook'
+      path: '/webhook'
+      fullPath: '/api/public/v1/suppliers/webhook'
+      preLoaderRoute: typeof ApiPublicV1SuppliersWebhookRouteImport
+      parentRoute: typeof ApiPublicV1SuppliersRoute
+    }
     '/api/public/v1/products/$azCode': {
       id: '/api/public/v1/products/$azCode'
       path: '/$azCode'
@@ -1180,6 +1200,17 @@ const ApiPublicV1ProductsRouteChildren: ApiPublicV1ProductsRouteChildren = {
 const ApiPublicV1ProductsRouteWithChildren =
   ApiPublicV1ProductsRoute._addFileChildren(ApiPublicV1ProductsRouteChildren)
 
+interface ApiPublicV1SuppliersRouteChildren {
+  ApiPublicV1SuppliersWebhookRoute: typeof ApiPublicV1SuppliersWebhookRoute
+}
+
+const ApiPublicV1SuppliersRouteChildren: ApiPublicV1SuppliersRouteChildren = {
+  ApiPublicV1SuppliersWebhookRoute: ApiPublicV1SuppliersWebhookRoute,
+}
+
+const ApiPublicV1SuppliersRouteWithChildren =
+  ApiPublicV1SuppliersRoute._addFileChildren(ApiPublicV1SuppliersRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -1191,7 +1222,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicV1AssetsRoute: ApiPublicV1AssetsRoute,
   ApiPublicV1PricingRoute: ApiPublicV1PricingRoute,
   ApiPublicV1ProductsRoute: ApiPublicV1ProductsRouteWithChildren,
-  ApiPublicV1SuppliersRoute: ApiPublicV1SuppliersRoute,
+  ApiPublicV1SuppliersRoute: ApiPublicV1SuppliersRouteWithChildren,
   ApiPrivateV1AiBatchOptimizeRoute: ApiPrivateV1AiBatchOptimizeRoute,
   ApiPrivateV1AiGenerateDatasheetRoute: ApiPrivateV1AiGenerateDatasheetRoute,
   ApiPrivateV1AiJobStatusRoute: ApiPrivateV1AiJobStatusRoute,
