@@ -151,10 +151,34 @@
 @layer components {
   .surface-elevated {
     background-color: var(--color-card);
-    box-shadow: 0 1px 0 0 oklch(0.24 0.06 260 / 0.04), 0 8px 24px -16px oklch(0.24 0.06 260 / 0.12);
+    box-shadow: 0 1px 0 0 oklch(0.20 0.14 268 / 0.04), 0 8px 24px -16px oklch(0.20 0.14 268 / 0.14);
   }
   .gold-divider {
     background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
     height: 1px;
+  }
+  .font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+  .product-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .product-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--color-accent) 60%, var(--color-border));
+    box-shadow: 0 14px 32px -18px oklch(0.20 0.14 268 / 0.28);
+  }
+  .product-card .thumb {
+    background:
+      radial-gradient(120% 80% at 50% 0%, color-mix(in oklab, var(--color-accent) 14%, transparent) 0%, transparent 60%),
+      linear-gradient(180deg, color-mix(in oklab, var(--color-primary) 6%, var(--color-card)) 0%, var(--color-card) 100%);
+  }
+  .hero-banner {
+    background:
+      radial-gradient(120% 100% at 100% 0%, color-mix(in oklab, var(--color-accent) 22%, transparent) 0%, transparent 55%),
+      linear-gradient(135deg, var(--color-primary) 0%, color-mix(in oklab, var(--color-primary) 80%, #000) 100%);
+    color: var(--color-primary-foreground);
   }
 }
