@@ -123,6 +123,28 @@ function ProductsList() {
     },
   });
 
+  // Fetch cover images for visible products
+  const visibleIds = (data?.rows ?? []).map((r: any) => r.id);
+  const { data: coverMap } = useQuery({
+    queryKey: ["product-covers", visibleIds],
+    enabled: visibleIds.length > 0,
+    queryFn: async () => {
+      const { data: links } = await supabase
+        .from("product_assets")
+        .select("product_id, asset_role, asset:assets(file_url)")
+        .in("product_id", visibleIds);
+      const map: Record<string, string> = {};
+      (links ?? []).forEach((l: any) => {
+        const url = l?.asset?.file_url;
+        if (!url) return;
+        if (l.asset_role === "main_image" || !map[l.product_id]) {
+          map[l.product_id] = url;
+        }
+      });
+      return map;
+    },
+  });
+
   const total = data?.count ?? 0;
   const pages = Math.ceil(total / PAGE);
 
