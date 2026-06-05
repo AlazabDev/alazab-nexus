@@ -1699,6 +1699,56 @@ export type Database = {
           },
         ]
       }
+      supplier_sync_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          payload: Json | null
+          records_failed: number
+          records_processed: number
+          records_updated: number
+          status: string
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          payload?: Json | null
+          records_failed?: number
+          records_processed?: number
+          records_updated?: number
+          status?: string
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          payload?: Json | null
+          records_failed?: number
+          records_processed?: number
+          records_updated?: number
+          status?: string
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_sync_logs_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           api_url: string | null
@@ -1719,6 +1769,8 @@ export type Database = {
           supplier_tier: Database["public"]["Enums"]["supplier_tier"] | null
           supplier_type: string | null
           updated_at: string
+          webhook_enabled: boolean
+          webhook_secret: string | null
           website: string | null
         }
         Insert: {
@@ -1740,6 +1792,8 @@ export type Database = {
           supplier_tier?: Database["public"]["Enums"]["supplier_tier"] | null
           supplier_type?: string | null
           updated_at?: string
+          webhook_enabled?: boolean
+          webhook_secret?: string | null
           website?: string | null
         }
         Update: {
@@ -1761,6 +1815,8 @@ export type Database = {
           supplier_tier?: Database["public"]["Enums"]["supplier_tier"] | null
           supplier_type?: string | null
           updated_at?: string
+          webhook_enabled?: boolean
+          webhook_secret?: string | null
           website?: string | null
         }
         Relationships: []
