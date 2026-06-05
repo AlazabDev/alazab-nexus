@@ -27,9 +27,12 @@ import {
   Sparkles,
   Loader2,
   Plus,
+  LayoutGrid,
+  List as ListIcon,
 } from "lucide-react";
 import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { PageHeader } from "@/components/page-header";
+import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/_authenticated/products/")({
   head: () => ({ meta: [{ title: "المنتجات والخدمات — Alazab PAOP" }] }),
