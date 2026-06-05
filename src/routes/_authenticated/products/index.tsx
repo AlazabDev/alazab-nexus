@@ -735,6 +735,7 @@ function ProductsList() {
           </div>
         </div>
       </Card>
+      )}
       </div>
     </>
   );
