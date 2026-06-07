@@ -782,3 +782,86 @@ function StatusBadge({ status }: { status: string }) {
   const v = map[status] ?? { label: status, cls: "bg-secondary" };
   return <span className={`text-[10px] px-2 py-0.5 rounded ${v.cls}`}>{v.label}</span>;
 }
+
+function PaginationBar({
+  page,
+  pages,
+  total,
+  pageSize,
+  onChange,
+  className = "",
+}: {
+  page: number;
+  pages: number;
+  total: number;
+  pageSize: number;
+  onChange: (p: number) => void;
+  className?: string;
+}) {
+  const from = total === 0 ? 0 : page * pageSize + 1;
+  const to = Math.min(total, (page + 1) * pageSize);
+  const [jump, setJump] = useState("");
+
+  const go = (p: number) => onChange(Math.max(0, Math.min(pages - 1, p)));
+
+  return (
+    <div className={`flex items-center justify-between gap-3 flex-wrap text-xs ${className}`}>
+      <div className="text-muted-foreground num" dir="ltr">
+        {from.toLocaleString("en-US")}–{to.toLocaleString("en-US")} of{" "}
+        {total.toLocaleString("en-US")}
+      </div>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => go(0)}
+          disabled={page === 0}
+          className="px-2 py-1 rounded border bg-card disabled:opacity-40 inline-flex items-center"
+          aria-label="الصفحة الأولى"
+        >
+          <ChevronsRight className="size-3.5" />
+        </button>
+        <button
+          onClick={() => go(page - 1)}
+          disabled={page === 0}
+          className="px-3 py-1 rounded border bg-card disabled:opacity-40"
+        >
+          السابق
+        </button>
+        <span className="num px-2" dir="ltr">
+          {page + 1} / {pages}
+        </span>
+        <button
+          onClick={() => go(page + 1)}
+          disabled={page >= pages - 1}
+          className="px-3 py-1 rounded border bg-card disabled:opacity-40"
+        >
+          التالي
+        </button>
+        <button
+          onClick={() => go(pages - 1)}
+          disabled={page >= pages - 1}
+          className="px-2 py-1 rounded border bg-card disabled:opacity-40 inline-flex items-center"
+          aria-label="الصفحة الأخيرة"
+        >
+          <ChevronsLeft className="size-3.5" />
+        </button>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const n = parseInt(jump, 10);
+            if (!isNaN(n)) go(n - 1);
+            setJump("");
+          }}
+          className="flex items-center gap-1 mr-2"
+        >
+          <Input
+            value={jump}
+            onChange={(e) => setJump(e.target.value.replace(/\D/g, ""))}
+            placeholder="انتقل..."
+            className="h-7 w-20 num text-xs"
+            dir="ltr"
+          />
+        </form>
+      </div>
+    </div>
+  );
+}
