@@ -119,7 +119,7 @@ function ProductsList() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", filters, page],
+    queryKey: ["products", filters, page, pageSize, sortKey, sortDir],
     queryFn: async () => {
       let query = supabase
         .from("products")
@@ -127,8 +127,8 @@ function ProductsList() {
           "id, az_code, egs_code, name_ar, name_en, item_type, status, gpc_family, sector_ar, confidence_level",
           { count: "exact" },
         )
-        .order("created_at", { ascending: false })
-        .range(page * PAGE, page * PAGE + PAGE - 1);
+        .order(sortKey, { ascending: sortDir === "asc" })
+        .range(page * pageSize, page * pageSize + pageSize - 1);
 
       if (filters.q)
         query = query.or(
