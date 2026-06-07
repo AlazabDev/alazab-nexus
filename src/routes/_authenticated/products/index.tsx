@@ -29,6 +29,9 @@ import {
   Plus,
   LayoutGrid,
   List as ListIcon,
+  ChevronsRight,
+  ChevronsLeft,
+  ArrowUpDown,
 } from "lucide-react";
 import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { PageHeader } from "@/components/page-header";
@@ -39,7 +42,24 @@ export const Route = createFileRoute("/_authenticated/products/")({
   component: ProductsList,
 });
 
-const PAGE = 50;
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 200];
+
+type SortKey =
+  | "created_at"
+  | "updated_at"
+  | "az_code"
+  | "name_ar"
+  | "name_en"
+  | "status";
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "created_at", label: "تاريخ الإنشاء" },
+  { value: "updated_at", label: "آخر تحديث" },
+  { value: "az_code", label: "AZ Code" },
+  { value: "name_ar", label: "الاسم بالعربي" },
+  { value: "name_en", label: "Name EN" },
+  { value: "status", label: "الحالة" },
+];
 
 interface Filters {
   q: string;
@@ -60,6 +80,9 @@ function ProductsList() {
     confidence: "all",
   });
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [sortKey, setSortKey] = useState<SortKey>("created_at");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [showFilters, setShowFilters] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [view, setView] = useState<"grid" | "table">("grid");
@@ -96,7 +119,7 @@ function ProductsList() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", filters, page],
+    queryKey: ["products", filters, page, pageSize, sortKey, sortDir],
     queryFn: async () => {
       let query = supabase
         .from("products")
@@ -104,8 +127,8 @@ function ProductsList() {
           "id, az_code, egs_code, name_ar, name_en, item_type, status, gpc_family, sector_ar, confidence_level",
           { count: "exact" },
         )
-        .order("created_at", { ascending: false })
-        .range(page * PAGE, page * PAGE + PAGE - 1);
+        .order(sortKey, { ascending: sortDir === "asc" })
+        .range(page * pageSize, page * pageSize + pageSize - 1);
 
       if (filters.q)
         query = query.or(
@@ -146,7 +169,7 @@ function ProductsList() {
   });
 
   const total = data?.count ?? 0;
-  const pages = Math.ceil(total / PAGE);
+  const pages = Math.max(1, Math.ceil(total / pageSize));
 
   const activeFiltersCount = Object.entries(filters).filter(
     ([key, value]) => key !== "q" && value !== "all",
@@ -475,23 +498,55 @@ function ProductsList() {
             </Button>
           )}
 
-          <div className="mr-auto inline-flex rounded-md border bg-card p-0.5">
-            <button
-              type="button"
-              onClick={() => setView("grid")}
-              aria-label="عرض شبكي"
-              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <LayoutGrid className="size-3.5" /> بطاقات
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("table")}
-              aria-label="عرض جدول"
-              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <ListIcon className="size-3.5" /> جدول
-            </button>
+          <div className="mr-auto flex items-center gap-2 flex-wrap">
+            <Select value={sortKey} onValueChange={(v) => { setSortKey(v as SortKey); setPage(0); }}>
+              <SelectTrigger className="w-[160px] h-9">
+                <ArrowUpDown className="size-3.5 ml-1" />
+                <SelectValue placeholder="ترتيب حسب" />
+              </SelectTrigger>
+              <SelectContent>
+                {SORT_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortDir} onValueChange={(v) => { setSortDir(v as "asc" | "desc"); setPage(0); }}>
+              <SelectTrigger className="w-[110px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">تنازلي</SelectItem>
+                <SelectItem value="asc">تصاعدي</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(0); }}>
+              <SelectTrigger className="w-[110px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <SelectItem key={n} value={String(n)}>{n} / صفحة</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="inline-flex rounded-md border bg-card p-0.5">
+              <button
+                type="button"
+                onClick={() => setView("grid")}
+                aria-label="عرض شبكي"
+                className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <LayoutGrid className="size-3.5" /> بطاقات
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("table")}
+                aria-label="عرض جدول"
+                className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <ListIcon className="size-3.5" /> جدول
+              </button>
+            </div>
           </div>
         </div>
       </Card>
@@ -582,27 +637,14 @@ function ProductsList() {
               ))}
             </div>
           )}
-          <div className="flex items-center justify-between mt-4 text-xs">
-            <div className="text-muted-foreground num" dir="ltr">
-              Page {page + 1} / {pages || 1} — {total.toLocaleString("en-US")} rows
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(Math.max(0, page - 1))}
-                disabled={page === 0}
-                className="px-3 py-1.5 rounded-md border bg-card disabled:opacity-50"
-              >
-                السابق
-              </button>
-              <button
-                onClick={() => setPage(Math.min(pages - 1, page + 1))}
-                disabled={page >= pages - 1}
-                className="px-3 py-1.5 rounded-md border bg-card disabled:opacity-50"
-              >
-                التالي
-              </button>
-            </div>
-          </div>
+          <PaginationBar
+            page={page}
+            pages={pages}
+            total={total}
+            pageSize={pageSize}
+            onChange={setPage}
+            className="mt-4"
+          />
         </div>
       ) : (
       <Card className="surface-elevated border-0 overflow-hidden">
@@ -713,27 +755,14 @@ function ProductsList() {
         </div>
 
 
-        <div className="flex items-center justify-between p-3 border-t bg-secondary/30 text-xs">
-          <div className="text-muted-foreground num" dir="ltr">
-            Page {page + 1} / {pages || 1} - {total.toLocaleString("en-US")} rows
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPage(Math.max(0, page - 1))}
-              disabled={page === 0}
-              className="px-3 py-1 rounded border disabled:opacity-50"
-            >
-              السابق
-            </button>
-            <button
-              onClick={() => setPage(Math.min(pages - 1, page + 1))}
-              disabled={page >= pages - 1}
-              className="px-3 py-1 rounded border disabled:opacity-50"
-            >
-              التالي
-            </button>
-          </div>
-        </div>
+        <PaginationBar
+          page={page}
+          pages={pages}
+          total={total}
+          pageSize={pageSize}
+          onChange={setPage}
+          className="p-3 border-t bg-secondary/30"
+        />
       </Card>
       )}
       </div>
@@ -752,4 +781,87 @@ function StatusBadge({ status }: { status: string }) {
   };
   const v = map[status] ?? { label: status, cls: "bg-secondary" };
   return <span className={`text-[10px] px-2 py-0.5 rounded ${v.cls}`}>{v.label}</span>;
+}
+
+function PaginationBar({
+  page,
+  pages,
+  total,
+  pageSize,
+  onChange,
+  className = "",
+}: {
+  page: number;
+  pages: number;
+  total: number;
+  pageSize: number;
+  onChange: (p: number) => void;
+  className?: string;
+}) {
+  const from = total === 0 ? 0 : page * pageSize + 1;
+  const to = Math.min(total, (page + 1) * pageSize);
+  const [jump, setJump] = useState("");
+
+  const go = (p: number) => onChange(Math.max(0, Math.min(pages - 1, p)));
+
+  return (
+    <div className={`flex items-center justify-between gap-3 flex-wrap text-xs ${className}`}>
+      <div className="text-muted-foreground num" dir="ltr">
+        {from.toLocaleString("en-US")}–{to.toLocaleString("en-US")} of{" "}
+        {total.toLocaleString("en-US")}
+      </div>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => go(0)}
+          disabled={page === 0}
+          className="px-2 py-1 rounded border bg-card disabled:opacity-40 inline-flex items-center"
+          aria-label="الصفحة الأولى"
+        >
+          <ChevronsRight className="size-3.5" />
+        </button>
+        <button
+          onClick={() => go(page - 1)}
+          disabled={page === 0}
+          className="px-3 py-1 rounded border bg-card disabled:opacity-40"
+        >
+          السابق
+        </button>
+        <span className="num px-2" dir="ltr">
+          {page + 1} / {pages}
+        </span>
+        <button
+          onClick={() => go(page + 1)}
+          disabled={page >= pages - 1}
+          className="px-3 py-1 rounded border bg-card disabled:opacity-40"
+        >
+          التالي
+        </button>
+        <button
+          onClick={() => go(pages - 1)}
+          disabled={page >= pages - 1}
+          className="px-2 py-1 rounded border bg-card disabled:opacity-40 inline-flex items-center"
+          aria-label="الصفحة الأخيرة"
+        >
+          <ChevronsLeft className="size-3.5" />
+        </button>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const n = parseInt(jump, 10);
+            if (!isNaN(n)) go(n - 1);
+            setJump("");
+          }}
+          className="flex items-center gap-1 mr-2"
+        >
+          <Input
+            value={jump}
+            onChange={(e) => setJump(e.target.value.replace(/\D/g, ""))}
+            placeholder="انتقل..."
+            className="h-7 w-20 num text-xs"
+            dir="ltr"
+          />
+        </form>
+      </div>
+    </div>
+  );
 }
