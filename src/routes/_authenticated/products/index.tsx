@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -37,20 +39,17 @@ import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { PageHeader } from "@/components/page-header";
 import { ProductCard } from "@/components/product-card";
 
-export const Route = createFileRoute("/_authenticated/products/")({
-  head: () => ({ meta: [{ title: "المنتجات والخدمات — Alazab PAOP" }] }),
-  component: ProductsList,
-});
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
 
-const PAGE_SIZE_OPTIONS = [25, 50, 100, 200];
-
-type SortKey =
-  | "created_at"
-  | "updated_at"
-  | "az_code"
-  | "name_ar"
-  | "name_en"
-  | "status";
+const SORT_KEYS = [
+  "created_at",
+  "updated_at",
+  "az_code",
+  "name_ar",
+  "name_en",
+  "status",
+] as const;
+type SortKey = (typeof SORT_KEYS)[number];
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "created_at", label: "تاريخ الإنشاء" },
@@ -60,6 +59,26 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "name_en", label: "Name EN" },
   { value: "status", label: "الحالة" },
 ];
+
+const productsSearchSchema = z.object({
+  q: fallback(z.string(), "").default(""),
+  status: fallback(z.string(), "all").default("all"),
+  itemType: fallback(z.string(), "all").default("all"),
+  gpcFamily: fallback(z.string(), "all").default("all"),
+  sector: fallback(z.string(), "all").default("all"),
+  confidence: fallback(z.string(), "all").default("all"),
+  sortKey: fallback(z.enum(SORT_KEYS), "created_at").default("created_at"),
+  sortDir: fallback(z.enum(["asc", "desc"]), "desc").default("desc"),
+  page: fallback(z.number().int().min(0), 0).default(0),
+  pageSize: fallback(z.number().int().min(1), 50).default(50),
+  view: fallback(z.enum(["grid", "table"]), "grid").default("grid"),
+});
+
+export const Route = createFileRoute("/_authenticated/products/")({
+  head: () => ({ meta: [{ title: "المنتجات والخدمات — Alazab PAOP" }] }),
+  validateSearch: zodValidator(productsSearchSchema),
+  component: ProductsList,
+});
 
 interface Filters {
   q: string;
@@ -71,21 +90,34 @@ interface Filters {
 }
 
 function ProductsList() {
-  const [filters, setFilters] = useState<Filters>({
-    q: "",
-    status: "all",
-    itemType: "all",
-    gpcFamily: "all",
-    sector: "all",
-    confidence: "all",
-  });
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState<number>(50);
-  const [sortKey, setSortKey] = useState<SortKey>("created_at");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+
+  const update = (patch: Partial<typeof search>) =>
+    navigate({ search: (prev: typeof search) => ({ ...prev, ...patch }), replace: true });
+
+  const filters: Filters = {
+    q: search.q,
+    status: search.status,
+    itemType: search.itemType,
+    gpcFamily: search.gpcFamily,
+    sector: search.sector,
+    confidence: search.confidence,
+  };
+  const setFilters = (f: Filters) => update({ ...f, page: 0 });
+  const page = search.page;
+  const setPage = (p: number) => update({ page: p });
+  const pageSize = search.pageSize;
+  const setPageSize = (n: number) => update({ pageSize: n, page: 0 });
+  const sortKey = search.sortKey;
+  const setSortKey = (k: SortKey) => update({ sortKey: k, page: 0 });
+  const sortDir = search.sortDir;
+  const setSortDir = (d: "asc" | "desc") => update({ sortDir: d, page: 0 });
+  const view = search.view;
+  const setView = (v: "grid" | "table") => update({ view: v });
+
   const [showFilters, setShowFilters] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
-  const [view, setView] = useState<"grid" | "table">("grid");
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     "az_code",
     "name_ar",
