@@ -169,7 +169,7 @@ function ProductsList() {
   });
 
   const total = data?.count ?? 0;
-  const pages = Math.ceil(total / PAGE);
+  const pages = Math.max(1, Math.ceil(total / pageSize));
 
   const activeFiltersCount = Object.entries(filters).filter(
     ([key, value]) => key !== "q" && value !== "all",
