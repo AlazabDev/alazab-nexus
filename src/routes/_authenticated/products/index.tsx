@@ -80,6 +80,9 @@ function ProductsList() {
     confidence: "all",
   });
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [sortKey, setSortKey] = useState<SortKey>("created_at");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [showFilters, setShowFilters] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [view, setView] = useState<"grid" | "table">("grid");
