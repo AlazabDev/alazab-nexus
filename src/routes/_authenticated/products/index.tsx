@@ -42,7 +42,24 @@ export const Route = createFileRoute("/_authenticated/products/")({
   component: ProductsList,
 });
 
-const PAGE = 50;
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 200];
+
+type SortKey =
+  | "created_at"
+  | "updated_at"
+  | "az_code"
+  | "name_ar"
+  | "name_en"
+  | "status";
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "created_at", label: "تاريخ الإنشاء" },
+  { value: "updated_at", label: "آخر تحديث" },
+  { value: "az_code", label: "AZ Code" },
+  { value: "name_ar", label: "الاسم بالعربي" },
+  { value: "name_en", label: "Name EN" },
+  { value: "status", label: "الحالة" },
+];
 
 interface Filters {
   q: string;
