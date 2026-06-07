@@ -498,23 +498,55 @@ function ProductsList() {
             </Button>
           )}
 
-          <div className="mr-auto inline-flex rounded-md border bg-card p-0.5">
-            <button
-              type="button"
-              onClick={() => setView("grid")}
-              aria-label="عرض شبكي"
-              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <LayoutGrid className="size-3.5" /> بطاقات
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("table")}
-              aria-label="عرض جدول"
-              className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <ListIcon className="size-3.5" /> جدول
-            </button>
+          <div className="mr-auto flex items-center gap-2 flex-wrap">
+            <Select value={sortKey} onValueChange={(v) => { setSortKey(v as SortKey); setPage(0); }}>
+              <SelectTrigger className="w-[160px] h-9">
+                <ArrowUpDown className="size-3.5 ml-1" />
+                <SelectValue placeholder="ترتيب حسب" />
+              </SelectTrigger>
+              <SelectContent>
+                {SORT_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortDir} onValueChange={(v) => { setSortDir(v as "asc" | "desc"); setPage(0); }}>
+              <SelectTrigger className="w-[110px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">تنازلي</SelectItem>
+                <SelectItem value="asc">تصاعدي</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(0); }}>
+              <SelectTrigger className="w-[110px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <SelectItem key={n} value={String(n)}>{n} / صفحة</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="inline-flex rounded-md border bg-card p-0.5">
+              <button
+                type="button"
+                onClick={() => setView("grid")}
+                aria-label="عرض شبكي"
+                className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <LayoutGrid className="size-3.5" /> بطاقات
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("table")}
+                aria-label="عرض جدول"
+                className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <ListIcon className="size-3.5" /> جدول
+              </button>
+            </div>
           </div>
         </div>
       </Card>
