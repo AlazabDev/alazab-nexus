@@ -29,6 +29,9 @@ import {
   Plus,
   LayoutGrid,
   List as ListIcon,
+  ChevronsRight,
+  ChevronsLeft,
+  ArrowUpDown,
 } from "lucide-react";
 import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { PageHeader } from "@/components/page-header";
