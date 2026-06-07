@@ -637,27 +637,14 @@ function ProductsList() {
               ))}
             </div>
           )}
-          <div className="flex items-center justify-between mt-4 text-xs">
-            <div className="text-muted-foreground num" dir="ltr">
-              Page {page + 1} / {pages || 1} — {total.toLocaleString("en-US")} rows
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(Math.max(0, page - 1))}
-                disabled={page === 0}
-                className="px-3 py-1.5 rounded-md border bg-card disabled:opacity-50"
-              >
-                السابق
-              </button>
-              <button
-                onClick={() => setPage(Math.min(pages - 1, page + 1))}
-                disabled={page >= pages - 1}
-                className="px-3 py-1.5 rounded-md border bg-card disabled:opacity-50"
-              >
-                التالي
-              </button>
-            </div>
-          </div>
+          <PaginationBar
+            page={page}
+            pages={pages}
+            total={total}
+            pageSize={pageSize}
+            onChange={setPage}
+            className="mt-4"
+          />
         </div>
       ) : (
       <Card className="surface-elevated border-0 overflow-hidden">
