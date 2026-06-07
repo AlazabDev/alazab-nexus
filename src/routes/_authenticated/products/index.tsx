@@ -94,7 +94,7 @@ function ProductsList() {
   const navigate = useNavigate({ from: Route.fullPath });
 
   const update = (patch: Partial<typeof search>) =>
-    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true });
+    navigate({ search: (prev: typeof search) => ({ ...prev, ...patch }), replace: true });
 
   const filters: Filters = {
     q: search.q,
