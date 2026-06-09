@@ -28,6 +28,8 @@ import { Upload, Star, ImageOff, Maximize2, Link as LinkIcon, Sparkles, Wand2 } 
 import { toast } from "sonner";
 import { SortableAssetGrid, type GridItem } from "@/components/sortable-asset-grid";
 import { AssetLightbox } from "@/components/asset-lightbox";
+import { useAiOps } from "@/hooks/use-ai-ops";
+import { AiOpsPanel } from "@/components/ai-ops-panel";
 
 type Row = {
   id: string;
