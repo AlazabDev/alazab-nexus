@@ -119,6 +119,19 @@ function SortableTile({
         >
           <GripVertical className="size-4" />
         </button>
+        {onEditAI && item.fileType?.startsWith("image/") && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditAI();
+            }}
+            className="absolute bottom-2 right-2 h-7 px-2 rounded-md bg-accent text-accent-foreground text-[11px] gap-1 inline-flex items-center opacity-0 group-hover:opacity-100 transition shadow-md"
+            title="تعديل بـ AI"
+          >
+            <Wand2 className="size-3" /> AI
+          </button>
+        )}
       </button>
       <div className="p-2 space-y-1">
         <div className="text-[11px] truncate font-medium" title={item.fileName}>
