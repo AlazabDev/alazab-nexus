@@ -10,7 +10,7 @@ import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@d
 import { CSS } from "@dnd-kit/utilities";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, GripVertical } from "lucide-react";
+import { Star, GripVertical, Wand2 } from "lucide-react";
 
 export type GridItem = {
   linkId: string;
