@@ -319,6 +319,43 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
         </Card>
       </div>
 
+      {/* AI tools + URL bar */}
+      <Card className="p-4 surface-elevated border-0 space-y-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <Sparkles className="size-4 text-accent" /> أدوات الذكاء الاصطناعي والروابط
+          </div>
+          <Button
+            onClick={onGenerateAI}
+            disabled={aiBusy}
+            size="sm"
+            className="gap-2"
+          >
+            <Sparkles className="size-4" />
+            {aiBusy ? "جاري الإنشاء..." : "إنشاء صور AI (3)"}
+          </Button>
+        </div>
+        <div className="flex gap-2 items-center">
+          <LinkIcon className="size-4 text-muted-foreground shrink-0" />
+          <Input
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            dir="ltr"
+            className="flex-1"
+            onKeyDown={(e) => e.key === "Enter" && onAddUrl()}
+          />
+          <Button onClick={onAddUrl} disabled={busy || !urlInput.trim()} variant="outline" size="sm">
+            إضافة من رابط
+          </Button>
+        </div>
+        {gridItems.length > 0 && (
+          <div className="text-xs text-muted-foreground">
+            للتعديل بالذكاء الاصطناعي: اضغط على أي صورة في المعرض، ثم استخدم زر "تعديل بـ AI".
+          </div>
+        )}
+      </Card>
+
       {/* Gallery */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
