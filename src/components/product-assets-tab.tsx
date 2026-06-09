@@ -52,7 +52,7 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const [busy, setBusy] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState(-1);
   const [urlInput, setUrlInput] = useState("");
-  const [aiBusy, setAiBusy] = useState(false);
+  // aiBusy is now derived from aiOps after declaration below
   const [editDialog, setEditDialog] = useState<{ url: string; linkId: string } | null>(null);
   const [editPrompt, setEditPrompt] = useState("");
   const [replaceOriginal, setReplaceOriginal] = useState(false);
