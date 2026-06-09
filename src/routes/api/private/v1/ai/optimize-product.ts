@@ -8,7 +8,8 @@ const OptimizeRequestSchema = z.object({
   productId: z.string().uuid(),
   optimizationLevel: z.enum(['basic', 'standard', 'premium']).default('standard'),
   focusAreas: z.array(z.string()).optional(),
-  applyAutomatically: z.boolean().default(false),
+  // applyAutomatically removed from public API surface — auto-apply must be
+  // performed by trusted server-side background jobs only, never an external caller.
 });
 
 export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
@@ -67,25 +68,11 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
               duration_ms: Date.now() - started,
             });
 
-          // Update product if automatic application is enabled
-          if (validated.applyAutomatically) {
-            await supabaseAdmin
-              .from('products')
-              .update({
-                name_en: optimizationResult.optimized_name_en,
-                name_ar: optimizationResult.optimized_name_ar,
-                short_description_en: optimizationResult.optimized_description_en,
-                short_description_ar: optimizationResult.optimized_description_ar,
-                content_optimization_score: optimizationResult.contentQualityScore,
-              } as never)
-              .eq('id', validated.productId);
-          }
-
           return json(
             {
               success: true,
               optimization: optimizationResult,
-              applied: validated.applyAutomatically,
+              applied: false,
             },
             200,
             { headers: CORS }
