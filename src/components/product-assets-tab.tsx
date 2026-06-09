@@ -107,31 +107,29 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
       setBusy(true);
       const existing = rows?.length ?? 0;
       const hasMain = !!main;
-      let added = 0;
       try {
         for (let i = 0; i < files.length; i++) {
           const f = files[i];
           if (!f.type.startsWith("image/") && !f.type.startsWith("application/")) continue;
           const isFirst = !hasMain && existing === 0 && i === 0;
-          await uploadAndLinkAsset({
-            file: f,
-            productId,
-            azCode,
-            role: isFirst ? "main_image" : "gallery",
-            sortOrder: existing + i,
-            folderPath: azCode,
+          const sortOrder = existing + i;
+          await aiOps.start("upload", `رفع: ${f.name}`, async () => {
+            await uploadAndLinkAsset({
+              file: f,
+              productId,
+              azCode,
+              role: isFirst ? "main_image" : "gallery",
+              sortOrder,
+              folderPath: azCode,
+            });
+            qc.invalidateQueries({ queryKey: ["product-assets", productId] });
           });
-          added++;
         }
-        toast.success(`تم رفع ${added} ملف`);
-        qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      } catch (e: any) {
-        toast.error(e.message ?? "فشل الرفع");
       } finally {
         setBusy(false);
       }
     },
-    [rows, main, productId, azCode, qc],
+    [rows, main, productId, azCode, qc, aiOps],
   );
 
   const onDrop = (e: React.DragEvent) => {
