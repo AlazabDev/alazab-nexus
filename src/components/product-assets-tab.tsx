@@ -49,6 +49,13 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const [dragOver, setDragOver] = useState(false);
   const [busy, setBusy] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState(-1);
+  const [urlInput, setUrlInput] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [editDialog, setEditDialog] = useState<{ url: string; linkId: string } | null>(null);
+  const [editPrompt, setEditPrompt] = useState("");
+  const [replaceOriginal, setReplaceOriginal] = useState(false);
+  const genFn = useServerFn(generateProductImages);
+  const editFn = useServerFn(aiEditProductImage);
 
   const { data: rows, isLoading } = useQuery<Row[]>({
     queryKey: ["product-assets", productId],
