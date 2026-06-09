@@ -405,8 +405,104 @@ ${stats.prices ? `**سجلات التسعير:**\n- الاجمالي: ${(stats.p
   }
 }
 
-// Main chat function
+// Main chat function — calls the server proxy so the Azure OpenAI API key
+// never ships in the browser bundle.
+import { azureChatCompletion } from "./ai-assistant.functions";
+
 export async function sendChatMessage(
+  messages: ChatMessage[],
+  onToolCall?: (toolName: string, args: Record<string, unknown>) => void,
+): Promise<AIResponse> {
+  const apiMessages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...messages.map((m) => ({ role: m.role, content: m.content })),
+  ];
+
+  try {
+    const data: any = await azureChatCompletion({
+      data: {
+        messages: apiMessages,
+        tools: TOOLS,
+        tool_choice: "auto",
+        temperature: 0.7,
+        max_tokens: 2000,
+      },
+    });
+
+    if (data?.error) {
+      return { content: data.error };
+    }
+
+    const choice = data.choices?.[0];
+    if (!choice) {
+      throw new Error("No response from Azure OpenAI");
+    }
+
+    // Handle tool calls (executed client-side against the user-scoped Supabase client → RLS applies)
+    if (choice.message?.tool_calls?.length) {
+      const toolResults: string[] = [];
+      for (const toolCall of choice.message.tool_calls) {
+        const toolName = toolCall.function.name;
+        const args = JSON.parse(toolCall.function.arguments);
+        onToolCall?.(toolName, args);
+        const result = await executeToolCall(toolName, args);
+        toolResults.push(result);
+      }
+
+      const followUpMessages = [
+        ...apiMessages,
+        choice.message,
+        ...choice.message.tool_calls.map((tc: any, i: number) => ({
+          role: "tool" as const,
+          tool_call_id: tc.id,
+          content: toolResults[i],
+        })),
+      ];
+
+      const followUpData: any = await azureChatCompletion({
+        data: {
+          messages: followUpMessages as any,
+          temperature: 0.7,
+          max_tokens: 2000,
+        },
+      });
+      if (followUpData?.error) return { content: followUpData.error };
+      const finalContent = followUpData.choices?.[0]?.message?.content || "";
+
+      return {
+        content: finalContent,
+        toolCalls: choice.message.tool_calls.map((tc: any) => ({
+          name: tc.function.name,
+          arguments: JSON.parse(tc.function.arguments),
+        })),
+        usage: followUpData.usage
+          ? {
+              promptTokens: followUpData.usage.prompt_tokens,
+              completionTokens: followUpData.usage.completion_tokens,
+              totalTokens: followUpData.usage.total_tokens,
+            }
+          : undefined,
+      };
+    }
+
+    return {
+      content: choice.message?.content || "",
+      usage: data.usage
+        ? {
+            promptTokens: data.usage.prompt_tokens,
+            completionTokens: data.usage.completion_tokens,
+            totalTokens: data.usage.total_tokens,
+          }
+        : undefined,
+    };
+  } catch (error) {
+    console.error("AI Assistant Error:", error);
+    return {
+      content: `عذرا، حدث خطا: ${error instanceof Error ? error.message : "خطا غير معروف"}`,
+    };
+  }
+}
+
   messages: ChatMessage[],
   onToolCall?: (toolName: string, args: Record<string, unknown>) => void,
 ): Promise<AIResponse> {
