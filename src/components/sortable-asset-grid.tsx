@@ -62,7 +62,15 @@ export function SortableAssetGrid({
   );
 }
 
-function SortableTile({ item, onOpen }: { item: GridItem; onOpen: () => void }) {
+function SortableTile({
+  item,
+  onOpen,
+  onEditAI,
+}: {
+  item: GridItem;
+  onOpen: () => void;
+  onEditAI?: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.linkId,
   });
