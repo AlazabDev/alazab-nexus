@@ -172,6 +172,65 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     }
   };
 
+  const onAddUrl = async () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    setBusy(true);
+    try {
+      await linkAssetFromUrl({
+        url,
+        productId,
+        azCode,
+        role: rows?.length ? "gallery" : "main_image",
+        sortOrder: rows?.length ?? 0,
+      });
+      setUrlInput("");
+      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      toast.success("تم إضافة الصورة من الرابط");
+    } catch (e: any) {
+      toast.error(e.message ?? "فشل الإضافة");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onGenerateAI = async () => {
+    setAiBusy(true);
+    try {
+      const res = await genFn({ data: { productIds: [productId] } });
+      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      toast.success(`تم إنشاء ${res.totalGenerated} صورة بالذكاء الاصطناعي`);
+    } catch (e: any) {
+      toast.error(e.message ?? "فشل الإنشاء");
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
+  const onEditAI = async () => {
+    if (!editDialog || !editPrompt.trim()) return;
+    setAiBusy(true);
+    try {
+      await editFn({
+        data: {
+          productId,
+          sourceUrl: editDialog.url,
+          prompt: editPrompt,
+          replaceLinkId: replaceOriginal ? editDialog.linkId : undefined,
+        },
+      });
+      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      toast.success("تم إنشاء النسخة المعدّلة");
+      setEditDialog(null);
+      setEditPrompt("");
+      setReplaceOriginal(false);
+    } catch (e: any) {
+      toast.error(e.message ?? "فشل التعديل");
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
