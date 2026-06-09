@@ -28,6 +28,8 @@ import { Upload, Star, ImageOff, Maximize2, Link as LinkIcon, Sparkles, Wand2 } 
 import { toast } from "sonner";
 import { SortableAssetGrid, type GridItem } from "@/components/sortable-asset-grid";
 import { AssetLightbox } from "@/components/asset-lightbox";
+import { useAiOps } from "@/hooks/use-ai-ops";
+import { AiOpsPanel } from "@/components/ai-ops-panel";
 
 type Row = {
   id: string;
@@ -50,12 +52,14 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const [busy, setBusy] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState(-1);
   const [urlInput, setUrlInput] = useState("");
-  const [aiBusy, setAiBusy] = useState(false);
+  // aiBusy is now derived from aiOps after declaration below
   const [editDialog, setEditDialog] = useState<{ url: string; linkId: string } | null>(null);
   const [editPrompt, setEditPrompt] = useState("");
   const [replaceOriginal, setReplaceOriginal] = useState(false);
   const genFn = useServerFn(generateProductImages);
   const editFn = useServerFn(aiEditProductImage);
+  const aiOps = useAiOps();
+  const aiBusy = aiOps.ops.some((o) => (o.kind === "ai-generate" || o.kind === "ai-edit") && o.status === "running");
 
   const { data: rows, isLoading } = useQuery<Row[]>({
     queryKey: ["product-assets", productId],
@@ -104,31 +108,29 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
       setBusy(true);
       const existing = rows?.length ?? 0;
       const hasMain = !!main;
-      let added = 0;
       try {
         for (let i = 0; i < files.length; i++) {
           const f = files[i];
           if (!f.type.startsWith("image/") && !f.type.startsWith("application/")) continue;
           const isFirst = !hasMain && existing === 0 && i === 0;
-          await uploadAndLinkAsset({
-            file: f,
-            productId,
-            azCode,
-            role: isFirst ? "main_image" : "gallery",
-            sortOrder: existing + i,
-            folderPath: azCode,
+          const sortOrder = existing + i;
+          await aiOps.start("upload", `رفع: ${f.name}`, async () => {
+            await uploadAndLinkAsset({
+              file: f,
+              productId,
+              azCode,
+              role: isFirst ? "main_image" : "gallery",
+              sortOrder,
+              folderPath: azCode,
+            });
+            qc.invalidateQueries({ queryKey: ["product-assets", productId] });
           });
-          added++;
         }
-        toast.success(`تم رفع ${added} ملف`);
-        qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      } catch (e: any) {
-        toast.error(e.message ?? "فشل الرفع");
       } finally {
         setBusy(false);
       }
     },
-    [rows, main, productId, azCode, qc],
+    [rows, main, productId, azCode, qc, aiOps],
   );
 
   const onDrop = (e: React.DragEvent) => {
@@ -175,60 +177,42 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const onAddUrl = async () => {
     const url = urlInput.trim();
     if (!url) return;
-    setBusy(true);
-    try {
-      await linkAssetFromUrl({
-        url,
-        productId,
-        azCode,
-        role: rows?.length ? "gallery" : "main_image",
-        sortOrder: rows?.length ?? 0,
-      });
-      setUrlInput("");
+    const role = rows?.length ? "gallery" : "main_image";
+    const sortOrder = rows?.length ?? 0;
+    setUrlInput("");
+    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async () => {
+      await linkAssetFromUrl({ url, productId, azCode, role, sortOrder });
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      toast.success("تم إضافة الصورة من الرابط");
-    } catch (e: any) {
-      toast.error(e.message ?? "فشل الإضافة");
-    } finally {
-      setBusy(false);
-    }
+    });
   };
 
   const onGenerateAI = async () => {
-    setAiBusy(true);
-    try {
+    await aiOps.start("ai-generate", "إنشاء 3 صور بالذكاء الاصطناعي", async () => {
       const res = await genFn({ data: { productIds: [productId] } });
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      toast.success(`تم إنشاء ${res.totalGenerated} صورة بالذكاء الاصطناعي`);
-    } catch (e: any) {
-      toast.error(e.message ?? "فشل الإنشاء");
-    } finally {
-      setAiBusy(false);
-    }
+      toast.success(`تم إنشاء ${res.totalGenerated} صورة`);
+    });
   };
 
   const onEditAI = async () => {
     if (!editDialog || !editPrompt.trim()) return;
-    setAiBusy(true);
-    try {
+    const dlg = editDialog;
+    const prompt = editPrompt;
+    const replace = replaceOriginal;
+    setEditDialog(null);
+    setEditPrompt("");
+    setReplaceOriginal(false);
+    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async () => {
       await editFn({
         data: {
           productId,
-          sourceUrl: editDialog.url,
-          prompt: editPrompt,
-          replaceLinkId: replaceOriginal ? editDialog.linkId : undefined,
+          sourceUrl: dlg.url,
+          prompt,
+          replaceLinkId: replace ? dlg.linkId : undefined,
         },
       });
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      toast.success("تم إنشاء النسخة المعدّلة");
-      setEditDialog(null);
-      setEditPrompt("");
-      setReplaceOriginal(false);
-    } catch (e: any) {
-      toast.error(e.message ?? "فشل التعديل");
-    } finally {
-      setAiBusy(false);
-    }
+    });
   };
 
   if (isLoading) {
@@ -355,6 +339,15 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
           </div>
         )}
       </Card>
+
+      <AiOpsPanel
+        ops={aiOps.ops}
+        onRetry={aiOps.retry}
+        onDismiss={aiOps.remove}
+        onClearDone={aiOps.clearDone}
+      />
+
+
 
       {/* Gallery */}
       <div className="space-y-3">
