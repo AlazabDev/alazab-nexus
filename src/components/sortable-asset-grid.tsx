@@ -26,10 +26,12 @@ export function SortableAssetGrid({
   items,
   onReorder,
   onOpen,
+  onEditAI,
 }: {
   items: GridItem[];
   onReorder: (newOrder: GridItem[]) => void;
   onOpen: (index: number) => void;
+  onEditAI?: (item: GridItem) => void;
 }) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -47,7 +49,12 @@ export function SortableAssetGrid({
       <SortableContext items={items.map((i) => i.linkId)} strategy={rectSortingStrategy}>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {items.map((it, idx) => (
-            <SortableTile key={it.linkId} item={it} onOpen={() => onOpen(idx)} />
+            <SortableTile
+              key={it.linkId}
+              item={it}
+              onOpen={() => onOpen(idx)}
+              onEditAI={onEditAI ? () => onEditAI(it) : undefined}
+            />
           ))}
         </div>
       </SortableContext>
