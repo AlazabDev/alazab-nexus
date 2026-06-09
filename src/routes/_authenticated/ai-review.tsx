@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import DOMPurify from "dompurify";
 import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
@@ -242,7 +243,10 @@ function AIReview() {
                           message.role === "user" ? "prose-invert" : "",
                         )}
                         dangerouslySetInnerHTML={{
-                          __html: formatMessage(message.content),
+                          __html: DOMPurify.sanitize(formatMessage(message.content), {
+                            ALLOWED_TAGS: ["strong", "em", "h3", "h4", "li", "ul", "br", "span", "div"],
+                            ALLOWED_ATTR: ["class"],
+                          }),
                         }}
                       />
                     </div>
@@ -335,10 +339,16 @@ function AIReview() {
   );
 }
 
-// Helper function to format message content
+// Helper function to format message content.
+// IMPORTANT: the resulting HTML is sanitized with DOMPurify before being injected.
 function formatMessage(content: string): string {
+  // Escape raw HTML first so any tags in the AI/database content cannot leak through.
+  const escaped = content
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
   return (
-    content
+    escaped
       // Bold
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       // Headers
@@ -349,10 +359,5 @@ function formatMessage(content: string): string {
       // Line breaks
       .replace(/\n\n/g, "<br/><br/>")
       .replace(/\n/g, "<br/>")
-      // Tables (basic)
-      .replace(
-        /\| (.*?) \| (.*?) \|/g,
-        '<div class="flex gap-4"><span class="font-medium">$1</span><span>$2</span></div>',
-      )
   );
 }

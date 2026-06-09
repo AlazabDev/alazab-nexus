@@ -39,7 +39,8 @@ export const Route = createFileRoute("/api/public/v1/products/$azCode")({
           supabaseAdmin
             .from("prices")
             .select(
-              "selling_price, purchase_price, currency, status, supplier_id, valid_from, valid_to",
+              // purchase_price intentionally excluded — cost data must not leak to public API consumers
+              "selling_price, currency, status, supplier_id, valid_from, valid_to",
             )
             .eq("product_id", product.id),
         ]);

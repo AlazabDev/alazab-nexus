@@ -121,6 +121,15 @@ export const generateProductImages = createServerFn({ method: "POST" })
     z.object({ productIds: z.array(z.string().uuid()).min(1).max(20) }).parse(input),
   )
   .handler(async ({ data, context }) => {
+    // Only editors and admins may trigger AI image generation (uses admin storage)
+    const { data: roleRow } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .in("role", ["editor", "admin"])
+      .maybeSingle();
+    if (!roleRow) throw new Error("Forbidden: editor or admin role required");
+
     const { data: products, error } = await supabaseAdmin
       .from("products")
       .select("id, az_code, name_ar, name_en, description_ar, gpc_family")

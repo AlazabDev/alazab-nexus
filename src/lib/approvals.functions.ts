@@ -101,6 +101,11 @@ export const decideApproval = createServerFn({ method: "POST" })
       .single();
     if (e1 || !appr) throw new Error(e1?.message ?? "Approval not found");
 
+    // Prevent self-approval: the submitter cannot decide on their own request
+    if (appr.requested_by && appr.requested_by === userId) {
+      throw new Error("Forbidden: cannot decide on your own submission");
+    }
+
     let newStatus = appr.status as string;
     let newStage = appr.current_stage as Stage;
     let decidedAt: string | null = null;
@@ -183,11 +188,33 @@ export const decideApproval = createServerFn({ method: "POST" })
     return { ok: true, status: newStatus, stage: newStage };
   });
 
+async function isAdmin(supabase: any, userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
+  return !!data;
+}
+
 export const cancelApproval = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ approvalId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    const { data: appr, error: lookupErr } = await supabase
+      .from("approvals")
+      .select("requested_by")
+      .eq("id", data.approvalId)
+      .single();
+    if (lookupErr || !appr) throw new Error(lookupErr?.message ?? "Approval not found");
+
+    // Only the submitter or an admin may cancel an approval
+    if (appr.requested_by !== userId && !(await isAdmin(supabase, userId))) {
+      throw new Error("Forbidden: cannot cancel another user's approval");
+    }
+
     const { error } = await supabase
       .from("approvals")
       .update({ status: "cancelled" })
@@ -217,9 +244,21 @@ export const reassignApproval = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: appr } = await supabase
       .from("approvals")
-      .select("title,current_stage")
+      .select("title,current_stage,requested_by,assigned_to")
       .eq("id", data.approvalId)
       .single();
+    if (!appr) throw new Error("Approval not found");
+
+    // Only admins, the original submitter, or the currently assigned reviewer may reassign
+    const admin = await isAdmin(supabase, userId);
+    if (
+      !admin &&
+      appr.requested_by !== userId &&
+      appr.assigned_to !== userId
+    ) {
+      throw new Error("Forbidden: cannot reassign this approval");
+    }
+
     const { error } = await supabase
       .from("approvals")
       .update({ assigned_to: data.assignedTo })

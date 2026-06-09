@@ -23,7 +23,7 @@ const STATUSES = [
   "content_incomplete",
   "pricing_incomplete",
   "supplier_pending",
-  "approved",
+  // "approved" intentionally excluded — approvals must go through the multi-stage workflow
   "rejected",
   "exported",
   "archived",
@@ -62,7 +62,17 @@ export const bulkUpsertProducts = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data, context }) => {
-    const { userId } = context;
+    const { userId, supabase } = context;
+
+    // Only editors and admins may bulk-import products
+    const { data: roleRow } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .in("role", ["editor", "admin"])
+      .maybeSingle();
+    if (!roleRow) throw new Error("Forbidden: editor or admin role required");
+
     const errors: { row: number; az_code?: string; message: string }[] = [];
     const valid: ProductImportRow[] = [];
 

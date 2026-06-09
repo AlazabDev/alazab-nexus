@@ -225,13 +225,35 @@ export const reviewProduct = createServerFn({ method: "POST" })
     };
   });
 
+// Strict allowlist of fields applyAISuggestions may write to products.
+// Status, approval columns, IDs, etc. are NEVER writable through this path.
+const APPLY_AI_ALLOWED_FIELDS = [
+  "short_description_ar",
+  "short_description_en",
+  "marketing_content",
+  "technical_content",
+  "tags",
+  "search_keywords",
+] as const;
+
 export const applyAISuggestions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { productId: string; fields: Partial<AISuggestions> }) => input)
+  .inputValidator((input: { productId: string; fields: Partial<AISuggestions> }) => {
+    if (!input || typeof input.productId !== "string") throw new Error("Invalid input");
+    const fields: Record<string, unknown> = {};
+    if (input.fields && typeof input.fields === "object") {
+      for (const k of APPLY_AI_ALLOWED_FIELDS) {
+        const v = (input.fields as Record<string, unknown>)[k];
+        if (v !== undefined) fields[k] = v;
+      }
+    }
+    return { productId: input.productId, fields };
+  })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const update: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(data.fields)) {
+      if (!APPLY_AI_ALLOWED_FIELDS.includes(k as (typeof APPLY_AI_ALLOWED_FIELDS)[number])) continue;
       if (v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0)) {
         update[k] = v;
       }
