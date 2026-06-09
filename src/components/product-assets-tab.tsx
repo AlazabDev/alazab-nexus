@@ -59,6 +59,7 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const genFn = useServerFn(generateProductImages);
   const editFn = useServerFn(aiEditProductImage);
   const aiOps = useAiOps();
+  const aiBusy = aiOps.ops.some((o) => (o.kind === "ai-generate" || o.kind === "ai-edit") && o.status === "running");
 
   const { data: rows, isLoading } = useQuery<Row[]>({
     queryKey: ["product-assets", productId],
