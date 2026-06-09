@@ -374,6 +374,11 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
             items={gridItems}
             onReorder={onReorder}
             onOpen={(i) => setLightboxIdx(i)}
+            onEditAI={(it) => {
+              setEditDialog({ url: it.url, linkId: it.linkId });
+              setEditPrompt("");
+              setReplaceOriginal(false);
+            }}
           />
         )}
       </div>
@@ -385,6 +390,48 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
         onSetMain={onSetMain}
         onUnlink={onUnlink}
       />
+
+      <Dialog open={!!editDialog} onOpenChange={(o) => !o && setEditDialog(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="size-4 text-accent" /> تعديل الصورة بالذكاء الاصطناعي
+            </DialogTitle>
+          </DialogHeader>
+          {editDialog && (
+            <div className="space-y-3">
+              <img
+                src={editDialog.url}
+                alt=""
+                className="w-full max-h-64 object-contain bg-muted rounded-md"
+              />
+              <Textarea
+                value={editPrompt}
+                onChange={(e) => setEditPrompt(e.target.value)}
+                placeholder="مثال: غيّر الخلفية إلى أبيض نقي، أضف إضاءة استوديو، أزل العلامة المائية..."
+                rows={4}
+                dir="rtl"
+              />
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={replaceOriginal}
+                  onChange={(e) => setReplaceOriginal(e.target.checked)}
+                />
+                استبدال الصورة الأصلية (فك الربط بعد الإنشاء)
+              </label>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog(null)} disabled={aiBusy}>
+              إلغاء
+            </Button>
+            <Button onClick={onEditAI} disabled={aiBusy || editPrompt.trim().length < 3}>
+              {aiBusy ? "جاري التنفيذ..." : "تنفيذ"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
