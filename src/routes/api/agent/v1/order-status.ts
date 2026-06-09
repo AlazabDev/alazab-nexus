@@ -112,6 +112,17 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
         const auth = await requireApiKey(request, "/api/agent/v1/order-status");
         if ("error" in auth) return auth.error;
 
+        const VALID_STATUSES = [
+          "pending",
+          "materials_requested",
+          "in_production",
+          "quality_check",
+          "ready",
+          "delivered",
+          "cancelled",
+        ];
+        const VALID_PAYMENT_STATUSES = ["unpaid", "partial", "paid", "refunded"];
+
         try {
           const body = await request.json();
 
@@ -120,16 +131,41 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
           }
 
           const updates: any = {};
-          if (body.status) updates.status = body.status;
+          if (body.status) {
+            if (!VALID_STATUSES.includes(body.status)) {
+              return json(
+                { success: false, error: "Invalid status", code: "invalid_status" },
+                400,
+              );
+            }
+            updates.status = body.status;
+          }
           if (body.actual_start_date) updates.actual_start_date = body.actual_start_date;
           if (body.actual_completion_date)
             updates.actual_completion_date = body.actual_completion_date;
           if (body.delivery_date) updates.delivery_date = body.delivery_date;
-          if (body.payment_status) updates.payment_status = body.payment_status;
-          if (body.amount_paid !== undefined) updates.amount_paid = body.amount_paid;
-          if (body.production_notes) updates.production_notes = body.production_notes;
-          if (body.quality_notes) updates.quality_notes = body.quality_notes;
-          if (body.delivery_notes) updates.delivery_notes = body.delivery_notes;
+          if (body.payment_status) {
+            if (!VALID_PAYMENT_STATUSES.includes(body.payment_status)) {
+              return json(
+                { success: false, error: "Invalid payment_status", code: "invalid_payment_status" },
+                400,
+              );
+            }
+            updates.payment_status = body.payment_status;
+          }
+          if (body.amount_paid !== undefined) {
+            const n = Number(body.amount_paid);
+            if (!Number.isFinite(n) || n < 0) {
+              return json({ success: false, error: "Invalid amount_paid" }, 400);
+            }
+            updates.amount_paid = n;
+          }
+          if (typeof body.production_notes === "string")
+            updates.production_notes = body.production_notes.slice(0, 2000);
+          if (typeof body.quality_notes === "string")
+            updates.quality_notes = body.quality_notes.slice(0, 2000);
+          if (typeof body.delivery_notes === "string")
+            updates.delivery_notes = body.delivery_notes.slice(0, 2000);
 
           let query = supabaseAdmin.from("manufacturing_orders").update(updates);
           if (body.order_id) {

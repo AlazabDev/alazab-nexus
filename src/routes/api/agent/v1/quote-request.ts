@@ -128,21 +128,15 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
             payload: { request_id: body.request_id },
           });
 
-          // ارجاع عرض السعر للشات بوت
+          // ارجاع عرض السعر للشات بوت — internal cost structure intentionally withheld
           return json({
             success: true,
             data: {
               quote_id: data.id,
               request_id: data.request_id,
               pricing: {
-                materials_cost: pricing.materials_cost,
-                labor_cost: pricing.labor_cost,
-                overhead_cost: pricing.overhead_cost,
-                subtotal: pricing.total_cost,
-                profit_margin_percent: pricing.profit_margin,
                 selling_price: pricing.selling_price,
                 currency: data.currency,
-                breakdown: pricing.breakdown,
               },
               validity: {
                 quoted_at: data.quoted_at,

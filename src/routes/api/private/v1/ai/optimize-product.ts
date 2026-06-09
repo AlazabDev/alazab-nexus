@@ -18,13 +18,10 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
       POST: async ({ request }) => {
         const started = Date.now();
 
-        // Verify authentication
-        const authResult = await requireApiKey(request);
-        if (authResult.error) return authResult.error;
+        // Verify authentication and enforce per-key endpoint allowlist
+        const authResult = await requireApiKey(request, '/api/private/v1/ai/optimize-product');
+        if ('error' in authResult) return authResult.error;
         const auth = { success: true, userId: authResult.consumer?.id ?? null };
-        if (!auth.success) {
-          return json({ error: 'Unauthorized' }, 401);
-        }
 
         try {
           const body = await request.json();
