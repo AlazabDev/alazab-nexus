@@ -176,60 +176,42 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const onAddUrl = async () => {
     const url = urlInput.trim();
     if (!url) return;
-    setBusy(true);
-    try {
-      await linkAssetFromUrl({
-        url,
-        productId,
-        azCode,
-        role: rows?.length ? "gallery" : "main_image",
-        sortOrder: rows?.length ?? 0,
-      });
-      setUrlInput("");
+    const role = rows?.length ? "gallery" : "main_image";
+    const sortOrder = rows?.length ?? 0;
+    setUrlInput("");
+    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async () => {
+      await linkAssetFromUrl({ url, productId, azCode, role, sortOrder });
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      toast.success("تم إضافة الصورة من الرابط");
-    } catch (e: any) {
-      toast.error(e.message ?? "فشل الإضافة");
-    } finally {
-      setBusy(false);
-    }
+    });
   };
 
   const onGenerateAI = async () => {
-    setAiBusy(true);
-    try {
+    await aiOps.start("ai-generate", "إنشاء 3 صور بالذكاء الاصطناعي", async () => {
       const res = await genFn({ data: { productIds: [productId] } });
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      toast.success(`تم إنشاء ${res.totalGenerated} صورة بالذكاء الاصطناعي`);
-    } catch (e: any) {
-      toast.error(e.message ?? "فشل الإنشاء");
-    } finally {
-      setAiBusy(false);
-    }
+      toast.success(`تم إنشاء ${res.totalGenerated} صورة`);
+    });
   };
 
   const onEditAI = async () => {
     if (!editDialog || !editPrompt.trim()) return;
-    setAiBusy(true);
-    try {
+    const dlg = editDialog;
+    const prompt = editPrompt;
+    const replace = replaceOriginal;
+    setEditDialog(null);
+    setEditPrompt("");
+    setReplaceOriginal(false);
+    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async () => {
       await editFn({
         data: {
           productId,
-          sourceUrl: editDialog.url,
-          prompt: editPrompt,
-          replaceLinkId: replaceOriginal ? editDialog.linkId : undefined,
+          sourceUrl: dlg.url,
+          prompt,
+          replaceLinkId: replace ? dlg.linkId : undefined,
         },
       });
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-      toast.success("تم إنشاء النسخة المعدّلة");
-      setEditDialog(null);
-      setEditPrompt("");
-      setReplaceOriginal(false);
-    } catch (e: any) {
-      toast.error(e.message ?? "فشل التعديل");
-    } finally {
-      setAiBusy(false);
-    }
+    });
   };
 
   if (isLoading) {
