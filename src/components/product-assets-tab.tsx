@@ -340,6 +340,15 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
         )}
       </Card>
 
+      <AiOpsPanel
+        ops={aiOps.ops}
+        onRetry={aiOps.retry}
+        onDismiss={aiOps.remove}
+        onClearDone={aiOps.clearDone}
+      />
+
+
+
       {/* Gallery */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
