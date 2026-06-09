@@ -1,17 +1,30 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   uploadAndLinkAsset,
   deleteAssetLink,
   promoteToMain,
   reorderAssets,
+  linkAssetFromUrl,
 } from "@/lib/upload-assets";
-import { Upload, Star, ImageOff, Maximize2 } from "lucide-react";
+import { generateProductImages } from "@/lib/product-image-gen.functions";
+import { aiEditProductImage } from "@/lib/ai-image-edit.functions";
+import { Upload, Star, ImageOff, Maximize2, Link as LinkIcon, Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { SortableAssetGrid, type GridItem } from "@/components/sortable-asset-grid";
 import { AssetLightbox } from "@/components/asset-lightbox";
