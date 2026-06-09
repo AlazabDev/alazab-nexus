@@ -10,7 +10,7 @@ import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@d
 import { CSS } from "@dnd-kit/utilities";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, GripVertical } from "lucide-react";
+import { Star, GripVertical, Wand2 } from "lucide-react";
 
 export type GridItem = {
   linkId: string;
@@ -26,10 +26,12 @@ export function SortableAssetGrid({
   items,
   onReorder,
   onOpen,
+  onEditAI,
 }: {
   items: GridItem[];
   onReorder: (newOrder: GridItem[]) => void;
   onOpen: (index: number) => void;
+  onEditAI?: (item: GridItem) => void;
 }) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -47,7 +49,12 @@ export function SortableAssetGrid({
       <SortableContext items={items.map((i) => i.linkId)} strategy={rectSortingStrategy}>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {items.map((it, idx) => (
-            <SortableTile key={it.linkId} item={it} onOpen={() => onOpen(idx)} />
+            <SortableTile
+              key={it.linkId}
+              item={it}
+              onOpen={() => onOpen(idx)}
+              onEditAI={onEditAI ? () => onEditAI(it) : undefined}
+            />
           ))}
         </div>
       </SortableContext>
@@ -55,7 +62,15 @@ export function SortableAssetGrid({
   );
 }
 
-function SortableTile({ item, onOpen }: { item: GridItem; onOpen: () => void }) {
+function SortableTile({
+  item,
+  onOpen,
+  onEditAI,
+}: {
+  item: GridItem;
+  onOpen: () => void;
+  onEditAI?: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.linkId,
   });
@@ -104,6 +119,19 @@ function SortableTile({ item, onOpen }: { item: GridItem; onOpen: () => void }) 
         >
           <GripVertical className="size-4" />
         </button>
+        {onEditAI && item.fileType?.startsWith("image/") && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditAI();
+            }}
+            className="absolute bottom-2 right-2 h-7 px-2 rounded-md bg-accent text-accent-foreground text-[11px] gap-1 inline-flex items-center opacity-0 group-hover:opacity-100 transition shadow-md"
+            title="تعديل بـ AI"
+          >
+            <Wand2 className="size-3" /> AI
+          </button>
+        )}
       </button>
       <div className="p-2 space-y-1">
         <div className="text-[11px] truncate font-medium" title={item.fileName}>

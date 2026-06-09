@@ -1,17 +1,30 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   uploadAndLinkAsset,
   deleteAssetLink,
   promoteToMain,
   reorderAssets,
+  linkAssetFromUrl,
 } from "@/lib/upload-assets";
-import { Upload, Star, ImageOff, Maximize2 } from "lucide-react";
+import { generateProductImages } from "@/lib/product-image-gen.functions";
+import { aiEditProductImage } from "@/lib/ai-image-edit.functions";
+import { Upload, Star, ImageOff, Maximize2, Link as LinkIcon, Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { SortableAssetGrid, type GridItem } from "@/components/sortable-asset-grid";
 import { AssetLightbox } from "@/components/asset-lightbox";
@@ -36,6 +49,13 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const [dragOver, setDragOver] = useState(false);
   const [busy, setBusy] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState(-1);
+  const [urlInput, setUrlInput] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [editDialog, setEditDialog] = useState<{ url: string; linkId: string } | null>(null);
+  const [editPrompt, setEditPrompt] = useState("");
+  const [replaceOriginal, setReplaceOriginal] = useState(false);
+  const genFn = useServerFn(generateProductImages);
+  const editFn = useServerFn(aiEditProductImage);
 
   const { data: rows, isLoading } = useQuery<Row[]>({
     queryKey: ["product-assets", productId],
@@ -152,6 +172,65 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     }
   };
 
+  const onAddUrl = async () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    setBusy(true);
+    try {
+      await linkAssetFromUrl({
+        url,
+        productId,
+        azCode,
+        role: rows?.length ? "gallery" : "main_image",
+        sortOrder: rows?.length ?? 0,
+      });
+      setUrlInput("");
+      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      toast.success("تم إضافة الصورة من الرابط");
+    } catch (e: any) {
+      toast.error(e.message ?? "فشل الإضافة");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onGenerateAI = async () => {
+    setAiBusy(true);
+    try {
+      const res = await genFn({ data: { productIds: [productId] } });
+      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      toast.success(`تم إنشاء ${res.totalGenerated} صورة بالذكاء الاصطناعي`);
+    } catch (e: any) {
+      toast.error(e.message ?? "فشل الإنشاء");
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
+  const onEditAI = async () => {
+    if (!editDialog || !editPrompt.trim()) return;
+    setAiBusy(true);
+    try {
+      await editFn({
+        data: {
+          productId,
+          sourceUrl: editDialog.url,
+          prompt: editPrompt,
+          replaceLinkId: replaceOriginal ? editDialog.linkId : undefined,
+        },
+      });
+      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      toast.success("تم إنشاء النسخة المعدّلة");
+      setEditDialog(null);
+      setEditPrompt("");
+      setReplaceOriginal(false);
+    } catch (e: any) {
+      toast.error(e.message ?? "فشل التعديل");
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -240,6 +319,43 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
         </Card>
       </div>
 
+      {/* AI tools + URL bar */}
+      <Card className="p-4 surface-elevated border-0 space-y-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <Sparkles className="size-4 text-accent" /> أدوات الذكاء الاصطناعي والروابط
+          </div>
+          <Button
+            onClick={onGenerateAI}
+            disabled={aiBusy}
+            size="sm"
+            className="gap-2"
+          >
+            <Sparkles className="size-4" />
+            {aiBusy ? "جاري الإنشاء..." : "إنشاء صور AI (3)"}
+          </Button>
+        </div>
+        <div className="flex gap-2 items-center">
+          <LinkIcon className="size-4 text-muted-foreground shrink-0" />
+          <Input
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            dir="ltr"
+            className="flex-1"
+            onKeyDown={(e) => e.key === "Enter" && onAddUrl()}
+          />
+          <Button onClick={onAddUrl} disabled={busy || !urlInput.trim()} variant="outline" size="sm">
+            إضافة من رابط
+          </Button>
+        </div>
+        {gridItems.length > 0 && (
+          <div className="text-xs text-muted-foreground">
+            للتعديل بالذكاء الاصطناعي: اضغط على أي صورة في المعرض، ثم استخدم زر "تعديل بـ AI".
+          </div>
+        )}
+      </Card>
+
       {/* Gallery */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -258,6 +374,11 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
             items={gridItems}
             onReorder={onReorder}
             onOpen={(i) => setLightboxIdx(i)}
+            onEditAI={(it) => {
+              setEditDialog({ url: it.url, linkId: it.linkId });
+              setEditPrompt("");
+              setReplaceOriginal(false);
+            }}
           />
         )}
       </div>
@@ -269,6 +390,48 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
         onSetMain={onSetMain}
         onUnlink={onUnlink}
       />
+
+      <Dialog open={!!editDialog} onOpenChange={(o) => !o && setEditDialog(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="size-4 text-accent" /> تعديل الصورة بالذكاء الاصطناعي
+            </DialogTitle>
+          </DialogHeader>
+          {editDialog && (
+            <div className="space-y-3">
+              <img
+                src={editDialog.url}
+                alt=""
+                className="w-full max-h-64 object-contain bg-muted rounded-md"
+              />
+              <Textarea
+                value={editPrompt}
+                onChange={(e) => setEditPrompt(e.target.value)}
+                placeholder="مثال: غيّر الخلفية إلى أبيض نقي، أضف إضاءة استوديو، أزل العلامة المائية..."
+                rows={4}
+                dir="rtl"
+              />
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={replaceOriginal}
+                  onChange={(e) => setReplaceOriginal(e.target.checked)}
+                />
+                استبدال الصورة الأصلية (فك الربط بعد الإنشاء)
+              </label>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog(null)} disabled={aiBusy}>
+              إلغاء
+            </Button>
+            <Button onClick={onEditAI} disabled={aiBusy || editPrompt.trim().length < 3}>
+              {aiBusy ? "جاري التنفيذ..." : "تنفيذ"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
