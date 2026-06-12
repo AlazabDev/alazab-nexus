@@ -114,7 +114,11 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
           if (!f.type.startsWith("image/") && !f.type.startsWith("application/")) continue;
           const isFirst = !hasMain && existing === 0 && i === 0;
           const sortOrder = existing + i;
-          await aiOps.start("upload", `رفع: ${f.name}`, async () => {
+          await aiOps.start("upload", `رفع: ${f.name}`, async (ctx) => {
+            ctx.log(`الملف: ${f.name} (${(f.size / 1024).toFixed(1)}KB, ${f.type})`);
+            ctx.log(`الدور: ${isFirst ? "صورة رئيسية" : "معرض"} · ترتيب ${sortOrder}`);
+            ctx.setProgress(25);
+            ctx.log("رفع إلى التخزين…");
             await uploadAndLinkAsset({
               file: f,
               productId,
@@ -123,6 +127,8 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
               sortOrder,
               folderPath: azCode,
             });
+            ctx.setProgress(85);
+            ctx.log("ربط الأصل بالمنتج");
             qc.invalidateQueries({ queryKey: ["product-assets", productId] });
           });
         }
@@ -180,15 +186,26 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     const role = rows?.length ? "gallery" : "main_image";
     const sortOrder = rows?.length ?? 0;
     setUrlInput("");
-    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async () => {
+    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async (ctx) => {
+      ctx.log(`URL: ${url}`);
+      ctx.log(`الدور: ${role} · ترتيب ${sortOrder}`);
+      ctx.setProgress(40);
+      ctx.log("التحقق من الرابط وإنشاء سجل الأصل…");
       await linkAssetFromUrl({ url, productId, azCode, role, sortOrder });
+      ctx.setProgress(85);
+      ctx.log("تم ربط الأصل بالمنتج");
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
     });
   };
 
   const onGenerateAI = async () => {
-    await aiOps.start("ai-generate", "إنشاء 3 صور بالذكاء الاصطناعي", async () => {
+    await aiOps.start("ai-generate", "إنشاء 3 صور بالذكاء الاصطناعي", async (ctx) => {
+      ctx.log(`المنتج: ${azCode}`);
+      ctx.log("استدعاء وكيل توليد الصور (Lovable AI Gateway)…");
+      ctx.setProgress(35);
       const res = await genFn({ data: { productIds: [productId] } });
+      ctx.setProgress(85);
+      ctx.log(`تم توليد ${res.totalGenerated} صورة`, "success");
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
       toast.success(`تم إنشاء ${res.totalGenerated} صورة`);
     });
@@ -202,7 +219,12 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     setEditDialog(null);
     setEditPrompt("");
     setReplaceOriginal(false);
-    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async () => {
+    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async (ctx) => {
+      ctx.log(`المصدر: ${dlg.url}`);
+      ctx.log(`التعليمات: ${prompt}`);
+      ctx.log(`استبدال الأصل: ${replace ? "نعم" : "لا"}`);
+      ctx.setProgress(30);
+      ctx.log("استدعاء وكيل تعديل الصورة…");
       await editFn({
         data: {
           productId,
@@ -211,6 +233,8 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
           replaceLinkId: replace ? dlg.linkId : undefined,
         },
       });
+      ctx.setProgress(90);
+      ctx.log("تم تطبيق التعديل وحفظ النسخة الجديدة", "success");
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
     });
   };
