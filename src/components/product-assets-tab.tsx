@@ -186,15 +186,26 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     const role = rows?.length ? "gallery" : "main_image";
     const sortOrder = rows?.length ?? 0;
     setUrlInput("");
-    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async () => {
+    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async (ctx) => {
+      ctx.log(`URL: ${url}`);
+      ctx.log(`الدور: ${role} · ترتيب ${sortOrder}`);
+      ctx.setProgress(40);
+      ctx.log("التحقق من الرابط وإنشاء سجل الأصل…");
       await linkAssetFromUrl({ url, productId, azCode, role, sortOrder });
+      ctx.setProgress(85);
+      ctx.log("تم ربط الأصل بالمنتج");
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
     });
   };
 
   const onGenerateAI = async () => {
-    await aiOps.start("ai-generate", "إنشاء 3 صور بالذكاء الاصطناعي", async () => {
+    await aiOps.start("ai-generate", "إنشاء 3 صور بالذكاء الاصطناعي", async (ctx) => {
+      ctx.log(`المنتج: ${azCode}`);
+      ctx.log("استدعاء وكيل توليد الصور (Lovable AI Gateway)…");
+      ctx.setProgress(35);
       const res = await genFn({ data: { productIds: [productId] } });
+      ctx.setProgress(85);
+      ctx.log(`تم توليد ${res.totalGenerated} صورة`, "success");
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
       toast.success(`تم إنشاء ${res.totalGenerated} صورة`);
     });
@@ -208,7 +219,12 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     setEditDialog(null);
     setEditPrompt("");
     setReplaceOriginal(false);
-    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async () => {
+    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async (ctx) => {
+      ctx.log(`المصدر: ${dlg.url}`);
+      ctx.log(`التعليمات: ${prompt}`);
+      ctx.log(`استبدال الأصل: ${replace ? "نعم" : "لا"}`);
+      ctx.setProgress(30);
+      ctx.log("استدعاء وكيل تعديل الصورة…");
       await editFn({
         data: {
           productId,
