@@ -114,7 +114,11 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
           if (!f.type.startsWith("image/") && !f.type.startsWith("application/")) continue;
           const isFirst = !hasMain && existing === 0 && i === 0;
           const sortOrder = existing + i;
-          await aiOps.start("upload", `رفع: ${f.name}`, async () => {
+          await aiOps.start("upload", `رفع: ${f.name}`, async (ctx) => {
+            ctx.log(`الملف: ${f.name} (${(f.size / 1024).toFixed(1)}KB, ${f.type})`);
+            ctx.log(`الدور: ${isFirst ? "صورة رئيسية" : "معرض"} · ترتيب ${sortOrder}`);
+            ctx.setProgress(25);
+            ctx.log("رفع إلى التخزين…");
             await uploadAndLinkAsset({
               file: f,
               productId,
@@ -123,6 +127,8 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
               sortOrder,
               folderPath: azCode,
             });
+            ctx.setProgress(85);
+            ctx.log("ربط الأصل بالمنتج");
             qc.invalidateQueries({ queryKey: ["product-assets", productId] });
           });
         }
