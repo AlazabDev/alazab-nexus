@@ -233,6 +233,8 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
           replaceLinkId: replace ? dlg.linkId : undefined,
         },
       });
+      ctx.setProgress(90);
+      ctx.log("تم تطبيق التعديل وحفظ النسخة الجديدة", "success");
       qc.invalidateQueries({ queryKey: ["product-assets", productId] });
     });
   };
