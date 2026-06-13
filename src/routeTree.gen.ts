@@ -23,6 +23,7 @@ import { Route as AuthenticatedContentRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedBuildHealthRouteImport } from './routes/_authenticated/build-health'
 import { Route as AuthenticatedAuditLogsRouteImport } from './routes/_authenticated/audit-logs'
 import { Route as AuthenticatedAiReviewRouteImport } from './routes/_authenticated/ai-review'
+import { Route as AuthenticatedAiChatRouteImport } from './routes/_authenticated/ai-chat'
 import { Route as AuthenticatedSuppliersIndexRouteImport } from './routes/_authenticated/suppliers/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedRequestsIndexRouteImport } from './routes/_authenticated/requests/index'
@@ -138,6 +139,11 @@ const AuthenticatedAuditLogsRoute = AuthenticatedAuditLogsRouteImport.update({
 const AuthenticatedAiReviewRoute = AuthenticatedAiReviewRouteImport.update({
   id: '/ai-review',
   path: '/ai-review',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAiChatRoute = AuthenticatedAiChatRouteImport.update({
+  id: '/ai-chat',
+  path: '/ai-chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSuppliersIndexRoute =
@@ -379,6 +385,7 @@ const ApiPrivateV1AiBatchOptimizeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/ai-chat': typeof AuthenticatedAiChatRoute
   '/ai-review': typeof AuthenticatedAiReviewRoute
   '/audit-logs': typeof AuthenticatedAuditLogsRoute
   '/build-health': typeof AuthenticatedBuildHealthRoute
@@ -435,6 +442,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/ai-chat': typeof AuthenticatedAiChatRoute
   '/ai-review': typeof AuthenticatedAiReviewRoute
   '/audit-logs': typeof AuthenticatedAuditLogsRoute
   '/build-health': typeof AuthenticatedBuildHealthRoute
@@ -493,6 +501,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/ai-chat': typeof AuthenticatedAiChatRoute
   '/_authenticated/ai-review': typeof AuthenticatedAiReviewRoute
   '/_authenticated/audit-logs': typeof AuthenticatedAuditLogsRoute
   '/_authenticated/build-health': typeof AuthenticatedBuildHealthRoute
@@ -551,6 +560,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/ai-chat'
     | '/ai-review'
     | '/audit-logs'
     | '/build-health'
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/ai-chat'
     | '/ai-review'
     | '/audit-logs'
     | '/build-health'
@@ -664,6 +675,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/ai-chat'
     | '/_authenticated/ai-review'
     | '/_authenticated/audit-logs'
     | '/_authenticated/build-health'
@@ -835,6 +847,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-review'
       fullPath: '/ai-review'
       preLoaderRoute: typeof AuthenticatedAiReviewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ai-chat': {
+      id: '/_authenticated/ai-chat'
+      path: '/ai-chat'
+      fullPath: '/ai-chat'
+      preLoaderRoute: typeof AuthenticatedAiChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/suppliers/': {
@@ -1128,6 +1147,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAiChatRoute: typeof AuthenticatedAiChatRoute
   AuthenticatedAiReviewRoute: typeof AuthenticatedAiReviewRoute
   AuthenticatedAuditLogsRoute: typeof AuthenticatedAuditLogsRoute
   AuthenticatedBuildHealthRoute: typeof AuthenticatedBuildHealthRoute
@@ -1168,6 +1188,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAiChatRoute: AuthenticatedAiChatRoute,
   AuthenticatedAiReviewRoute: AuthenticatedAiReviewRoute,
   AuthenticatedAuditLogsRoute: AuthenticatedAuditLogsRoute,
   AuthenticatedBuildHealthRoute: AuthenticatedBuildHealthRoute,
