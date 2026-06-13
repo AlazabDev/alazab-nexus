@@ -67,6 +67,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "التكاملات والتوصيلات", to: "/integrations", icon: Network, group: "العمليات" },
   { title: "مراجعة المحتوى AI", to: "/content-review", icon: Sparkles, group: "العمليات" },
   { title: "مساعد AI", to: "/ai-review", icon: Sparkles, group: "العمليات" },
+  { title: "Azure AI · ضبط جماعي", to: "/ai-studio/bulk", icon: Sparkles, group: "العمليات", keywords: ["azure", "bulk", "optimize", "تحسين"] },
   { title: "الموافقات", to: "/approvals", icon: CheckCircle2, group: "العمليات" },
 
   // النظام
