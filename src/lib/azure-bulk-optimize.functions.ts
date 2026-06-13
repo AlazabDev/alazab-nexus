@@ -113,7 +113,7 @@ export const azureBulkOptimizeContent = createServerFn({ method: "POST" })
 
         const { error: uErr } = await supabaseAdmin
           .from("products")
-          .update(patch)
+          .update(patch as never)
           .eq("id", p.id);
         if (uErr) throw new Error(uErr.message);
 
