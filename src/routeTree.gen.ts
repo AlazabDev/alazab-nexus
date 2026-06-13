@@ -48,6 +48,7 @@ import { Route as AuthenticatedAiStudioQuotesRouteImport } from './routes/_authe
 import { Route as AuthenticatedAiStudioOptimizeRouteImport } from './routes/_authenticated/ai-studio/optimize'
 import { Route as AuthenticatedAiStudioImagesRouteImport } from './routes/_authenticated/ai-studio/images'
 import { Route as AuthenticatedAiStudioDatasheetsRouteImport } from './routes/_authenticated/ai-studio/datasheets'
+import { Route as AuthenticatedAiStudioBulkRouteImport } from './routes/_authenticated/ai-studio/bulk'
 import { Route as ApiPublicV1SuppliersRouteImport } from './routes/api/public/v1/suppliers'
 import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/products'
 import { Route as ApiPublicV1PricingRouteImport } from './routes/api/public/v1/pricing'
@@ -287,6 +288,12 @@ const AuthenticatedAiStudioDatasheetsRoute =
     path: '/ai-studio/datasheets',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAiStudioBulkRoute =
+  AuthenticatedAiStudioBulkRouteImport.update({
+    id: '/ai-studio/bulk',
+    path: '/ai-studio/bulk',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiPublicV1SuppliersRoute = ApiPublicV1SuppliersRouteImport.update({
   id: '/api/public/v1/suppliers',
   path: '/api/public/v1/suppliers',
@@ -383,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
   '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
   '/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
@@ -438,6 +446,7 @@ export interface FileRoutesByTo {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
   '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
   '/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
@@ -495,6 +504,7 @@ export interface FileRoutesById {
   '/_authenticated/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/_authenticated/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/_authenticated/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
   '/_authenticated/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
   '/_authenticated/ai-studio/optimize': typeof AuthenticatedAiStudioOptimizeRoute
@@ -552,6 +562,7 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/ai-studio/bulk'
     | '/ai-studio/datasheets'
     | '/ai-studio/images'
     | '/ai-studio/optimize'
@@ -607,6 +618,7 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/ai-studio/bulk'
     | '/ai-studio/datasheets'
     | '/ai-studio/images'
     | '/ai-studio/optimize'
@@ -663,6 +675,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quote-requests'
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
+    | '/_authenticated/ai-studio/bulk'
     | '/_authenticated/ai-studio/datasheets'
     | '/_authenticated/ai-studio/images'
     | '/_authenticated/ai-studio/optimize'
@@ -999,6 +1012,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiStudioDatasheetsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/ai-studio/bulk': {
+      id: '/_authenticated/ai-studio/bulk'
+      path: '/ai-studio/bulk'
+      fullPath: '/ai-studio/bulk'
+      preLoaderRoute: typeof AuthenticatedAiStudioBulkRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/v1/suppliers': {
       id: '/api/public/v1/suppliers'
       path: '/api/public/v1/suppliers'
@@ -1119,6 +1139,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedQuoteRequestsRoute: typeof AuthenticatedQuoteRequestsRoute
   AuthenticatedSupplierInventoryRoute: typeof AuthenticatedSupplierInventoryRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
+  AuthenticatedAiStudioBulkRoute: typeof AuthenticatedAiStudioBulkRoute
   AuthenticatedAiStudioDatasheetsRoute: typeof AuthenticatedAiStudioDatasheetsRoute
   AuthenticatedAiStudioImagesRoute: typeof AuthenticatedAiStudioImagesRoute
   AuthenticatedAiStudioOptimizeRoute: typeof AuthenticatedAiStudioOptimizeRoute
@@ -1158,6 +1179,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedQuoteRequestsRoute: AuthenticatedQuoteRequestsRoute,
   AuthenticatedSupplierInventoryRoute: AuthenticatedSupplierInventoryRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
+  AuthenticatedAiStudioBulkRoute: AuthenticatedAiStudioBulkRoute,
   AuthenticatedAiStudioDatasheetsRoute: AuthenticatedAiStudioDatasheetsRoute,
   AuthenticatedAiStudioImagesRoute: AuthenticatedAiStudioImagesRoute,
   AuthenticatedAiStudioOptimizeRoute: AuthenticatedAiStudioOptimizeRoute,

@@ -317,11 +317,8 @@ function BulkAzurePage() {
         </div>
       </div>
 
-      <AiOpsPanel ops={aiOps.ops} onRetry={aiOps.retry} onRemove={aiOps.remove} onClearDone={aiOps.clearDone} />
+      <AiOpsPanel ops={aiOps.ops} onRetry={aiOps.retry} onDismiss={aiOps.remove} onClearDone={aiOps.clearDone} />
     </div>
   );
 }
 
-function Label_({ children }: { children: React.ReactNode }) {
-  return <Label className="text-sm">{children}</Label>;
-}
