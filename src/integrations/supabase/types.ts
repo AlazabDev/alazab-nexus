@@ -1699,6 +1699,32 @@ export type Database = {
           },
         ]
       }
+      supplier_secrets: {
+        Row: {
+          supplier_id: string
+          updated_at: string
+          webhook_secret: string | null
+        }
+        Insert: {
+          supplier_id: string
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Update: {
+          supplier_id?: string
+          updated_at?: string
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_secrets_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: true
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       supplier_sync_logs: {
         Row: {
           created_at: string
@@ -1770,7 +1796,6 @@ export type Database = {
           supplier_type: string | null
           updated_at: string
           webhook_enabled: boolean
-          webhook_secret: string | null
           website: string | null
         }
         Insert: {
@@ -1793,7 +1818,6 @@ export type Database = {
           supplier_type?: string | null
           updated_at?: string
           webhook_enabled?: boolean
-          webhook_secret?: string | null
           website?: string | null
         }
         Update: {
@@ -1816,7 +1840,6 @@ export type Database = {
           supplier_type?: string | null
           updated_at?: string
           webhook_enabled?: boolean
-          webhook_secret?: string | null
           website?: string | null
         }
         Relationships: []
