@@ -67,17 +67,27 @@ export const Route = createFileRoute("/api/public/v1/suppliers/webhook")({
 
         const { data: supplier, error: sErr } = await supabaseAdmin
           .from("suppliers")
-          .select("id, webhook_secret, webhook_enabled, status")
+          .select("id, webhook_enabled, status")
           .eq("id", supplierId)
           .maybeSingle();
 
         if (sErr || !supplier) return json({ error: "Supplier not found" }, 404);
-        if (!supplier.webhook_enabled || !supplier.webhook_secret) {
+        if (!supplier.webhook_enabled) {
+          return json({ error: "Webhook not enabled for supplier" }, 403);
+        }
+
+        const { data: secretRow } = await supabaseAdmin
+          .from("supplier_secrets")
+          .select("webhook_secret")
+          .eq("supplier_id", supplier.id)
+          .maybeSingle();
+        const webhookSecret = secretRow?.webhook_secret;
+        if (!webhookSecret) {
           return json({ error: "Webhook not enabled for supplier" }, 403);
         }
 
         const body = await request.text();
-        if (!verifySig(supplier.webhook_secret, body, signature)) {
+        if (!verifySig(webhookSecret, body, signature)) {
           await supabaseAdmin.from("supplier_sync_logs").insert({
             supplier_id: supplier.id,
             event_type: "unknown",
@@ -87,6 +97,7 @@ export const Route = createFileRoute("/api/public/v1/suppliers/webhook")({
           });
           return json({ error: "Invalid signature" }, 401);
         }
+
 
         let parsed: z.infer<typeof Payload>;
         try {
