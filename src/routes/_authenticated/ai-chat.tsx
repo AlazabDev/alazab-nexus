@@ -32,11 +32,12 @@ const SUGGESTIONS = [
 async function searchProducts(query: string) {
   const { data } = await supabase
     .from("products")
-    .select("az_code, name_ar, description_ar, gpc_class, unit_price, estimated_price")
+    .select("az_code, name_ar, description_ar, gpc_class, price")
     .or(`name_ar.ilike.%${query}%,gpc_class.ilike.%${query}%,az_code.ilike.%${query}%`)
     .limit(5);
   return data ?? [];
 }
+
 
 
 function AiChat() {
