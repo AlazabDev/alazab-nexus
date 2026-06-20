@@ -68,7 +68,7 @@ function AiChat() {
         const results = await searchProducts(content);
         if (results.length > 0) {
           context = `\n\nنتائج البحث:\n${results.map(p =>
-            `- ${p.az_code}: ${p.name_ar} | ${p.brand} | سعر: ${p.unit_price ?? p.estimated_price ?? "غير محدد"} ج.م`
+            `- ${p.az_code}: ${p.name_ar} | ${p.gpc_class ?? ""} | سعر: ${p.price ?? "غير محدد"} ج.م`
           ).join("\n")}`;
         }
       }
