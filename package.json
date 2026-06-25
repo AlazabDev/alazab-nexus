@@ -10,7 +10,19 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build:health": "bun scripts/build-health.ts"
+    "build:health": "bun scripts/build-health.ts",
+    "git:pull": "bash scripts/git-commands.sh pull",
+    "git:pull-rebase": "bash scripts/git-commands.sh pull-rebase",
+    "git:sync": "bash scripts/git-commands.sh sync",
+    "git:status": "bash scripts/git-commands.sh status",
+    "git:fetch": "bash scripts/git-commands.sh fetch",
+    "git:commits": "bash scripts/git-commands.sh commits",
+    "git:diff": "bash scripts/git-commands.sh diff",
+    "git:stash": "bash scripts/git-commands.sh stash",
+    "git:pop": "bash scripts/git-commands.sh pop",
+    "git:stashes": "bash scripts/git-commands.sh stashes",
+    "git:deps": "bash scripts/git-commands.sh deps",
+    "git:full-sync": "bash scripts/git-commands.sh full-sync"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.81",
