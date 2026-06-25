@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { azureChatCompletion } from "@/lib/ai-assistant.functions";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { Bot, Send, User, Loader2, Sparkles } from "lucide-react";
+import { ConnectionStatusIndicator } from "@/components/connection-status-indicator";
+import { ChatProductivityTools } from "@/components/chat-productivity-tools";
+import { ChatSmartSuggestions } from "@/components/chat-smart-suggestions";
+import { Bot, Send, User, Loader2, Sparkles, Menu } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/ai-chat")({
@@ -44,6 +47,8 @@ function AiChat() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showTools, setShowTools] = useState(false);
+  const [conversationId] = useState(`chat-${Date.now()}`);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,6 +66,37 @@ function AiChat() {
     setLoading(true);
 
     try {
+      // معالجة الأوامر السريعة
+      if (content.startsWith("/")) {
+        const command = content.substring(1).toLowerCase();
+        let quickResponse = "";
+
+        switch (true) {
+          case command === "مساعدة" || command === "help":
+            quickResponse = `الأوامر السريعة المتاحة:
+/مساعدة - عرض هذه الرسالة
+/إحصائيات - إحصائيات المحادثة
+/حفظ - حفظ المحادثة
+/مسح - مسح المحادثة
+/البحث [كلمة] - البحث عن منتج`;
+            break;
+          case command === "مسح" || command === "clear":
+            setMsgs([]);
+            quickResponse = "تم مسح المحادثة";
+            break;
+          case command.startsWith("بحث"):
+          case command.startsWith("search"):
+            quickResponse = "يرجى استخدام البحث العادي بدلاً من الأمر السريع";
+            break;
+          default:
+            quickResponse = `أمر غير معروف: ${command}\nاكتب /مساعدة لعرض الأوامر المتاحة`;
+        }
+
+        setMsgs([...history, { role: "assistant", content: quickResponse }]);
+        setLoading(false);
+        return;
+      }
+
       // بحث تلقائي لو الرسالة تحتوي كلمات بحث
       let context = "";
       const searchTerms = ["ابحث", "search", "منتج", "product", "كود", "code"];
@@ -94,12 +130,22 @@ function AiChat() {
 
   return (
     <>
-      <PageHeader
-        icon={<Bot className="size-5" />}
-        title="مساعد AI"
-        description="اسأل عن المنتجات أو اطلب تحسين المحتوى"
-      />
-      <div className="flex flex-col h-[calc(100vh-140px)] max-w-3xl mx-auto p-4 gap-3">
+      <div className="border-b border-border">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bot className="size-5 text-accent" />
+            <div>
+              <h1 className="text-lg font-semibold">مساعد AI</h1>
+              <p className="text-xs text-muted-foreground">
+                اسأل عن المنتجات أو اطلب تحسين المحتوى
+              </p>
+            </div>
+          </div>
+          <ConnectionStatusIndicator showDetails={true} autoMonitor={true} />
+        </div>
+      </div>
+
+      <div className="flex flex-col h-[calc(100vh-160px)] max-w-3xl mx-auto p-4 gap-3">
 
         {/* منطقة المحادثة */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-1">
@@ -152,20 +198,44 @@ function AiChat() {
           <div ref={bottomRef} />
         </div>
 
+        {/* الاقتراحات الذكية */}
+        <ChatSmartSuggestions
+          messages={msgs}
+          onSuggestionClick={send}
+        />
+
         {/* حقل الإدخال */}
-        <div className="flex gap-2 items-end">
-          <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder="اكتب رسالتك... (Enter للإرسال)"
-            rows={1}
-            className="flex-1 resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm
-              focus:outline-none focus:ring-2 focus:ring-accent/40 max-h-32 overflow-y-auto"
-          />
-          <Button onClick={() => send()} disabled={!input.trim() || loading} size="icon" className="h-11 w-11 rounded-xl">
-            <Send className="size-4" />
-          </Button>
+        <div className="space-y-2">
+          <div className="flex gap-2 items-end">
+            <textarea
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+              placeholder="اكتب رسالتك... (/ للأوامر السريعة)"
+              rows={1}
+              className="flex-1 resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm
+                focus:outline-none focus:ring-2 focus:ring-accent/40 max-h-32 overflow-y-auto"
+            />
+            <Button onClick={() => send()} disabled={!input.trim() || loading} size="icon" className="h-11 w-11 rounded-xl">
+              <Send className="size-4" />
+            </Button>
+          </div>
+
+          {/* الأدوات الإنتاجية */}
+          {msgs.length > 0 && (
+            <div className="flex items-center justify-between px-2">
+              <span className="text-xs text-muted-foreground">
+                {msgs.length} رسالة
+              </span>
+              <ChatProductivityTools
+                messages={msgs.map(m => ({
+                  role: m.role,
+                  content: m.content,
+                }))}
+                conversationId={conversationId}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
