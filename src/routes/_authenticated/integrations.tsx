@@ -37,8 +37,11 @@ import {
   Trash2,
   Eye,
   Code,
+  Lightbulb,
 } from "lucide-react";
 import { toast } from "sonner";
+import { IntegrationSyncMonitor } from "@/components/integration-sync-monitor";
+import { testConnection, getAutoFixRecommendations } from "@/lib/integration-handler";
 
 const integrations = [
   {
@@ -420,8 +423,11 @@ function IntegrationDetails({
   integration: (typeof integrations)[0];
   config: any;
 }) {
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const recommendations = config?.id ? getAutoFixRecommendations(config.id) : [];
+
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 py-4 max-h-[600px] overflow-y-auto">
       <div className="bg-secondary/50 rounded-lg p-4 space-y-2 text-sm">
         <div>
           <p className="text-muted-foreground">الحالة:</p>
@@ -449,6 +455,46 @@ function IntegrationDetails({
           </div>
         )}
       </div>
+
+      {/* Sync Monitor */}
+      {config?.status === "active" && (
+        <div className="border-t pt-4">
+          <p className="text-sm font-semibold mb-3">مراقب المزامنة</p>
+          <IntegrationSyncMonitor
+            integrationId={config.id}
+            integrationName={integration.name}
+            lastSync={integration.lastSync}
+            syncFrequency={integration.syncFrequency}
+          />
+        </div>
+      )}
+
+      {/* Auto-fix Recommendations */}
+      {recommendations.length > 0 && (
+        <div className="border-t pt-4">
+          <button
+            onClick={() => setShowRecommendations(!showRecommendations)}
+            className="flex items-center gap-2 text-sm font-semibold hover:text-accent transition-colors w-full"
+          >
+            <Lightbulb className="size-4 text-yellow-600" />
+            توصيات الإصلاح الذاتي ({recommendations.length})
+          </button>
+
+          {showRecommendations && (
+            <ul className="mt-3 space-y-2">
+              {recommendations.map((rec, idx) => (
+                <li
+                  key={idx}
+                  className="text-xs bg-yellow-500/10 border border-yellow-500/30 text-yellow-700 rounded p-2 flex items-start gap-2"
+                >
+                  <span className="text-yellow-600 font-bold mt-0.5">•</span>
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div className="pt-4 border-t space-y-2 text-sm">
         <p className="text-muted-foreground">الحقول المتزامنة:</p>

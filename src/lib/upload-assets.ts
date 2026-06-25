@@ -16,8 +16,80 @@ export type AssetRole =
 
 const BUCKET = "product-assets";
 
+// أنواع الملفات المدعومة
+const SUPPORTED_MIME_TYPES = {
+  image: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+  pdf: ["application/pdf"],
+  video: ["video/mp4", "video/webm", "video/quicktime"],
+};
+
+// السجل - تخزين محلي لسجل العمليات
+interface UploadLog {
+  timestamp: string;
+  fileName: string;
+  assetRole: AssetRole;
+  status: "success" | "failed" | "retried";
+  message: string;
+  error?: string;
+}
+
+const uploadLogs: UploadLog[] = [];
+
 function sanitize(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+/**
+ * التحقق من صحة الملف قبل الرفع
+ */
+export function validateFile(file: File, maxSize: number = 50 * 1024 * 1024): {
+  valid: boolean;
+  error?: string;
+} {
+  // التحقق من الحجم
+  if (file.size > maxSize) {
+    return {
+      valid: false,
+      error: `حجم الملف يتجاوز الحد الأقصى (${(maxSize / 1024 / 1024).toFixed(0)}MB)`,
+    };
+  }
+
+  // التحقق من النوع
+  const allValidTypes = Object.values(SUPPORTED_MIME_TYPES).flat();
+  if (!allValidTypes.includes(file.type) && !file.name.endsWith(".pdf")) {
+    return {
+      valid: false,
+      error: `نوع الملف غير مدعوم. الأنواع المدعومة: صور، PDF، فيديو`,
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * تسجيل العملية في السجل
+ */
+function logUploadOperation(log: UploadLog) {
+  const fullLog = {
+    ...log,
+    timestamp: new Date().toISOString(),
+  };
+  uploadLogs.push(fullLog);
+  console.log("[v0] Upload operation logged:", fullLog);
+}
+
+/**
+ * الحصول على سجل العمليات
+ */
+export function getUploadLogs(): UploadLog[] {
+  return [...uploadLogs];
+}
+
+/**
+ * مسح سجل العمليات
+ */
+export function clearUploadLogs() {
+  uploadLogs.length = 0;
 }
 
 export async function uploadAndLinkAsset(opts: {
@@ -29,47 +101,100 @@ export async function uploadAndLinkAsset(opts: {
   folderPath?: string;
 }) {
   const { file, productId, azCode, role, sortOrder, folderPath } = opts;
+
+  // التحقق من الملف
+  const validation = validateFile(file);
+  if (!validation.valid) {
+    logUploadOperation({
+      fileName: file.name,
+      assetRole: role,
+      status: "failed",
+      message: "فشل التحقق من الملف",
+      error: validation.error,
+      timestamp: new Date().toISOString(),
+    });
+    throw new Error(validation.error);
+  }
+
   const ts = Date.now();
   const safeName = sanitize(file.name);
   const path = `${azCode}/${ts}_${sortOrder}_${safeName}`;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { error: upErr } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, file, { cacheControl: "31536000", upsert: false, contentType: file.type });
-  if (upErr) throw new Error(`Storage: ${upErr.message}`);
+    // محاولة الرفع
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: file.type,
+      });
 
-  const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    if (upErr) {
+      throw new Error(`خطأ التخزين: ${upErr.message}`);
+    }
 
-  const { data: asset, error: aErr } = await supabase
-    .from("assets")
-    .insert({
-      file_name: file.name,
-      file_url: pub.publicUrl,
-      file_size: file.size,
-      file_type: file.type || null,
-      folder_path: folderPath ?? azCode,
-      storage_provider: "supabase",
-      source: "bulk_upload",
-      uploaded_by: user?.id ?? null,
-      status: "active",
-    })
-    .select("id")
-    .single();
-  if (aErr) throw new Error(`Asset row: ${aErr.message}`);
+    const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
 
-  const { error: lErr } = await supabase.from("product_assets").insert({
-    product_id: productId,
-    asset_id: asset.id,
-    asset_role: role,
-    sort_order: sortOrder,
-  });
-  if (lErr) throw new Error(`Link: ${lErr.message}`);
+    // إنشاء سجل الأصل
+    const { data: asset, error: aErr } = await supabase
+      .from("assets")
+      .insert({
+        file_name: file.name,
+        file_url: pub.publicUrl,
+        file_size: file.size,
+        file_type: file.type || null,
+        folder_path: folderPath ?? azCode,
+        storage_provider: "supabase",
+        source: "bulk_upload",
+        uploaded_by: user?.id ?? null,
+        status: "active",
+      })
+      .select("id")
+      .single();
 
-  return { assetId: asset.id, publicUrl: pub.publicUrl, path };
+    if (aErr) {
+      throw new Error(`خطأ في إنشاء سجل الأصل: ${aErr.message}`);
+    }
+
+    // ربط الأصل بالمنتج
+    const { error: lErr } = await supabase.from("product_assets").insert({
+      product_id: productId,
+      asset_id: asset.id,
+      asset_role: role,
+      sort_order: sortOrder,
+    });
+
+    if (lErr) {
+      throw new Error(`خطأ في ربط الأصل: ${lErr.message}`);
+    }
+
+    // تسجيل العملية الناجحة
+    logUploadOperation({
+      fileName: file.name,
+      assetRole: role,
+      status: "success",
+      message: `تم رفع ${file.name} بنجاح`,
+      timestamp: new Date().toISOString(),
+    });
+
+    return { assetId: asset.id, publicUrl: pub.publicUrl, path };
+  } catch (error: any) {
+    // تسجيل الفشل
+    logUploadOperation({
+      fileName: file.name,
+      assetRole: role,
+      status: "failed",
+      message: "فشل الرفع",
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+    throw error;
+  }
 }
 
 /** Link an asset by external URL (no upload — stores the URL as-is). */
