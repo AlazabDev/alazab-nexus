@@ -1,10 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import {
-  Search, Grid3X3, List, SlidersHorizontal, X,
-  Package, ChevronDown, ExternalLink, Star,
+  Search, Grid3X3, List, X,
+  Package, ExternalLink, QrCode as QrIcon,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+
+type ItemType = Database["public"]["Enums"]["item_type"];
+
+// Monospace stack — as requested by the user
+const MONO_STACK =
+  '"Menlo","Monaco","Consolas","Cascadia Mono","Ubuntu Mono","DejaVu Sans Mono","Liberation Mono","JetBrains Mono","Fira Code","Cousine","Roboto Mono","Courier New",Courier,sans-serif,system-ui';
 
 export const Route = createFileRoute("/catalog/")({
   head: () => ({
@@ -15,6 +23,7 @@ export const Route = createFileRoute("/catalog/")({
   }),
   component: CatalogPage,
 });
+
 
 // ── Types ──────────────────────────────────────────────────
 type Product = {
@@ -241,14 +250,25 @@ function ProductModal({ p, onClose }: { p: Product; onClose: () => void }) {
             </tbody>
           </table>
 
-          <a
-            href={`https://prod.alazab.com/products/${p.az_code}`}
-            target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white transition"
-            style={{ background: "#0D1B2A" }}
-          >
-            عرض التفاصيل <ExternalLink className="size-4" />
-          </a>
+          <div className="grid grid-cols-[1fr_auto] items-center gap-4 pt-2">
+            <Link
+              to="/catalog/$azCode"
+              params={{ azCode: p.az_code }}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white transition"
+              style={{ background: "#0D1B2A" }}
+            >
+              عرض التفاصيل <ExternalLink className="size-4" />
+            </Link>
+            <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white border border-[#E8E4DC]">
+              <QRCodeSVG
+                value={typeof window !== "undefined" ? `${window.location.origin}/catalog/${p.az_code}` : `/catalog/${p.az_code}`}
+                size={64}
+                level="M"
+                includeMargin={false}
+              />
+              <span className="text-[9px] text-[#8C8680]" style={{ fontFamily: MONO_STACK }}>QR</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -269,15 +289,16 @@ function CatalogPage() {
     q: "", brand: "", type: "", sort: "name_ar",
   });
 
-  const searchTimer = useRef<ReturnType<typeof setTimeout>>();
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
 
   // إحصائيات سريعة
   useEffect(() => {
     (async () => {
       const [t, p, s] = await Promise.all([
-        supabase.from("products").select("*", { count: "exact", head: true }),
-        supabase.from("products").select("*", { count: "exact", head: true }).not("unit_price", "is", null),
-        supabase.from("products").select("*", { count: "exact", head: true }).not("daftra_id", "is", null),
+        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true),
+        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true).not("unit_price", "is", null),
+        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true).not("daftra_id", "is", null),
       ]);
       setStats({ total: t.count ?? 0, priced: p.count ?? 0, synced: s.count ?? 0 });
     })();
@@ -287,12 +308,13 @@ function CatalogPage() {
     setLoading(true);
     let q = supabase.from("products")
       .select("id,az_code,name_ar,name_en,description_ar,brand,item_type,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,gpc_class,operational_track,status", { count: "exact" })
-      .eq("status", "needs_review")
+      .eq("active", true)
+      .not("status", "in", "(archived,rejected)")
       .range((pg - 1) * PAGE, pg * PAGE - 1);
 
     if (f.q)     q = q.or(`name_ar.ilike.%${f.q}%,az_code.ilike.%${f.q}%,name_en.ilike.%${f.q}%`);
     if (f.brand) q = q.eq("brand", f.brand);
-    if (f.type)  q = q.eq("item_type", f.type);
+    if (f.type)  q = q.eq("item_type", f.type as ItemType);
 
     if (f.sort === "unit_price_asc")  q = q.order("unit_price", { ascending: true,  nullsFirst: false });
     else if (f.sort === "unit_price_desc") q = q.order("unit_price", { ascending: false, nullsFirst: false });
@@ -319,7 +341,7 @@ function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]" dir="rtl"
-      style={{ fontFamily: "'Tajawal','Segoe UI',Arial,sans-serif" }}>
+      style={{ fontFamily: MONO_STACK }}>
 
       {/* ── Hero ── */}
       <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0D1B2A 0%, #1a2f4a 60%, #0D1B2A 100%)" }}>

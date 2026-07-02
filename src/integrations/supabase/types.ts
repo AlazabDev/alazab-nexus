@@ -1339,21 +1339,25 @@ export type Database = {
       }
       products: {
         Row: {
+          active: boolean
           approved_at: string | null
           approved_by: string | null
           az_code: string
+          brand: string | null
           category: string | null
           category_id: string | null
           confidence_level: string | null
           content_optimization_score: number | null
           created_at: string
           created_by: string | null
+          daftra_id: string | null
           datasheet_generated: boolean | null
           default_price_id: string | null
           default_supplier_id: string | null
           description_ar: string | null
           description_en: string | null
           egs_code: string | null
+          estimated_price: number | null
           external_links: Json | null
           family_id: string | null
           faq: Json | null
@@ -1363,9 +1367,12 @@ export type Database = {
           gpc_segment: string | null
           gs1_gpc_brick: string | null
           id: string
+          image_url_2: string | null
+          image_url_3: string | null
           installation_notes: string | null
           internal_notes: string | null
           item_type: Database["public"]["Enums"]["item_type"]
+          main_image_url: string | null
           maintenance_notes: string | null
           marketing_content: string | null
           materials: Json | null
@@ -1384,25 +1391,31 @@ export type Database = {
           tags: string[] | null
           technical_content: string | null
           unit_id: string | null
+          unit_label: string | null
+          unit_price: number | null
           updated_at: string
           warranty_info: string | null
         }
         Insert: {
+          active?: boolean
           approved_at?: string | null
           approved_by?: string | null
           az_code: string
+          brand?: string | null
           category?: string | null
           category_id?: string | null
           confidence_level?: string | null
           content_optimization_score?: number | null
           created_at?: string
           created_by?: string | null
+          daftra_id?: string | null
           datasheet_generated?: boolean | null
           default_price_id?: string | null
           default_supplier_id?: string | null
           description_ar?: string | null
           description_en?: string | null
           egs_code?: string | null
+          estimated_price?: number | null
           external_links?: Json | null
           family_id?: string | null
           faq?: Json | null
@@ -1412,9 +1425,12 @@ export type Database = {
           gpc_segment?: string | null
           gs1_gpc_brick?: string | null
           id?: string
+          image_url_2?: string | null
+          image_url_3?: string | null
           installation_notes?: string | null
           internal_notes?: string | null
           item_type?: Database["public"]["Enums"]["item_type"]
+          main_image_url?: string | null
           maintenance_notes?: string | null
           marketing_content?: string | null
           materials?: Json | null
@@ -1433,25 +1449,31 @@ export type Database = {
           tags?: string[] | null
           technical_content?: string | null
           unit_id?: string | null
+          unit_label?: string | null
+          unit_price?: number | null
           updated_at?: string
           warranty_info?: string | null
         }
         Update: {
+          active?: boolean
           approved_at?: string | null
           approved_by?: string | null
           az_code?: string
+          brand?: string | null
           category?: string | null
           category_id?: string | null
           confidence_level?: string | null
           content_optimization_score?: number | null
           created_at?: string
           created_by?: string | null
+          daftra_id?: string | null
           datasheet_generated?: boolean | null
           default_price_id?: string | null
           default_supplier_id?: string | null
           description_ar?: string | null
           description_en?: string | null
           egs_code?: string | null
+          estimated_price?: number | null
           external_links?: Json | null
           family_id?: string | null
           faq?: Json | null
@@ -1461,9 +1483,12 @@ export type Database = {
           gpc_segment?: string | null
           gs1_gpc_brick?: string | null
           id?: string
+          image_url_2?: string | null
+          image_url_3?: string | null
           installation_notes?: string | null
           internal_notes?: string | null
           item_type?: Database["public"]["Enums"]["item_type"]
+          main_image_url?: string | null
           maintenance_notes?: string | null
           marketing_content?: string | null
           materials?: Json | null
@@ -1482,6 +1507,8 @@ export type Database = {
           tags?: string[] | null
           technical_content?: string | null
           unit_id?: string | null
+          unit_label?: string | null
+          unit_price?: number | null
           updated_at?: string
           warranty_info?: string | null
         }

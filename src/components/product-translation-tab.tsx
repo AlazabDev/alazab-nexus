@@ -134,7 +134,7 @@ export function ProductTranslationTab({ productId }: { productId: string }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {Object.entries(drafts).map(([field, value]) => {
-            const original = (product as Record<string, string | null>)[field];
+            const original = (product as unknown as Record<string, string | null>)[field];
             return (
               <Card key={field} className="p-4 surface-elevated border-0 space-y-2">
                 <div className="flex items-center justify-between">
