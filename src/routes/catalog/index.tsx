@@ -290,7 +290,7 @@ function CatalogPage() {
   });
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const navigate = useNavigate();
+
 
   // إحصائيات سريعة
   useEffect(() => {
