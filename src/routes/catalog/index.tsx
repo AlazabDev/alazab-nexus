@@ -278,7 +278,8 @@ function CatalogPage() {
     q: "", brand: "", type: "", sort: "name_ar",
   });
 
-  const searchTimer = useRef<ReturnType<typeof setTimeout>>();
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const navigate = useNavigate();
 
   // إحصائيات سريعة
   useEffect(() => {
