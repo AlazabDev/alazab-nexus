@@ -1,10 +1,18 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import {
-  Search, Grid3X3, List, SlidersHorizontal, X,
-  Package, ChevronDown, ExternalLink, Star,
+  Search, Grid3X3, List, X,
+  Package, ExternalLink, QrCode as QrIcon,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+
+type ItemType = Database["public"]["Enums"]["item_type"];
+
+// Monospace stack — as requested by the user
+const MONO_STACK =
+  '"Menlo","Monaco","Consolas","Cascadia Mono","Ubuntu Mono","DejaVu Sans Mono","Liberation Mono","JetBrains Mono","Fira Code","Cousine","Roboto Mono","Courier New",Courier,sans-serif,system-ui';
 
 export const Route = createFileRoute("/catalog/")({
   head: () => ({
@@ -15,6 +23,7 @@ export const Route = createFileRoute("/catalog/")({
   }),
   component: CatalogPage,
 });
+
 
 // ── Types ──────────────────────────────────────────────────
 type Product = {
