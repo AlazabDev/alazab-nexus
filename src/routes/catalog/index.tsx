@@ -285,9 +285,9 @@ function CatalogPage() {
   useEffect(() => {
     (async () => {
       const [t, p, s] = await Promise.all([
-        supabase.from("products").select("*", { count: "exact", head: true }),
-        supabase.from("products").select("*", { count: "exact", head: true }).not("unit_price", "is", null),
-        supabase.from("products").select("*", { count: "exact", head: true }).not("daftra_id", "is", null),
+        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true),
+        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true).not("unit_price", "is", null),
+        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true).not("daftra_id", "is", null),
       ]);
       setStats({ total: t.count ?? 0, priced: p.count ?? 0, synced: s.count ?? 0 });
     })();
