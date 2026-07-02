@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogIndexRouteImport } from './routes/catalog/index'
+import { Route as CatalogAzCodeRouteImport } from './routes/catalog/$azCode'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AuthenticatedSupplierInventoryRouteImport } from './routes/_authenticated/supplier-inventory'
 import { Route as AuthenticatedQuoteRequestsRouteImport } from './routes/_authenticated/quote-requests'
@@ -85,6 +86,11 @@ const IndexRoute = IndexRouteImport.update({
 const CatalogIndexRoute = CatalogIndexRouteImport.update({
   id: '/catalog/',
   path: '/catalog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogAzCodeRoute = CatalogAzCodeRouteImport.update({
+  id: '/catalog/$azCode',
+  path: '/catalog/$azCode',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
@@ -410,6 +416,7 @@ export interface FileRoutesByFullPath {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/catalog/$azCode': typeof CatalogAzCodeRoute
   '/catalog/': typeof CatalogIndexRoute
   '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
@@ -469,6 +476,7 @@ export interface FileRoutesByTo {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/catalog/$azCode': typeof CatalogAzCodeRoute
   '/catalog': typeof CatalogIndexRoute
   '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
@@ -530,6 +538,7 @@ export interface FileRoutesById {
   '/_authenticated/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/catalog/$azCode': typeof CatalogAzCodeRoute
   '/catalog/': typeof CatalogIndexRoute
   '/_authenticated/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/_authenticated/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
@@ -591,6 +600,7 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/catalog/$azCode'
     | '/catalog/'
     | '/ai-chat/history'
     | '/ai-studio/bulk'
@@ -650,6 +660,7 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/catalog/$azCode'
     | '/catalog'
     | '/ai-chat/history'
     | '/ai-studio/bulk'
@@ -710,6 +721,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quote-requests'
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
+    | '/catalog/$azCode'
     | '/catalog/'
     | '/_authenticated/ai-chat/history'
     | '/_authenticated/ai-studio/bulk'
@@ -759,6 +771,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  CatalogAzCodeRoute: typeof CatalogAzCodeRoute
   CatalogIndexRoute: typeof CatalogIndexRoute
   ApiAgentV1InternalApprovalRoute: typeof ApiAgentV1InternalApprovalRoute
   ApiAgentV1OrderStatusRoute: typeof ApiAgentV1OrderStatusRoute
@@ -803,6 +816,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/catalog/'
       preLoaderRoute: typeof CatalogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog/$azCode': {
+      id: '/catalog/$azCode'
+      path: '/catalog/$azCode'
+      fullPath: '/catalog/$azCode'
+      preLoaderRoute: typeof CatalogAzCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/support': {
@@ -1309,6 +1329,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  CatalogAzCodeRoute: CatalogAzCodeRoute,
   CatalogIndexRoute: CatalogIndexRoute,
   ApiAgentV1InternalApprovalRoute: ApiAgentV1InternalApprovalRoute,
   ApiAgentV1OrderStatusRoute: ApiAgentV1OrderStatusRoute,
