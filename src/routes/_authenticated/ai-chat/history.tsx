@@ -19,7 +19,7 @@ import {
 import { MessageSquare, Trash2, Copy, Clock, RotateCcw, Search } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/ai-chat")({
+export const Route = createFileRoute("/_authenticated/ai-chat/history")({
   head: () => ({ meta: [{ title: "سجل المحادثات — Alazab PAOP" }] }),
   component: ChatHistory,
 });

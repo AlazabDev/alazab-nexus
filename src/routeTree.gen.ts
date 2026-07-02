@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CatalogIndexRouteImport } from './routes/catalog/index'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AuthenticatedSupplierInventoryRouteImport } from './routes/_authenticated/supplier-inventory'
 import { Route as AuthenticatedQuoteRequestsRouteImport } from './routes/_authenticated/quote-requests'
@@ -50,6 +51,7 @@ import { Route as AuthenticatedAiStudioOptimizeRouteImport } from './routes/_aut
 import { Route as AuthenticatedAiStudioImagesRouteImport } from './routes/_authenticated/ai-studio/images'
 import { Route as AuthenticatedAiStudioDatasheetsRouteImport } from './routes/_authenticated/ai-studio/datasheets'
 import { Route as AuthenticatedAiStudioBulkRouteImport } from './routes/_authenticated/ai-studio/bulk'
+import { Route as AuthenticatedAiChatHistoryRouteImport } from './routes/_authenticated/ai-chat/history'
 import { Route as ApiPublicV1SuppliersRouteImport } from './routes/api/public/v1/suppliers'
 import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/products'
 import { Route as ApiPublicV1PricingRouteImport } from './routes/api/public/v1/pricing'
@@ -78,6 +80,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogIndexRoute = CatalogIndexRouteImport.update({
+  id: '/catalog/',
+  path: '/catalog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
@@ -300,6 +307,12 @@ const AuthenticatedAiStudioBulkRoute =
     path: '/ai-studio/bulk',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAiChatHistoryRoute =
+  AuthenticatedAiChatHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedAiChatRoute,
+  } as any)
 const ApiPublicV1SuppliersRoute = ApiPublicV1SuppliersRouteImport.update({
   id: '/api/public/v1/suppliers',
   path: '/api/public/v1/suppliers',
@@ -385,7 +398,7 @@ const ApiPrivateV1AiBatchOptimizeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/ai-chat': typeof AuthenticatedAiChatRoute
+  '/ai-chat': typeof AuthenticatedAiChatRouteWithChildren
   '/ai-review': typeof AuthenticatedAiReviewRoute
   '/audit-logs': typeof AuthenticatedAuditLogsRoute
   '/build-health': typeof AuthenticatedBuildHealthRoute
@@ -397,6 +410,8 @@ export interface FileRoutesByFullPath {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/catalog/': typeof CatalogIndexRoute
+  '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
   '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
@@ -442,7 +457,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/ai-chat': typeof AuthenticatedAiChatRoute
+  '/ai-chat': typeof AuthenticatedAiChatRouteWithChildren
   '/ai-review': typeof AuthenticatedAiReviewRoute
   '/audit-logs': typeof AuthenticatedAuditLogsRoute
   '/build-health': typeof AuthenticatedBuildHealthRoute
@@ -454,6 +469,8 @@ export interface FileRoutesByTo {
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/catalog': typeof CatalogIndexRoute
+  '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
   '/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
@@ -501,7 +518,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/_authenticated/ai-chat': typeof AuthenticatedAiChatRoute
+  '/_authenticated/ai-chat': typeof AuthenticatedAiChatRouteWithChildren
   '/_authenticated/ai-review': typeof AuthenticatedAiReviewRoute
   '/_authenticated/audit-logs': typeof AuthenticatedAuditLogsRoute
   '/_authenticated/build-health': typeof AuthenticatedBuildHealthRoute
@@ -513,6 +530,8 @@ export interface FileRoutesById {
   '/_authenticated/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/catalog/': typeof CatalogIndexRoute
+  '/_authenticated/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/_authenticated/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/_authenticated/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
   '/_authenticated/ai-studio/images': typeof AuthenticatedAiStudioImagesRoute
@@ -572,6 +591,8 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/catalog/'
+    | '/ai-chat/history'
     | '/ai-studio/bulk'
     | '/ai-studio/datasheets'
     | '/ai-studio/images'
@@ -629,6 +650,8 @@ export interface FileRouteTypes {
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
+    | '/catalog'
+    | '/ai-chat/history'
     | '/ai-studio/bulk'
     | '/ai-studio/datasheets'
     | '/ai-studio/images'
@@ -687,6 +710,8 @@ export interface FileRouteTypes {
     | '/_authenticated/quote-requests'
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
+    | '/catalog/'
+    | '/_authenticated/ai-chat/history'
     | '/_authenticated/ai-studio/bulk'
     | '/_authenticated/ai-studio/datasheets'
     | '/_authenticated/ai-studio/images'
@@ -734,6 +759,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  CatalogIndexRoute: typeof CatalogIndexRoute
   ApiAgentV1InternalApprovalRoute: typeof ApiAgentV1InternalApprovalRoute
   ApiAgentV1OrderStatusRoute: typeof ApiAgentV1OrderStatusRoute
   ApiAgentV1QuoteRequestRoute: typeof ApiAgentV1QuoteRequestRoute
@@ -770,6 +796,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog/': {
+      id: '/catalog/'
+      path: '/catalog'
+      fullPath: '/catalog/'
+      preLoaderRoute: typeof CatalogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/support': {
@@ -1038,6 +1071,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiStudioBulkRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/ai-chat/history': {
+      id: '/_authenticated/ai-chat/history'
+      path: '/history'
+      fullPath: '/ai-chat/history'
+      preLoaderRoute: typeof AuthenticatedAiChatHistoryRouteImport
+      parentRoute: typeof AuthenticatedAiChatRoute
+    }
     '/api/public/v1/suppliers': {
       id: '/api/public/v1/suppliers'
       path: '/api/public/v1/suppliers'
@@ -1146,8 +1186,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAiChatRouteChildren {
+  AuthenticatedAiChatHistoryRoute: typeof AuthenticatedAiChatHistoryRoute
+}
+
+const AuthenticatedAiChatRouteChildren: AuthenticatedAiChatRouteChildren = {
+  AuthenticatedAiChatHistoryRoute: AuthenticatedAiChatHistoryRoute,
+}
+
+const AuthenticatedAiChatRouteWithChildren =
+  AuthenticatedAiChatRoute._addFileChildren(AuthenticatedAiChatRouteChildren)
+
 interface AuthenticatedRouteChildren {
-  AuthenticatedAiChatRoute: typeof AuthenticatedAiChatRoute
+  AuthenticatedAiChatRoute: typeof AuthenticatedAiChatRouteWithChildren
   AuthenticatedAiReviewRoute: typeof AuthenticatedAiReviewRoute
   AuthenticatedAuditLogsRoute: typeof AuthenticatedAuditLogsRoute
   AuthenticatedBuildHealthRoute: typeof AuthenticatedBuildHealthRoute
@@ -1188,7 +1239,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedAiChatRoute: AuthenticatedAiChatRoute,
+  AuthenticatedAiChatRoute: AuthenticatedAiChatRouteWithChildren,
   AuthenticatedAiReviewRoute: AuthenticatedAiReviewRoute,
   AuthenticatedAuditLogsRoute: AuthenticatedAuditLogsRoute,
   AuthenticatedBuildHealthRoute: AuthenticatedBuildHealthRoute,
@@ -1258,6 +1309,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  CatalogIndexRoute: CatalogIndexRoute,
   ApiAgentV1InternalApprovalRoute: ApiAgentV1InternalApprovalRoute,
   ApiAgentV1OrderStatusRoute: ApiAgentV1OrderStatusRoute,
   ApiAgentV1QuoteRequestRoute: ApiAgentV1QuoteRequestRoute,
