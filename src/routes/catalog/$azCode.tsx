@@ -206,22 +206,23 @@ function ProductDetail() {
 
           {/* QR + AZ code card */}
           <div className="rounded-2xl bg-white border border-[#E8E4DC] p-4 flex items-center gap-4">
-            <div className="p-2 bg-white rounded-lg border border-[#E8E4DC]">
+            <div ref={qrRef} className="p-2 bg-white rounded-lg border border-[#E8E4DC]">
               <QRCodeSVG value={shareUrl} size={96} level="M" includeMargin={false} />
             </div>
             <div className="flex-1 min-w-0 space-y-1.5">
               <div className="text-[10px] uppercase tracking-wider text-[#8C8680]">AZ Code</div>
               <div className="text-lg font-bold text-[#534AB7] break-all">{p.az_code}</div>
-              <a
-                href={`data:image/svg+xml;utf8,${encodeURIComponent(
-                  `<?xml version="1.0" encoding="UTF-8"?>` +
-                    (document.querySelector(`[data-qr="${p.az_code}"]`)?.outerHTML ?? "")
-                )}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const svg = document.querySelector<SVGSVGElement>("svg[data-qr='" + p.az_code + "']");
+              <button
+                type="button"
+                onClick={() => {
+                  const svg = qrRef.current?.querySelector("svg");
                   if (!svg) return;
-                  const blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" });
+                  const clone = svg.cloneNode(true) as SVGSVGElement;
+                  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+                  const blob = new Blob(
+                    ['<?xml version="1.0" encoding="UTF-8"?>', new XMLSerializer().serializeToString(clone)],
+                    { type: "image/svg+xml" }
+                  );
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
@@ -232,13 +233,10 @@ function ProductDetail() {
                 className="inline-flex items-center gap-1 text-[11px] text-[#0D1B2A] hover:text-[#C9A84C] transition"
               >
                 <Download className="size-3" /> تنزيل QR (SVG)
-              </a>
-              {/* Hidden reference SVG used for the download */}
-              <div className="hidden">
-                <QRCodeSVG value={shareUrl} size={512} level="M" includeMargin={false} />
-              </div>
+              </button>
             </div>
           </div>
+
 
           {/* Specs table */}
           <div className="rounded-2xl bg-white border border-[#E8E4DC] overflow-hidden">
