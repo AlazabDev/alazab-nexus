@@ -297,12 +297,13 @@ function CatalogPage() {
     setLoading(true);
     let q = supabase.from("products")
       .select("id,az_code,name_ar,name_en,description_ar,brand,item_type,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,gpc_class,operational_track,status", { count: "exact" })
-      .eq("status", "needs_review")
+      .eq("active", true)
+      .not("status", "in", "(archived,rejected)")
       .range((pg - 1) * PAGE, pg * PAGE - 1);
 
     if (f.q)     q = q.or(`name_ar.ilike.%${f.q}%,az_code.ilike.%${f.q}%,name_en.ilike.%${f.q}%`);
     if (f.brand) q = q.eq("brand", f.brand);
-    if (f.type)  q = q.eq("item_type", f.type);
+    if (f.type)  q = q.eq("item_type", f.type as ItemType);
 
     if (f.sort === "unit_price_asc")  q = q.order("unit_price", { ascending: true,  nullsFirst: false });
     else if (f.sort === "unit_price_desc") q = q.order("unit_price", { ascending: false, nullsFirst: false });
