@@ -90,6 +90,7 @@ function ProductDetail() {
   const { product: p } = Route.useLoaderData();
   const images = [p.main_image_url, p.image_url_2, p.image_url_3].filter(Boolean) as string[];
   const [active, setActive] = useState<string | null>(images[0] ?? null);
+  const qrRef = useRef<HTMLDivElement>(null);
   const price = p.unit_price ?? p.estimated_price;
   const bm = BRAND_META[p.brand ?? ""];
 
