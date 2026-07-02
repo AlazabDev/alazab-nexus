@@ -250,14 +250,25 @@ function ProductModal({ p, onClose }: { p: Product; onClose: () => void }) {
             </tbody>
           </table>
 
-          <a
-            href={`https://prod.alazab.com/products/${p.az_code}`}
-            target="_blank" rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white transition"
-            style={{ background: "#0D1B2A" }}
-          >
-            عرض التفاصيل <ExternalLink className="size-4" />
-          </a>
+          <div className="grid grid-cols-[1fr_auto] items-center gap-4 pt-2">
+            <Link
+              to="/catalog/$azCode"
+              params={{ azCode: p.az_code }}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white transition"
+              style={{ background: "#0D1B2A" }}
+            >
+              عرض التفاصيل <ExternalLink className="size-4" />
+            </Link>
+            <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white border border-[#E8E4DC]">
+              <QRCodeSVG
+                value={typeof window !== "undefined" ? `${window.location.origin}/catalog/${p.az_code}` : `/catalog/${p.az_code}`}
+                size={64}
+                level="M"
+                includeMargin={false}
+              />
+              <span className="text-[9px] text-[#8C8680]" style={{ fontFamily: MONO_STACK }}>QR</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
