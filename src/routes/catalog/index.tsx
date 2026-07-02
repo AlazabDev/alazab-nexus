@@ -341,7 +341,7 @@ function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]" dir="rtl"
-      style={{ fontFamily: "'Tajawal','Segoe UI',Arial,sans-serif" }}>
+      style={{ fontFamily: MONO_STACK }}>
 
       {/* ── Hero ── */}
       <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0D1B2A 0%, #1a2f4a 60%, #0D1B2A 100%)" }}>
