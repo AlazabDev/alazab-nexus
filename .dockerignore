@@ -1,0 +1,10 @@
+node_modules
+.git
+.github
+dist
+.output
+.vinxi
+.wrangler
+logs
+*.log
+.DS_Store
