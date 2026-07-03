@@ -296,7 +296,7 @@ function ProductsDashboard() {
               إضافة منتج
             </Button>
           </Link>
-          <Link to="/products?status=needs_review">
+          <Link to="/products" search={{ status: "needs_review" } as never}>
             <Button variant="outline" className="w-full gap-2">
               <AlertCircle className="size-4" />
               مراجعة المنتجات
