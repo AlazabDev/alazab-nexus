@@ -75,7 +75,7 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
               applied: false,
             },
             200,
-            { headers: CORS }
+            { request }
           );
         } catch (error) {
           console.error('[v0] API error:', error);
@@ -93,7 +93,7 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
               error: error instanceof Error ? error.message : 'Optimization failed',
             },
             500,
-            { headers: CORS }
+            { request }
           );
         }
       },

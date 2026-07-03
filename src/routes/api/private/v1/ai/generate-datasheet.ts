@@ -43,7 +43,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
                 datasheet_id: existingDatasheet.id,
               },
               200,
-              { headers: CORS }
+              { request }
             );
           }
 
@@ -140,7 +140,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
               },
             },
             200,
-            { headers: CORS }
+            { request }
           );
         } catch (error) {
           console.error('[v0] Datasheet generation error:', error);
@@ -158,7 +158,7 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
               error: error instanceof Error ? error.message : 'Datasheet generation failed',
             },
             500,
-            { headers: CORS }
+            { request }
           );
         }
       },
