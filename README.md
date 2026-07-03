@@ -1,4 +1,4 @@
-# AzProud - Product Management Platform
+# Alazab Nexus — Product Management Platform
 
 A comprehensive, AI-powered product and service management system built for enterprises managing complex catalogs with Arabic localization and real-time collaboration.
 
@@ -53,7 +53,7 @@ A comprehensive, AI-powered product and service management system built for ente
 
 ## Overview
 
-AzProud is a professional product management platform designed for organizations that need to:
+Alazab Nexus is a professional product management platform designed for organizations that need to:
 - Manage large product catalogs efficiently
 - Integrate with multiple business systems (Daftra, ERPNext, Bot Gateway)
 - Leverage AI for product classification and analysis
@@ -106,7 +106,7 @@ AzProud is a professional product management platform designed for organizations
 
 2. **Install dependencies**
    ```bash
-   bun install
+   pnpm install
    # or: npm install / pnpm install / yarn install
    ```
 
@@ -121,13 +121,13 @@ AzProud is a professional product management platform designed for organizations
 
 4. **Run development server**
    ```bash
-   bun run dev
+   pnpm dev
    # App will be available at http://localhost:8084
    ```
 
 5. **Build for production**
    ```bash
-   bun run build
+   pnpm build
    bun run preview
    ```
 
@@ -246,7 +246,7 @@ docker run -p 3000:3000 azproud
 
 ### Manual
 ```bash
-bun run build
+pnpm build
 bun run preview
 ```
 
@@ -300,7 +300,7 @@ bun run preview
 
 1. Create feature branch from `main`
 2. Make changes following code style
-3. Test locally with `bun run dev`
+3. Test locally with `pnpm dev`
 4. Push and create pull request
 5. Merge after review
 
@@ -315,12 +315,12 @@ bun run preview
 
 Run tests:
 ```bash
-bun run test
+pnpm test
 ```
 
 Coverage:
 ```bash
-bun run test:coverage
+pnpm test:coverage
 ```
 
 ## Monitoring & Maintenance
@@ -337,7 +337,7 @@ bun run test:coverage
 
 ### Performance
 - Use Lighthouse for performance audits
-- Monitor bundle size: `bun run build` → dist/ folder
+- Monitor bundle size: `pnpm build` → dist/ folder
 - Check Core Web Vitals in Vercel Analytics
 
 ## Support & Troubleshooting
