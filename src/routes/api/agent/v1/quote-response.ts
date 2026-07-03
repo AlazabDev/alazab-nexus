@@ -11,12 +11,12 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey } from "@/lib/api-auth";
+import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
 
 export const Route = createFileRoute("/api/agent/v1/quote-response")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       POST: async ({ request }) => {
         const started = Date.now();

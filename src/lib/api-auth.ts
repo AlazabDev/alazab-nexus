@@ -37,27 +37,43 @@ export function corsHeaders(request: Request): Record<string, string> {
   };
 }
 
-// Backward-compat: a permissive default for handlers that still import CORS
-// as a static constant. Prefer corsHeaders(request).
+// Deprecated: use corsHeaders(request) instead. Kept for backward-compat and
+// intentionally locked-down in production (no wildcard origin).
 export const CORS = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": process.env.NODE_ENV === "production" ? "null" : "*",
+  Vary: "Origin",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, x-api-key, Authorization",
   "Access-Control-Max-Age": "86400",
 } as const;
 
-export function json(
-  body: unknown,
-  status = 200,
-  extra: Record<string, string> | { headers?: Record<string, string> } = {},
-) {
-  const extraHeaders: Record<string, string> =
-    extra && typeof extra === "object" && "headers" in extra && extra.headers
-      ? (extra.headers as Record<string, string>)
-      : ((extra as Record<string, string>) ?? {});
+export function preflight(request: Request) {
+  return new Response(null, { status: 204, headers: corsHeaders(request) });
+}
+
+type JsonOpts =
+  | { request?: Request; headers?: Record<string, string> }
+  | Record<string, string>;
+
+export function json(body: unknown, status = 200, opts: JsonOpts = {}) {
+  let cors: Record<string, string>;
+  let extraHeaders: Record<string, string> = {};
+
+  if (opts && typeof opts === "object" && "request" in opts && opts.request instanceof Request) {
+    const o = opts as { request: Request; headers?: Record<string, string> };
+    cors = corsHeaders(o.request);
+    if (o.headers) extraHeaders = o.headers;
+  } else if (opts && typeof opts === "object" && "headers" in opts && (opts as { headers?: unknown }).headers) {
+    cors = { ...CORS };
+    extraHeaders = (opts as { headers: Record<string, string> }).headers;
+  } else {
+    cors = { ...CORS };
+    extraHeaders = (opts as Record<string, string>) ?? {};
+  }
+
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...CORS, ...extraHeaders },
+    headers: { "Content-Type": "application/json", ...cors, ...extraHeaders },
   });
 }
 

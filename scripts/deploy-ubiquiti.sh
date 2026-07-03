@@ -2,8 +2,8 @@
 
 ###############################################################################
 #                                                                             #
-#  AzProud Production Deployment Script for Ubiquiti 24                      #
-#  Domain: proud.azab.services                                               #
+#  Alazab Nexus Production Deployment Script for Ubiquiti 24                      #
+#  Domain: products.alazab.com                                               #
 #                                                                             #
 #  This script handles:                                                       #
 #  - Cloning/updating the repository                                         #
@@ -26,10 +26,10 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-DOMAIN="proud.azab.services"
-APP_NAME="azproud"
-APP_DIR="/home/ubuntu/azproud"
-REPO_URL="https://github.com/uberfiix/az-product.git"
+DOMAIN="products.alazab.com"
+APP_NAME="alazab-nexus"
+APP_DIR="/home/ubuntu/alazab-nexus"
+REPO_URL="https://github.com/uberfiix/alazab-nexus.git"
 REPO_BRANCH="main"
 NGINX_CONFIG="/etc/nginx/sites-available/$DOMAIN"
 APP_PORT=3000
@@ -61,7 +61,7 @@ command_exists() {
 # SECTION 1: Pre-deployment checks
 ###############################################################################
 
-print_info "Starting AzProud deployment to $DOMAIN..."
+print_info "Starting Alazab Nexus deployment to $DOMAIN..."
 print_info "This script will deploy to: $APP_DIR"
 
 # Check if running as root or with sudo
@@ -127,7 +127,10 @@ print_success "Repository ready at $APP_DIR"
 print_info "Installing dependencies..."
 
 # Check if bun is available, if not use npm
-if command_exists bun; then
+if command_exists pnpm; then
+    print_info "Using pnpm package manager"
+    pnpm install --frozen-lockfile
+elif command_exists bun; then
     print_info "Using Bun package manager"
     bun install
 else
@@ -158,7 +161,7 @@ AZURE_OPENAI_API_KEY=your_azure_key
 AZURE_OPENAI_ENDPOINT=your_azure_endpoint
 
 # API Configuration
-VITE_API_URL=https://proud.azab.services/api
+VITE_API_URL=https://products.alazab.com/api
 NODE_ENV=production
 
 # Daftra Integration (optional)
@@ -181,7 +184,9 @@ print_success "Environment file configured"
 
 print_info "Building application..."
 
-if command_exists bun; then
+if command_exists pnpm; then
+    pnpm run build
+elif command_exists bun; then
     bun run build
 else
     npm run build
@@ -210,7 +215,7 @@ cat > "$APP_DIR/ecosystem.config.js" << 'ECOSYSTEM'
 module.exports = {
   apps: [
     {
-      name: "azproud",
+      name: "alazab-nexus",
       script: "./dist/server/index.js",
       instances: "max",
       exec_mode: "cluster",
@@ -249,17 +254,17 @@ print_success "PM2 ecosystem configured"
 
 print_info "Creating systemd service file..."
 
-cat > "/etc/systemd/system/azproud.service" << 'SERVICE'
+cat > "/etc/systemd/system/alazab-nexus.service" << 'SERVICE'
 [Unit]
-Description=AzProud Application
+Description=Alazab Nexus Application
 After=network.target
 
 [Service]
 Type=forking
 User=ubuntu
-WorkingDirectory=/home/ubuntu/azproud
+WorkingDirectory=/home/ubuntu/alazab-nexus
 Environment="PATH=/usr/local/bin:/usr/bin"
-ExecStart=/usr/local/bin/pm2 start ecosystem.config.js --name azproud
+ExecStart=/usr/local/bin/pm2 start ecosystem.config.js --name alazab-nexus
 ExecReload=/usr/local/bin/pm2 reload ecosystem.config.js
 ExecStop=/usr/local/bin/pm2 stop ecosystem.config.js
 Restart=on-failure
@@ -269,7 +274,7 @@ RestartSec=10s
 WantedBy=multi-user.target
 SERVICE
 
-chmod 644 /etc/systemd/system/azproud.service
+chmod 644 /etc/systemd/system/alazab-nexus.service
 systemctl daemon-reload
 
 print_success "Systemd service created"
@@ -282,7 +287,7 @@ print_info "Configuring Nginx reverse proxy..."
 
 # Create nginx configuration
 cat > "$NGINX_CONFIG" << 'NGINX'
-upstream azproud_app {
+upstream alazab-nexus_app {
     least_conn;
     server 127.0.0.1:3000 max_fails=3 fail_timeout=30s;
     keepalive 64;
@@ -295,7 +300,7 @@ limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=5r/m;
 server {
     listen 80;
     listen [::]:80;
-    server_name proud.azab.services www.proud.azab.services;
+    server_name products.alazab.com www.products.alazab.com;
 
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
@@ -304,11 +309,11 @@ server {
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name proud.azab.services;
+    server_name products.alazab.com;
 
     # SSL Configuration
-    ssl_certificate /etc/letsencrypt/live/proud.azab.services/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/proud.azab.services/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/products.alazab.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/products.alazab.com/privkey.pem;
     
     # Modern SSL Configuration
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -329,8 +334,8 @@ server {
     add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
 
     # Logging
-    access_log /var/log/nginx/azproud-access.log combined;
-    error_log /var/log/nginx/azproud-error.log warn;
+    access_log /var/log/nginx/alazab-nexus-access.log combined;
+    error_log /var/log/nginx/alazab-nexus-error.log warn;
 
     # Gzip compression
     gzip on;
@@ -346,7 +351,7 @@ server {
     keepalive_timeout 15;
     send_timeout 10;
 
-    root /home/ubuntu/azproud/dist;
+    root /home/ubuntu/alazab-nexus/dist;
 
     # Static files with cache
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
@@ -359,7 +364,7 @@ server {
     location /api/ {
         limit_req zone=api_limit burst=50 nodelay;
         
-        proxy_pass http://azproud_app;
+        proxy_pass http://alazab-nexus_app;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -376,7 +381,7 @@ server {
     location /auth/ {
         limit_req zone=auth_limit burst=5 nodelay;
         
-        proxy_pass http://azproud_app;
+        proxy_pass http://alazab-nexus_app;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -386,7 +391,7 @@ server {
 
     # WebSocket support for real-time features
     location /ws/ {
-        proxy_pass http://azproud_app;
+        proxy_pass http://alazab-nexus_app;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -402,7 +407,7 @@ server {
     location / {
         try_files $uri $uri/ /index.html;
         
-        proxy_pass http://azproud_app;
+        proxy_pass http://alazab-nexus_app;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -415,12 +420,12 @@ server {
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name www.proud.azab.services;
+    server_name www.products.alazab.com;
 
-    ssl_certificate /etc/letsencrypt/live/proud.azab.services/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/proud.azab.services/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/products.alazab.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/products.alazab.com/privkey.pem;
 
-    return 301 https://proud.azab.services$request_uri;
+    return 301 https://products.alazab.com$request_uri;
 }
 NGINX
 
@@ -447,12 +452,12 @@ print_info "Setting up SSL/TLS with Let's Encrypt..."
 if command_exists certbot; then
     print_info "Certbot found, checking certificates..."
     
-    if [ ! -d "/etc/letsencrypt/live/proud.azab.services" ]; then
+    if [ ! -d "/etc/letsencrypt/live/products.alazab.com" ]; then
         print_info "Creating new certificate..."
         certbot certonly --nginx --non-interactive --agree-tos \
-            -d proud.azab.services \
-            -d www.proud.azab.services \
-            -m "admin@azab.services" || print_warning "Certificate setup may require manual intervention"
+            -d products.alazab.com \
+            -d www.products.alazab.com \
+            -m "admin@alazab.com" || print_warning "Certificate setup may require manual intervention"
     else
         print_info "Certificate already exists"
     fi
@@ -464,9 +469,9 @@ else
     apt-get update && apt-get install -y certbot python3-certbot-nginx
     
     certbot certonly --nginx --non-interactive --agree-tos \
-        -d proud.azab.services \
-        -d www.proud.azab.services \
-        -m "admin@azab.services" || print_warning "Certificate setup may require manual intervention"
+        -d products.alazab.com \
+        -d www.products.alazab.com \
+        -m "admin@alazab.com" || print_warning "Certificate setup may require manual intervention"
 fi
 
 print_success "SSL/TLS configured"
@@ -475,11 +480,11 @@ print_success "SSL/TLS configured"
 # SECTION 10: Start application
 ###############################################################################
 
-print_info "Starting AzProud application..."
+print_info "Starting Alazab Nexus application..."
 
 # Stop existing PM2 process if running
-pm2 stop azproud 2>/dev/null || true
-pm2 delete azproud 2>/dev/null || true
+pm2 stop alazab-nexus 2>/dev/null || true
+pm2 delete alazab-nexus 2>/dev/null || true
 
 # Start application
 cd "$APP_DIR"
@@ -504,8 +509,8 @@ mkdir -p "$APP_DIR/logs"
 chown -R ubuntu:ubuntu "$APP_DIR/logs"
 
 # Create logrotate configuration
-cat > "/etc/logrotate.d/azproud" << 'LOGROTATE'
-/home/ubuntu/azproud/logs/*.log {
+cat > "/etc/logrotate.d/alazab-nexus" << 'LOGROTATE'
+/home/ubuntu/alazab-nexus/logs/*.log {
     daily
     rotate 14
     compress
@@ -514,11 +519,11 @@ cat > "/etc/logrotate.d/azproud" << 'LOGROTATE'
     create 0640 ubuntu ubuntu
     sharedscripts
     postrotate
-        pm2 reload azproud > /dev/null 2>&1 || true
+        pm2 reload alazab-nexus > /dev/null 2>&1 || true
     endscript
 }
 
-/var/log/nginx/azproud-*.log {
+/var/log/nginx/alazab-nexus-*.log {
     daily
     rotate 14
     compress
@@ -543,11 +548,11 @@ print_info "Verifying deployment..."
 sleep 3
 
 # Check if app is running
-if pm2 list | grep -q "azproud"; then
+if pm2 list | grep -q "alazab-nexus"; then
     print_success "Application is running"
 else
     print_error "Application failed to start"
-    pm2 logs azproud --lines 20
+    pm2 logs alazab-nexus --lines 20
     exit 1
 fi
 
@@ -578,7 +583,7 @@ systemctl enable nginx
 systemctl restart nginx
 
 # Enable systemd service
-systemctl enable azproud.service
+systemctl enable alazab-nexus.service
 
 # Create backup directory
 mkdir -p /home/ubuntu/backups
@@ -595,7 +600,7 @@ echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}   Deployment Completed Successfully!${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
-echo -e "Domain:          ${BLUE}https://proud.azab.services${NC}"
+echo -e "Domain:          ${BLUE}https://products.alazab.com${NC}"
 echo -e "Application:     ${BLUE}$APP_NAME${NC}"
 echo -e "Directory:       ${BLUE}$APP_DIR${NC}"
 echo -e "Process Manager: ${BLUE}PM2${NC}"
@@ -603,22 +608,22 @@ echo -e "Web Server:      ${BLUE}Nginx${NC}"
 echo -e "SSL:             ${BLUE}Let's Encrypt${NC}"
 echo ""
 echo -e "${YELLOW}Useful Commands:${NC}"
-echo "  View logs:              pm2 logs azproud"
-echo "  Restart app:            pm2 restart azproud"
-echo "  Stop app:               pm2 stop azproud"
+echo "  View logs:              pm2 logs alazab-nexus"
+echo "  Restart app:            pm2 restart alazab-nexus"
+echo "  Stop app:               pm2 stop alazab-nexus"
 echo "  View app status:        pm2 status"
 echo "  Nginx reload:           sudo systemctl reload nginx"
-echo "  View error logs:        tail -f /var/log/nginx/azproud-error.log"
+echo "  View error logs:        tail -f /var/log/nginx/alazab-nexus-error.log"
 echo ""
 echo -e "${YELLOW}Health Checks:${NC}"
-echo "  Website:                curl https://proud.azab.services"
-echo "  Check SSL:              openssl s_client -connect proud.azab.services:443"
+echo "  Website:                curl https://products.alazab.com"
+echo "  Check SSL:              openssl s_client -connect products.alazab.com:443"
 echo "  Monitor app:            watch -n 1 'pm2 status && echo && pm2 logs --lines 5'"
 echo ""
 echo -e "${YELLOW}Maintenance:${NC}"
 echo "  Auto-backup daily:      crontab -e"
 echo "  Check updates:          cd $APP_DIR && git status"
-echo "  Deploy updates:         cd $APP_DIR && git pull && bun run build && pm2 reload azproud"
+echo "  Deploy updates:         cd $APP_DIR && git pull && bun run build && pm2 reload alazab-nexus"
 echo ""
 echo -e "${GREEN}Deployment Date: $(date)${NC}"
 echo ""

@@ -22,7 +22,11 @@
     "git:pop": "bash scripts/git-commands.sh pop",
     "git:stashes": "bash scripts/git-commands.sh stashes",
     "git:deps": "bash scripts/git-commands.sh deps",
-    "git:full-sync": "bash scripts/git-commands.sh full-sync"
+    "git:full-sync": "bash scripts/git-commands.sh full-sync",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "ci": "pnpm run typecheck && pnpm run lint && pnpm run build"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.81",

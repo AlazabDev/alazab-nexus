@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall, corsHeaders} from '@/lib/api-auth';
 import { generateQuoteFromRequest, generateQuoteId } from '@/lib/ai/quote-generator';
 import { z } from 'zod';
 import crypto from 'crypto';
@@ -28,7 +28,7 @@ const QuoteRequestSchema = z.object({
 export const Route = createFileRoute('/api/public/v1/ai/quotes')({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
       POST: async ({ request }) => {
         const started = Date.now();
 

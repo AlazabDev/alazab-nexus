@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Complete guide for deploying AzProud to production environments.
+Complete guide for deploying Alazab Nexus to production environments.
 
 ## Table of Contents
 
@@ -22,9 +22,9 @@ Complete guide for deploying AzProud to production environments.
 Before deploying to production, ensure:
 
 ### Code Quality
-- [ ] All tests passing: `bun run test`
-- [ ] No TypeScript errors: `bun run build`
-- [ ] No console errors or warnings in dev: `bun run dev`
+- [ ] All tests passing: `pnpm test`
+- [ ] No TypeScript errors: `pnpm build`
+- [ ] No console errors or warnings in dev: `pnpm dev`
 - [ ] Code reviewed by at least one team member
 - [ ] Branch is up-to-date with main: `git pull origin main`
 
@@ -76,12 +76,12 @@ git push origin main
 1. Go to [vercel.com](https://vercel.com)
 2. Click "Add New Project"
 3. Select "Import Git Repository"
-4. Select the `uberfiix/az-product` repository
+4. Select the `uberfiix/alazab-nexus` repository
 5. Configure project:
    - **Project Name:** az-product (or custom)
    - **Framework Preset:** Vite
    - **Root Directory:** ./
-   - **Build Command:** `bun run build`
+   - **Build Command:** `pnpm build`
    - **Output Directory:** `dist`
 
 ### 3. Environment Variables
@@ -92,7 +92,7 @@ Configure in Vercel Dashboard → Settings → Environment Variables:
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 AZURE_OPENAI_API_KEY=your-azure-key-here
-VITE_API_URL=https://azproud.vercel.app/api
+VITE_API_URL=https://products.alazab.com/api
 NODE_ENV=production
 ```
 
@@ -240,7 +240,7 @@ sudo apt-get install -y nginx
 
 ```bash
 cd /var/www
-sudo git clone https://github.com/uberfiix/az-product.git
+sudo git clone https://github.com/uberfiix/alazab-nexus.git
 cd az-product
 sudo chown -R $USER:$USER .
 ```
@@ -248,8 +248,8 @@ sudo chown -R $USER:$USER .
 ### 3. Install Dependencies & Build
 
 ```bash
-bun install
-bun run build
+pnpm install
+pnpm build
 ```
 
 ### 4. Configure Nginx
@@ -316,7 +316,7 @@ sudo certbot certonly --nginx -d azproud.alazab.com
 ```ini
 # /etc/systemd/system/azproud.service
 [Unit]
-Description=AzProud Production Server
+Description=Alazab Nexus Production Server
 After=network.target
 
 [Service]
@@ -361,7 +361,7 @@ VITE_SUPABASE_URL=https://staging.supabase.co
 VITE_SUPABASE_ANON_KEY=your-staging-anon-key
 AZURE_OPENAI_API_KEY=your-staging-key
 NODE_ENV=production
-VITE_API_URL=https://staging-azproud.vercel.app/api
+VITE_API_URL=https://staging-products.alazab.com/api
 ```
 
 ### Production (.env.production)
@@ -384,7 +384,7 @@ VITE_API_URL=https://azproud.alazab.com/api
 # Create Supabase project
 # 1. Go to https://supabase.com/dashboard
 # 2. Click "New Project"
-# 3. Name: "AzProud Production"
+# 3. Name: "Alazab Nexus Production"
 # 4. Region: Closest to your users
 # 5. Generate strong password
 ```
@@ -563,10 +563,10 @@ docker logs azproud
 echo $VITE_SUPABASE_URL
 
 # Verify dependencies
-bun install
+pnpm install
 
 # Rebuild
-bun run build
+pnpm build
 ```
 
 ### Database connection error
