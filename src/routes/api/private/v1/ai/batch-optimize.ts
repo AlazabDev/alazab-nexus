@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall, corsHeaders} from '@/lib/api-auth';
 import { z } from 'zod';
 
 const BatchOptimizeRequestSchema = z.object({
@@ -13,7 +13,7 @@ const BatchOptimizeRequestSchema = z.object({
 export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
       POST: async ({ request }) => {
         const started = Date.now();
 

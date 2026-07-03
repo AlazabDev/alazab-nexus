@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall, corsHeaders} from '@/lib/api-auth';
 import { z } from 'zod';
 
 const StatusRequestSchema = z.object({
@@ -10,7 +10,7 @@ const StatusRequestSchema = z.object({
 export const Route = createFileRoute('/api/private/v1/ai/job-status')({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
       GET: async ({ request }) => {
         const started = Date.now();
 

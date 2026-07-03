@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey, logCall } from '@/lib/api-auth';
+import { CORS, json, requireApiKey, logCall, corsHeaders} from '@/lib/api-auth';
 import { generateProductDatasheet, generatePDFDatasheet } from '@/lib/ai/datasheet-generator';
 import { z } from 'zod';
 
@@ -14,7 +14,7 @@ const DatasheetRequestSchema = z.object({
 export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
       POST: async ({ request }) => {
         const started = Date.now();
 

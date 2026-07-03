@@ -11,13 +11,13 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey } from "@/lib/api-auth";
+import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
 import { calculateQuotePrice, type DesignData } from "@/lib/pricing-engine";
 
 export const Route = createFileRoute("/api/agent/v1/quote-request")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       // POST - استقبال طلب تسعير جديد
       POST: async ({ request }) => {
