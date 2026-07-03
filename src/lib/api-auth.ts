@@ -17,17 +17,10 @@ function isDev() {
   return process.env.NODE_ENV !== "production";
 }
 
-export function corsHeaders(request: Request): Record<string, string> {
-  const reqOrigin = request.headers.get("origin") ?? "";
+function defaultCorsHeaders(): Record<string, string> {
   const allowed = parseAllowedOrigins();
-  let originHeader = "null";
-  if (allowed.length === 0) {
-    originHeader = isDev() ? "*" : "null";
-  } else if (allowed.includes(reqOrigin)) {
-    originHeader = reqOrigin;
-  } else if (allowed.includes("*") && isDev()) {
-    originHeader = "*";
-  }
+  const originHeader = isDev() ? "*" : allowed[0] ?? "null";
+
   return {
     "Access-Control-Allow-Origin": originHeader,
     Vary: "Origin",
@@ -37,15 +30,31 @@ export function corsHeaders(request: Request): Record<string, string> {
   };
 }
 
-// Deprecated: use corsHeaders(request) instead. Kept for backward-compat and
-// intentionally locked-down in production (no wildcard origin).
-export const CORS = {
-  "Access-Control-Allow-Origin": process.env.NODE_ENV === "production" ? "null" : "*",
-  Vary: "Origin",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, x-api-key, Authorization",
-  "Access-Control-Max-Age": "86400",
-} as const;
+export function corsHeaders(request: Request): Record<string, string> {
+  const reqOrigin = request.headers.get("origin") ?? "";
+  const allowed = parseAllowedOrigins();
+  let originHeader = "null";
+
+  if (allowed.length === 0) {
+    originHeader = isDev() ? "*" : "null";
+  } else if (allowed.includes(reqOrigin)) {
+    originHeader = reqOrigin;
+  } else if (allowed.includes("*") && isDev()) {
+    originHeader = "*";
+  }
+
+  return {
+    "Access-Control-Allow-Origin": originHeader,
+    Vary: "Origin",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, x-api-key, Authorization",
+    "Access-Control-Max-Age": "86400",
+  };
+}
+
+// Deprecated: use corsHeaders(request) or json(..., { request }) instead.
+// Kept for backward compatibility and intentionally never exposes wildcard in production.
+export const CORS = defaultCorsHeaders() as Readonly<Record<string, string>>;
 
 export function preflight(request: Request) {
   return new Response(null, { status: 204, headers: corsHeaders(request) });
@@ -63,11 +72,16 @@ export function json(body: unknown, status = 200, opts: JsonOpts = {}) {
     const o = opts as { request: Request; headers?: Record<string, string> };
     cors = corsHeaders(o.request);
     if (o.headers) extraHeaders = o.headers;
-  } else if (opts && typeof opts === "object" && "headers" in opts && (opts as { headers?: unknown }).headers) {
-    cors = { ...CORS };
+  } else if (
+    opts &&
+    typeof opts === "object" &&
+    "headers" in opts &&
+    (opts as { headers?: unknown }).headers
+  ) {
+    cors = defaultCorsHeaders();
     extraHeaders = (opts as { headers: Record<string, string> }).headers;
   } else {
-    cors = { ...CORS };
+    cors = defaultCorsHeaders();
     extraHeaders = (opts as Record<string, string>) ?? {};
   }
 
@@ -90,6 +104,7 @@ export async function requireApiKey(request: Request, endpoint?: string) {
       error: json(
         { success: false, error: "Missing x-api-key header", code: "missing_api_key" },
         401,
+        { request },
       ),
     };
 
@@ -100,11 +115,19 @@ export async function requireApiKey(request: Request, endpoint?: string) {
     .maybeSingle();
   if (error || !data)
     return {
-      error: json({ success: false, error: "Invalid API key", code: "invalid_api_key" }, 401),
+      error: json(
+        { success: false, error: "Invalid API key", code: "invalid_api_key" },
+        401,
+        { request },
+      ),
     };
   if (!data.is_active)
     return {
-      error: json({ success: false, error: "API key disabled", code: "api_key_disabled" }, 403),
+      error: json(
+        { success: false, error: "API key disabled", code: "api_key_disabled" },
+        403,
+        { request },
+      ),
     };
 
   // Endpoint whitelist (empty list = allow all)
@@ -124,6 +147,7 @@ export async function requireApiKey(request: Request, endpoint?: string) {
             code: "endpoint_forbidden",
           },
           403,
+          { request },
         ),
       };
     }
@@ -139,7 +163,11 @@ export async function requireApiKey(request: Request, endpoint?: string) {
       .gte("created_at", since);
     if ((count ?? 0) >= RATE_LIMIT_PER_MINUTE) {
       return {
-        error: json({ success: false, error: "Rate limit exceeded", code: "rate_limited" }, 429),
+        error: json(
+          { success: false, error: "Rate limit exceeded", code: "rate_limited" },
+          429,
+          { request },
+        ),
       };
     }
   } catch (e) {
