@@ -2,7 +2,7 @@
 
 A comprehensive, AI-powered product and service management system built for enterprises managing complex catalogs with Arabic localization and real-time collaboration.
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -28,7 +28,6 @@ A comprehensive, AI-powered product and service management system built for ente
   - [API Security](#api-security)
 - [Performance Targets](#performance-targets)
 - [Deployment](#deployment)
-  - [Vercel (Recommended)](#vercel-recommended)
   - [Docker](#docker)
   - [Manual](#manual)
 - [Integration Points](#integration-points)
@@ -92,7 +91,8 @@ Alazab Nexus is a professional product management platform designed for organiza
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ or Bun 1.0+
+- Node.js 22+ recommended
+- pnpm 11.6.0 via Corepack
 - Supabase account with database connection
 - Azure OpenAI API key (optional for AI features)
 
@@ -100,14 +100,15 @@ Alazab Nexus is a professional product management platform designed for organiza
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/uberfiix/az-product.git
-   cd az-product
+   git clone https://github.com/AlazabDev/alazab-nexus.git
+   cd alazab-nexus
    ```
 
 2. **Install dependencies**
    ```bash
-   pnpm install
-   # or: npm install / pnpm install / yarn install
+   corepack enable
+   corepack prepare pnpm@11.6.0 --activate
+   pnpm install --frozen-lockfile
    ```
 
 3. **Set up environment variables**
@@ -115,20 +116,23 @@ Alazab Nexus is a professional product management platform designed for organiza
    cp .env.example .env.local
    ```
    Required variables:
-   - `VITE_SUPABASE_URL` - Supabase project URL
-   - `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
+   - `VITE_SUPABASE_URL` - Supabase project URL for the browser client
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` - Supabase publishable/anon key for the browser client
+   - `SUPABASE_URL` - Supabase project URL for SSR/server routes
+   - `SUPABASE_PUBLISHABLE_KEY` - Supabase publishable/anon key for SSR/server routes
+   - `SUPABASE_SERVICE_ROLE_KEY` - server-only service role key
+   - `ALLOWED_ORIGINS` - comma-separated production origins, for example `https://products.alazab.com`
    - `AZURE_OPENAI_API_KEY` - Azure OpenAI API key (optional)
 
 4. **Run development server**
    ```bash
    pnpm dev
-   # App will be available at http://localhost:8084
    ```
 
 5. **Build for production**
    ```bash
    pnpm build
-   bun run preview
+   pnpm preview
    ```
 
 ## Project Structure
@@ -204,50 +208,62 @@ Tailwind CSS v4 with design tokens in `styles.css` for:
 
 ### Authentication
 - Supabase Auth with email/password
-- Email verification required before account activation
 - Session management with secure cookies
 - Protected routes requiring authentication
 
 ### Database Security
 - Row-Level Security (RLS) policies on all tables
-- Parameterized queries (Supabase prevents SQL injection)
-- Service Role Key restricted to backend
+- Parameterized queries through Supabase client APIs
+- Service role key restricted to server-side code and hosting secrets
 - API key rate limiting
 
 ### API Security
-- CORS policy configured for allowed domains
-- Rate limiting (100 requests/minute per API key)
-- Input validation on all forms (Zod)
-- CSRF tokens for state-changing operations
+- CORS policy configured through `ALLOWED_ORIGINS`
+- Rate limiting through `API_RATE_LIMIT_PER_MINUTE`
+- Input validation on public and agent endpoints
+- Cost fields intentionally excluded from public product/pricing responses
 
 ## Performance Targets
 
 | Metric | Target | Status |
 |--------|--------|--------|
-| Dashboard Load Time | < 2s | ✓ |
-| Product List (1000 items) | < 1s | ✓ |
-| Search Response | < 500ms | ✓ |
-| API Response | < 200ms | ✓ |
-| Mobile FCP | < 2.5s | ✓ |
+| Dashboard Load Time | < 2s | target |
+| Product List (1000 items) | < 1s | target |
+| Search Response | < 500ms | target |
+| API Response | < 200ms | target |
+| Mobile FCP | < 2.5s | target |
 
 ## Deployment
 
-### Vercel (Recommended)
-1. Push to GitHub (main branch)
-2. Connect GitHub repository to Vercel
-3. Configure environment variables in Vercel dashboard
-4. Deploy: Vercel automatically builds and deploys
+Production domain:
+
+```txt
+products.alazab.com
+```
+
+Use the canonical deployment script for server deployment:
+
+```bash
+sudo DEPLOY_BRANCH=codex bash scripts/deploy-production.sh
+```
+
+After review and merge:
+
+```bash
+sudo DEPLOY_BRANCH=main bash scripts/deploy-production.sh
+```
 
 ### Docker
 ```bash
-docker build -t azproud .
-docker run -p 3000:3000 azproud
+docker build -t alazab-nexus .
+docker run --env-file .env.production -p 3000:3000 alazab-nexus
 ```
 
 ### Manual
 ```bash
-pnpm build
-bun run preview
+pnpm install --frozen-lockfile
+pnpm run ci
+pnpm preview
 ```
 
 ## Integration Points
@@ -270,28 +286,28 @@ bun run preview
 ## API Reference
 
 ### Products
-- `GET /api/products` - List products (paginated)
-- `POST /api/products` - Create product
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
+- `GET /api/public/v1/products` - List products (paginated)
+- `GET /api/public/v1/products/$azCode` - Get public product details
 
 ### Suppliers
-- `GET /api/suppliers` - List suppliers
-- `POST /api/suppliers` - Create supplier
-- `PUT /api/suppliers/:id` - Update supplier
+- `GET /api/public/v1/suppliers` - List suppliers
+- `POST /api/public/v1/suppliers/webhook` - Supplier price/inventory webhook
 
 ### Requests
-- `GET /api/requests` - List product requests
-- `POST /api/requests` - Create request
-- `PATCH /api/requests/:id/status` - Update status
+- `POST /api/agent/v1/quote-request` - Create quote request
+- `POST /api/agent/v1/quote-response` - Record customer quote response
+- `GET /api/agent/v1/order-status` - Get order status
 
 ## Troubleshooting
 
 ### Issue: "VITE_SUPABASE_URL is not set"
 **Solution:** Ensure `.env.local` file exists with all required environment variables.
 
+### Issue: "SUPABASE_PUBLISHABLE_KEY is not set"
+**Solution:** Configure `VITE_SUPABASE_PUBLISHABLE_KEY` for browser use and `SUPABASE_PUBLISHABLE_KEY` for SSR/server use.
+
 ### Issue: Auth redirects to login
-**Solution:** Email verification may be pending. Check verification email or disable email confirmation in Supabase.
+**Solution:** Check Supabase Auth settings, redirect URLs, and email confirmation policy.
 
 ### Issue: Images not displaying
 **Solution:** Check Supabase Storage bucket permissions and CORS settings.
@@ -301,44 +317,42 @@ bun run preview
 1. Create feature branch from `main`
 2. Make changes following code style
 3. Test locally with `pnpm dev`
-4. Push and create pull request
-5. Merge after review
+4. Run `pnpm run ci`
+5. Push and create pull request
+6. Merge after review
 
 ## Code Style
 
-- **Formatting:** Prettier (auto-format on save)
+- **Formatting:** Prettier
 - **Linting:** ESLint with TypeScript support
 - **Naming:** camelCase for variables/functions, PascalCase for components
 - **Comments:** JSDoc for complex functions, inline for logic clarity
 
 ## Testing
 
-Run tests:
+Current production gate:
 ```bash
-pnpm test
+pnpm run ci
 ```
 
-Coverage:
-```bash
-pnpm test:coverage
-```
+`pnpm test` currently maps to typecheck until a real test suite is added.
 
 ## Monitoring & Maintenance
 
 ### Database Health
 - Monitor query performance: Supabase Dashboard → Performance
 - Check storage usage: Supabase Dashboard → Storage
-- Review audit logs: `audit_logs` table in database
+- Review audit logs in the database
 
 ### Error Tracking
 - Monitor errors in Supabase logs
 - Toast notifications for user-facing errors
-- Console logs for debugging (development only)
+- Console logs for debugging in development only
 
 ### Performance
 - Use Lighthouse for performance audits
 - Monitor bundle size: `pnpm build` → dist/ folder
-- Check Core Web Vitals in Vercel Analytics
+- Check Core Web Vitals in hosting analytics
 
 ## Support & Troubleshooting
 
@@ -350,7 +364,7 @@ For issues:
 
 ## License
 
-Proprietary - Alazab PAOP
+Proprietary - Alazab Nexus
 
 ## Changelog
 
@@ -358,5 +372,5 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history and updates.
 
 ---
 
-**Last Updated:** May 2026  
+**Last Updated:** July 2026  
 **Maintainer:** Alazab Development Team
