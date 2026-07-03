@@ -266,7 +266,7 @@ function ProductsDashboard() {
 
           <div className="space-y-2">
             {needsReview.map((product: any) => (
-              <Link key={product.id} to={`/products/${product.id}/edit`}>
+              <Link key={product.id} to="/products/$id" params={{ id: product.id }}>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-background transition-colors cursor-pointer">
                   <div className="flex items-start gap-3 flex-1">
                     <Activity className="size-4 text-yellow-600 mt-0.5 shrink-0" />
