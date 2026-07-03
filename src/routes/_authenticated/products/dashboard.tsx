@@ -230,7 +230,7 @@ function ProductsDashboard() {
 
           <div className="space-y-2">
             {recentProducts.map((product: any) => (
-              <Link key={product.id} to={`/products/${product.id}`}>
+              <Link key={product.id} to="/products/$id" params={{ id: product.id }}>
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer">
                   <div className="flex-1">
                     <p className="font-medium text-sm">{product.name_ar || product.name_en}</p>
