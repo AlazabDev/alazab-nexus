@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
+import { json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 
 export const Route = createFileRoute("/api/public/v1/suppliers")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       GET: async ({ request }) => {
         const started = Date.now();
         const auth = await requireApiKey(request, "/api/public/v1/suppliers");
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/api/public/v1/suppliers")({
           )
           .eq("status", "active")
           .order("name");
-        if (error) return json({ error: error.message }, 500);
+        if (error) return json({ error: error.message }, 500, { request });
         await logCall({
           consumer: auth.consumer,
           request,
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/api/public/v1/suppliers")({
           status: 200,
           startedAt: started,
         });
-        return json({ data, total: count });
+        return json({ data, total: count }, 200, { request });
       },
     },
   },
