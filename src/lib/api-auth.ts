@@ -60,11 +60,12 @@ export function json(body: unknown, status = 200, opts: JsonOpts = {}) {
   let extraHeaders: Record<string, string> = {};
 
   if (opts && typeof opts === "object" && "request" in opts && opts.request instanceof Request) {
-    cors = corsHeaders(opts.request);
-    if (opts.headers) extraHeaders = opts.headers;
-  } else if (opts && typeof opts === "object" && "headers" in opts && opts.headers) {
+    const o = opts as { request: Request; headers?: Record<string, string> };
+    cors = corsHeaders(o.request);
+    if (o.headers) extraHeaders = o.headers;
+  } else if (opts && typeof opts === "object" && "headers" in opts && (opts as { headers?: unknown }).headers) {
     cors = { ...CORS };
-    extraHeaders = opts.headers as Record<string, string>;
+    extraHeaders = (opts as { headers: Record<string, string> }).headers;
   } else {
     cors = { ...CORS };
     extraHeaders = (opts as Record<string, string>) ?? {};
