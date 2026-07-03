@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
+import { json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 
 export const Route = createFileRoute("/api/public/v1/assets")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       GET: async ({ request }) => {
         const started = Date.now();
         const auth = await requireApiKey(request, "/api/public/v1/assets");
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/api/public/v1/assets")({
             .select("asset_role, sort_order, assets(id, file_url, file_name, file_type, file_size)")
             .eq("product_id", productId)
             .order("sort_order");
-          if (error) return json({ error: error.message }, 500);
+          if (error) return json({ error: error.message }, 500, { request });
           await logCall({
             consumer: auth.consumer,
             request,
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/api/public/v1/assets")({
             status: 200,
             startedAt: started,
           });
-          return json({ data });
+          return json({ data }, 200, { request });
         }
         const { data, error, count } = await supabaseAdmin
           .from("assets")
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/api/public/v1/assets")({
           .eq("status", "active")
           .order("created_at", { ascending: false })
           .limit(limit);
-        if (error) return json({ error: error.message }, 500);
+        if (error) return json({ error: error.message }, 500, { request });
         await logCall({
           consumer: auth.consumer,
           request,
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/api/public/v1/assets")({
           status: 200,
           startedAt: started,
         });
-        return json({ data, total: count, limit });
+        return json({ data, total: count, limit }, 200, { request });
       },
     },
   },
