@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
+import { json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 
 export const Route = createFileRoute("/api/public/v1/products/$azCode")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       GET: async ({ request, params }) => {
         const started = Date.now();
         const auth = await requireApiKey(request, "/api/public/v1/products/$azCode");
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/api/public/v1/products/$azCode")({
           .select("*")
           .or(`az_code.eq.${params.azCode},egs_code.eq.${params.azCode}`)
           .maybeSingle();
-        if (error) return json({ error: error.message }, 500);
+        if (error) return json({ error: error.message }, 500, { request });
         if (!product) {
           await logCall({
             consumer: auth.consumer,
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/api/public/v1/products/$azCode")({
             status: 404,
             startedAt: started,
           });
-          return json({ error: "Not found" }, 404);
+          return json({ error: "Not found" }, 404, { request });
         }
         const [{ data: assets }, { data: prices }] = await Promise.all([
           supabaseAdmin
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/api/public/v1/products/$azCode")({
           status: 200,
           startedAt: started,
         });
-        return json({ data: { ...product, assets, prices } });
+        return json({ data: { ...product, assets, prices } }, 200, { request });
       },
     },
   },

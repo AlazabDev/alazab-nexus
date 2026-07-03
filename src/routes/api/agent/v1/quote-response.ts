@@ -1,27 +1,17 @@
-/**
- * Alazab PAOP - Customer Response API
- * POST /api/agent/v1/quote-response
- *
- * APPROVAL GATE: when the customer accepts, this endpoint does NOT create a
- * manufacturing order or material requisition. It transitions the quote to
- * `accepted_pending_internal_approval` and creates an approvals record.
- * Manufacturing / material requisitions are only created by the internal
- * approval endpoint after an authorised user approves.
- */
-
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
+import { json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 
 export const Route = createFileRoute("/api/agent/v1/quote-response")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       POST: async ({ request }) => {
         const started = Date.now();
         const endpoint = "/api/agent/v1/quote-response";
-        const auth = await requireApiKey(request, "/api/agent/v1/quote-response");
+        const auth = await requireApiKey(request, endpoint);
         if ("error" in auth) {
           await logCall({
             consumer: null,
@@ -45,6 +35,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
                 code: "missing_identifier",
               },
               400,
+              { request },
             );
           }
           if (!body.response || !["accepted", "rejected"].includes(body.response)) {
@@ -55,18 +46,20 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
                 code: "invalid_response",
               },
               400,
+              { request },
             );
           }
 
-          // Fetch the quote
           let query = supabaseAdmin.from("quote_requests").select("*");
-          query = body.quote_id
-            ? query.eq("id", body.quote_id)
-            : query.eq("request_id", body.request_id);
+          query = body.quote_id ? query.eq("id", body.quote_id) : query.eq("request_id", body.request_id);
           const { data: quote, error: quoteError } = await query.maybeSingle();
 
           if (quoteError || !quote) {
-            return json({ success: false, error: "Quote not found", code: "quote_not_found" }, 404);
+            return json(
+              { success: false, error: "Quote not found", code: "quote_not_found" },
+              404,
+              { request },
+            );
           }
           if (quote.status !== "quoted") {
             return json(
@@ -76,17 +69,18 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
                 code: "invalid_quote_state",
               },
               400,
+              { request },
             );
           }
           if (quote.quote_valid_until && new Date(quote.quote_valid_until) < new Date()) {
-            await supabaseAdmin
-              .from("quote_requests")
-              .update({ status: "expired" })
-              .eq("id", quote.id);
-            return json({ success: false, error: "Quote has expired", code: "quote_expired" }, 400);
+            await supabaseAdmin.from("quote_requests").update({ status: "expired" }).eq("id", quote.id);
+            return json(
+              { success: false, error: "Quote has expired", code: "quote_expired" },
+              400,
+              { request },
+            );
           }
 
-          // ---------- Rejected branch ----------
           if (body.response === "rejected") {
             await supabaseAdmin
               .from("quote_requests")
@@ -116,19 +110,22 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
               payload: { quote_id: quote.id, response: "rejected" },
             });
 
-            return json({
-              success: true,
-              data: {
-                quote_id: quote.id,
-                response: "rejected",
-                rejection_reason: body.rejection_reason ?? null,
-                message_ar: "تم رفض العرض. نتمنى خدمتكم في المستقبل.",
-                message_en: "Quote rejected. We hope to serve you in the future.",
+            return json(
+              {
+                success: true,
+                data: {
+                  quote_id: quote.id,
+                  response: "rejected",
+                  rejection_reason: body.rejection_reason ?? null,
+                  message_ar: "تم رفض العرض. نتمنى خدمتكم في المستقبل.",
+                  message_en: "Quote rejected. We hope to serve you in the future.",
+                },
               },
-            });
+              200,
+              { request },
+            );
           }
 
-          // ---------- Accepted branch -> Approval Gate ----------
           await supabaseAdmin
             .from("quote_requests")
             .update({
@@ -164,6 +161,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
                 code: "approval_create_failed",
               },
               500,
+              { request },
             );
           }
 
@@ -186,21 +184,25 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
             payload: { quote_id: quote.id, response: "accepted", approval_id: approval.id },
           });
 
-          return json({
-            success: true,
-            data: {
-              quote_id: quote.id,
-              response: "accepted",
-              status: "accepted_pending_internal_approval",
-              approval: {
-                approval_id: approval.id,
-                status: approval.status,
-                current_stage: approval.current_stage,
+          return json(
+            {
+              success: true,
+              data: {
+                quote_id: quote.id,
+                response: "accepted",
+                status: "accepted_pending_internal_approval",
+                approval: {
+                  approval_id: approval.id,
+                  status: approval.status,
+                  current_stage: approval.current_stage,
+                },
+                message_ar: "تم استلام موافقتكم. الطلب الآن قيد المراجعة الداخلية.",
+                message_en: "Your acceptance is recorded. The order is pending internal review.",
               },
-              message_ar: "تم استلام موافقتكم. الطلب الآن قيد المراجعة الداخلية.",
-              message_en: "Your acceptance is recorded. The order is pending internal review.",
             },
-          });
+            200,
+            { request },
+          );
         } catch (err) {
           console.error("Quote response error:", err);
           await logCall({
@@ -214,6 +216,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
           return json(
             { success: false, error: "Internal server error", code: "internal_error" },
             500,
+            { request },
           );
         }
       },
