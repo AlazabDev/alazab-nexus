@@ -150,7 +150,7 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
 }
 
 function ProductRow({ p, onClick }: { p: Product; onClick: () => void }) {
-  const [imgErr, setImgErr] = useState(false);
+  const [imgErr, setImgErr] = useState(!imgSrc(p));
   const price = priceLabel(p);
 
   return (
