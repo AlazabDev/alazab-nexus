@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { callAzureProductAgent } from "@/lib/azure-foundry-agent.server";
-import { json, corsHeaders } from "@/lib/api-auth";
+import { json, corsHeaders, requireApiKey } from "@/lib/api-auth";
 
 const BodySchema = z.object({
   input: z.union([
@@ -24,6 +24,9 @@ export const Route = createFileRoute("/api/agent/v1/product-agent")({
         new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       POST: async ({ request }) => {
+        const auth = await requireApiKey(request, "/api/agent/v1/product-agent");
+        if ("error" in auth) return auth.error;
+
         try {
           const body = BodySchema.parse(await request.json());
           const result = await callAzureProductAgent({
