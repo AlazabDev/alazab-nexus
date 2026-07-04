@@ -53,7 +53,7 @@ type Filters = {
 
 // ── Constants ──────────────────────────────────────────────
 const PAGE = 24;
-const S3   = "https://alazab-storage-prod.s3.amazonaws.com/catalog-images";
+
 
 const BRAND_META: Record<string, { label: string; color: string; bg: string }> = {
   luxury_finishing: { label: "Luxury Finishing", color: "#534AB7", bg: "#EEEDFE" },
@@ -67,9 +67,13 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 // ── Helpers ────────────────────────────────────────────────
-function imgSrc(p: Product) {
-  return p.main_image_url || `${S3}/${p.az_code}_1.jpg`;
+function imgSrc(p: Product): string | undefined {
+  // Only use the stored URL. The old S3 bucket returns 403 for every asset,
+  // so we let onError fall back to the placeholder instead of guessing a URL.
+  return p.main_image_url ?? undefined;
 }
+
+
 
 function priceLabel(p: Product) {
   const v = p.unit_price ?? p.estimated_price;
@@ -93,7 +97,8 @@ function BrandDot({ brand }: { brand: string | null }) {
 }
 
 function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
-  const [imgErr, setImgErr] = useState(false);
+  const [imgErr, setImgErr] = useState(!imgSrc(p));
+
   const price = priceLabel(p);
 
   return (
@@ -145,7 +150,7 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
 }
 
 function ProductRow({ p, onClick }: { p: Product; onClick: () => void }) {
-  const [imgErr, setImgErr] = useState(false);
+  const [imgErr, setImgErr] = useState(!imgSrc(p));
   const price = priceLabel(p);
 
   return (
@@ -205,9 +210,14 @@ function ProductModal({ p, onClose }: { p: Product; onClose: () => void }) {
         </div>
 
         {/* Main image */}
-        <div className="w-full h-64 bg-[#F5F3EE]">
-          <img src={activeImg} alt={p.name_ar} className="w-full h-full object-contain p-4" onError={(e) => (e.currentTarget.style.display = "none")} />
+        <div className="w-full h-64 bg-[#F5F3EE] flex items-center justify-center">
+          {activeImg ? (
+            <img src={activeImg} alt={p.name_ar} className="w-full h-full object-contain p-4" onError={(e) => (e.currentTarget.style.display = "none")} />
+          ) : (
+            <Package className="size-14 text-[#C5BEE8]" />
+          )}
         </div>
+
 
         {/* Thumbs */}
         {imgs.length > 1 && (
