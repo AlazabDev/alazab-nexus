@@ -53,7 +53,7 @@ type Filters = {
 
 // ── Constants ──────────────────────────────────────────────
 const PAGE = 24;
-const S3   = "https://alazab-storage-prod.s3.amazonaws.com/catalog-images";
+
 
 const BRAND_META: Record<string, { label: string; color: string; bg: string }> = {
   luxury_finishing: { label: "Luxury Finishing", color: "#534AB7", bg: "#EEEDFE" },
