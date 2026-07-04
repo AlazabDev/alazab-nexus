@@ -67,11 +67,12 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 // ── Helpers ────────────────────────────────────────────────
-function imgSrc(p: Product) {
+function imgSrc(p: Product): string | undefined {
   // Only use the stored URL. The old S3 bucket returns 403 for every asset,
   // so we let onError fall back to the placeholder instead of guessing a URL.
-  return p.main_image_url || null;
+  return p.main_image_url ?? undefined;
 }
+
 
 
 function priceLabel(p: Product) {
