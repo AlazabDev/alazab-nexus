@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      _catalog_import_staging: {
+        Row: {
+          active: boolean | null
+          az_code: string
+          category: string | null
+          confidence_level: string | null
+          daftra_id: string | null
+          description_ar: string | null
+          description_en: string | null
+          egs_code: string | null
+          estimated_price: number | null
+          gpc_brick_title: string | null
+          gpc_class: string | null
+          gpc_family: string | null
+          gpc_segment: string | null
+          gs1_gpc_brick: string | null
+          image_url_2: string | null
+          image_url_3: string | null
+          item_type: string | null
+          main_image_url: string | null
+          name_ar: string | null
+          name_en: string | null
+          operational_track: string | null
+          sector_ar: string | null
+          source: string | null
+          status: string | null
+          unit_label: string | null
+          unit_price: number | null
+        }
+        Insert: {
+          active?: boolean | null
+          az_code: string
+          category?: string | null
+          confidence_level?: string | null
+          daftra_id?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          egs_code?: string | null
+          estimated_price?: number | null
+          gpc_brick_title?: string | null
+          gpc_class?: string | null
+          gpc_family?: string | null
+          gpc_segment?: string | null
+          gs1_gpc_brick?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
+          item_type?: string | null
+          main_image_url?: string | null
+          name_ar?: string | null
+          name_en?: string | null
+          operational_track?: string | null
+          sector_ar?: string | null
+          source?: string | null
+          status?: string | null
+          unit_label?: string | null
+          unit_price?: number | null
+        }
+        Update: {
+          active?: boolean | null
+          az_code?: string
+          category?: string | null
+          confidence_level?: string | null
+          daftra_id?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          egs_code?: string | null
+          estimated_price?: number | null
+          gpc_brick_title?: string | null
+          gpc_class?: string | null
+          gpc_family?: string | null
+          gpc_segment?: string | null
+          gs1_gpc_brick?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
+          item_type?: string | null
+          main_image_url?: string | null
+          name_ar?: string | null
+          name_en?: string | null
+          operational_track?: string | null
+          sector_ar?: string | null
+          source?: string | null
+          status?: string | null
+          unit_label?: string | null
+          unit_price?: number | null
+        }
+        Relationships: []
+      }
       ai_audit_logs: {
         Row: {
           action: string
