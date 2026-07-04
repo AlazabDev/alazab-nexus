@@ -68,8 +68,11 @@ const TYPE_LABELS: Record<string, string> = {
 
 // ── Helpers ────────────────────────────────────────────────
 function imgSrc(p: Product) {
-  return p.main_image_url || `${S3}/${p.az_code}_1.jpg`;
+  // Only use the stored URL. The old S3 bucket returns 403 for every asset,
+  // so we let onError fall back to the placeholder instead of guessing a URL.
+  return p.main_image_url || null;
 }
+
 
 function priceLabel(p: Product) {
   const v = p.unit_price ?? p.estimated_price;
