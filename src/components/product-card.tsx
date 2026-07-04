@@ -41,9 +41,7 @@ export function ProductCard({
   const conf = p.confidence_level ? CONF_MAP[p.confidence_level] : null;
 
   return (
-    <div
-      className={`product-card group relative ${selected ? "ring-2 ring-accent border-accent" : ""}`}
-    >
+    <div className={`product-card group relative ${selected ? "ring-2 ring-accent border-accent" : ""}`}>
       <div className="absolute top-3 right-3 z-10">
         <Checkbox
           checked={selected}
@@ -55,13 +53,8 @@ export function ProductCard({
         <span className={`text-[10px] px-2 py-0.5 rounded ${status.cls}`}>{status.label}</span>
       </div>
 
-      <Link
-        to="/products/$id"
-        params={{ id: p.id }}
-        className="block thumb aspect-[4/3] grid place-items-center overflow-hidden"
-      >
+      <Link to="/products/$id" params={{ id: p.id }} className="block thumb aspect-[4/3] grid place-items-center overflow-hidden">
         {p.cover_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={p.cover_url}
             alt={p.name_ar ?? ""}
@@ -90,21 +83,9 @@ export function ProductCard({
             {p.name_en}
           </div>
         )}
-
-        <div className="flex flex-wrap gap-1.5 pt-2">
-          {p.gpc_family && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
-              {p.gpc_family}
-            </span>
-          )}
-          {p.sector_ar && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
-              {p.sector_ar}
-            </span>
-          )}
-          {conf && (
-            <span className={`text-[10px] px-2 py-0.5 rounded-full ${conf.cls}`}>{conf.label}</span>
-          )}
+        <div className="flex flex-wrap gap-1 pt-1">
+          {p.gpc_family && <span className="text-[10px] px-2 py-0.5 rounded bg-secondary">{p.gpc_family}</span>}
+          {conf && <span className={`text-[10px] px-2 py-0.5 rounded ${conf.cls}`}>{conf.label}</span>}
         </div>
       </div>
     </div>
