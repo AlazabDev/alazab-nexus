@@ -59,6 +59,7 @@ import { Route as ApiPublicV1PricingRouteImport } from './routes/api/public/v1/p
 import { Route as ApiPublicV1AssetsRouteImport } from './routes/api/public/v1/assets'
 import { Route as ApiAgentV1QuoteResponseRouteImport } from './routes/api/agent/v1/quote-response'
 import { Route as ApiAgentV1QuoteRequestRouteImport } from './routes/api/agent/v1/quote-request'
+import { Route as ApiAgentV1ProductAgentRouteImport } from './routes/api/agent/v1/product-agent'
 import { Route as ApiAgentV1OrderStatusRouteImport } from './routes/api/agent/v1/order-status'
 import { Route as ApiAgentV1InternalApprovalRouteImport } from './routes/api/agent/v1/internal-approval'
 import { Route as ApiPublicV1SuppliersWebhookRouteImport } from './routes/api/public/v1/suppliers/webhook'
@@ -349,6 +350,11 @@ const ApiAgentV1QuoteRequestRoute = ApiAgentV1QuoteRequestRouteImport.update({
   path: '/api/agent/v1/quote-request',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAgentV1ProductAgentRoute = ApiAgentV1ProductAgentRouteImport.update({
+  id: '/api/agent/v1/product-agent',
+  path: '/api/agent/v1/product-agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAgentV1OrderStatusRoute = ApiAgentV1OrderStatusRouteImport.update({
   id: '/api/agent/v1/order-status',
   path: '/api/agent/v1/order-status',
@@ -447,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/suppliers/': typeof AuthenticatedSuppliersIndexRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
+  '/api/agent/v1/product-agent': typeof ApiAgentV1ProductAgentRoute
   '/api/agent/v1/quote-request': typeof ApiAgentV1QuoteRequestRoute
   '/api/agent/v1/quote-response': typeof ApiAgentV1QuoteResponseRoute
   '/api/public/v1/assets': typeof ApiPublicV1AssetsRoute
@@ -507,6 +514,7 @@ export interface FileRoutesByTo {
   '/suppliers': typeof AuthenticatedSuppliersIndexRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
+  '/api/agent/v1/product-agent': typeof ApiAgentV1ProductAgentRoute
   '/api/agent/v1/quote-request': typeof ApiAgentV1QuoteRequestRoute
   '/api/agent/v1/quote-response': typeof ApiAgentV1QuoteResponseRoute
   '/api/public/v1/assets': typeof ApiPublicV1AssetsRoute
@@ -569,6 +577,7 @@ export interface FileRoutesById {
   '/_authenticated/suppliers/': typeof AuthenticatedSuppliersIndexRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
+  '/api/agent/v1/product-agent': typeof ApiAgentV1ProductAgentRoute
   '/api/agent/v1/quote-request': typeof ApiAgentV1QuoteRequestRoute
   '/api/agent/v1/quote-response': typeof ApiAgentV1QuoteResponseRoute
   '/api/public/v1/assets': typeof ApiPublicV1AssetsRoute
@@ -631,6 +640,7 @@ export interface FileRouteTypes {
     | '/suppliers/'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
+    | '/api/agent/v1/product-agent'
     | '/api/agent/v1/quote-request'
     | '/api/agent/v1/quote-response'
     | '/api/public/v1/assets'
@@ -691,6 +701,7 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
+    | '/api/agent/v1/product-agent'
     | '/api/agent/v1/quote-request'
     | '/api/agent/v1/quote-response'
     | '/api/public/v1/assets'
@@ -752,6 +763,7 @@ export interface FileRouteTypes {
     | '/_authenticated/suppliers/'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
+    | '/api/agent/v1/product-agent'
     | '/api/agent/v1/quote-request'
     | '/api/agent/v1/quote-response'
     | '/api/public/v1/assets'
@@ -775,6 +787,7 @@ export interface RootRouteChildren {
   CatalogIndexRoute: typeof CatalogIndexRoute
   ApiAgentV1InternalApprovalRoute: typeof ApiAgentV1InternalApprovalRoute
   ApiAgentV1OrderStatusRoute: typeof ApiAgentV1OrderStatusRoute
+  ApiAgentV1ProductAgentRoute: typeof ApiAgentV1ProductAgentRoute
   ApiAgentV1QuoteRequestRoute: typeof ApiAgentV1QuoteRequestRoute
   ApiAgentV1QuoteResponseRoute: typeof ApiAgentV1QuoteResponseRoute
   ApiPublicV1AssetsRoute: typeof ApiPublicV1AssetsRoute
@@ -1140,6 +1153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAgentV1QuoteRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agent/v1/product-agent': {
+      id: '/api/agent/v1/product-agent'
+      path: '/api/agent/v1/product-agent'
+      fullPath: '/api/agent/v1/product-agent'
+      preLoaderRoute: typeof ApiAgentV1ProductAgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agent/v1/order-status': {
       id: '/api/agent/v1/order-status'
       path: '/api/agent/v1/order-status'
@@ -1333,6 +1353,7 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogIndexRoute: CatalogIndexRoute,
   ApiAgentV1InternalApprovalRoute: ApiAgentV1InternalApprovalRoute,
   ApiAgentV1OrderStatusRoute: ApiAgentV1OrderStatusRoute,
+  ApiAgentV1ProductAgentRoute: ApiAgentV1ProductAgentRoute,
   ApiAgentV1QuoteRequestRoute: ApiAgentV1QuoteRequestRoute,
   ApiAgentV1QuoteResponseRoute: ApiAgentV1QuoteResponseRoute,
   ApiPublicV1AssetsRoute: ApiPublicV1AssetsRoute,
@@ -1348,3 +1369,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
