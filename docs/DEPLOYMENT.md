@@ -27,7 +27,7 @@ API_RATE_LIMIT_PER_MINUTE=120
 NODE_ENV=production
 ```
 
-Optional AI variables:
+Optional Azure OpenAI variables:
 
 ```env
 AZURE_OPENAI_ENDPOINT=
@@ -35,6 +35,15 @@ AZURE_OPENAI_API_KEY=
 AZURE_OPENAI_API_VERSION=2024-08-01-preview
 AZURE_OPENAI_DEPLOYMENT=
 ```
+
+Azure AI Foundry product agent variables:
+
+```env
+AZURE_FOUNDRY_API_KEY=
+AZURE_FOUNDRY_AGENT_ENDPOINT=https://az-ai-resource.services.ai.azure.com/api/projects/az-ai-gateway/agents/az-agent-prod/endpoint/protocols/openai/responses
+```
+
+`AZURE_FOUNDRY_API_KEY` is server-only and must not be exposed as a `VITE_*` variable.
 
 ## Pre-deployment checklist
 
@@ -99,12 +108,36 @@ Use these settings only if deploying through Vercel:
 
 Configure the same environment variables listed above.
 
+## Public product pages
+
+The public product surface includes:
+
+```txt
+/products
+/products/$azCode
+/catalog
+/catalog/$azCode
+```
+
+`/products` is the new public product index. `/products/$azCode` is the new dynamic product template route. `/catalog` remains the advanced catalog experience.
+
+## Product agent endpoint
+
+The Azure Foundry product agent is exposed server-side through:
+
+```txt
+POST /api/agent/v1/product-agent
+```
+
+The endpoint requires `x-api-key` and forwards requests to `az-agent-prod` without exposing `AZURE_FOUNDRY_API_KEY` to the browser.
+
 ## Post-deployment verification
 
 Verify:
 
 ```bash
 curl -I https://products.alazab.com
+curl -I https://products.alazab.com/products
 curl -I https://products.alazab.com/api/public/v1/products
 ```
 
@@ -115,6 +148,7 @@ Also verify:
 - API CORS returns `Access-Control-Allow-Origin` for `https://products.alazab.com`.
 - Public product/pricing endpoints do not expose purchase cost fields.
 - Server logs contain no missing environment variable errors.
+- `AZURE_FOUNDRY_API_KEY` exists in development, preview, and production environments.
 
 ## Rollback
 
