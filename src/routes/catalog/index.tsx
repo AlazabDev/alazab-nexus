@@ -210,9 +210,14 @@ function ProductModal({ p, onClose }: { p: Product; onClose: () => void }) {
         </div>
 
         {/* Main image */}
-        <div className="w-full h-64 bg-[#F5F3EE]">
-          <img src={activeImg} alt={p.name_ar} className="w-full h-full object-contain p-4" onError={(e) => (e.currentTarget.style.display = "none")} />
+        <div className="w-full h-64 bg-[#F5F3EE] flex items-center justify-center">
+          {activeImg ? (
+            <img src={activeImg} alt={p.name_ar} className="w-full h-full object-contain p-4" onError={(e) => (e.currentTarget.style.display = "none")} />
+          ) : (
+            <Package className="size-14 text-[#C5BEE8]" />
+          )}
         </div>
+
 
         {/* Thumbs */}
         {imgs.length > 1 && (
