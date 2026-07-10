@@ -14,124 +14,148 @@ export type Database = {
   }
   public: {
     Tables: {
-      _catalog_import_staging: {
+      agent_actions: {
         Row: {
-          active: boolean | null
-          az_code: string
-          category: string | null
-          confidence_level: string | null
-          daftra_id: string | null
-          description_ar: string | null
-          description_en: string | null
-          egs_code: string | null
-          estimated_price: number | null
-          gpc_brick_title: string | null
-          gpc_class: string | null
-          gpc_family: string | null
-          gpc_segment: string | null
-          gs1_gpc_brick: string | null
-          image_url_2: string | null
-          image_url_3: string | null
-          item_type: string | null
-          main_image_url: string | null
-          name_ar: string | null
-          name_en: string | null
-          operational_track: string | null
-          sector_ar: string | null
-          source: string | null
+          action_type: string
+          created_at: string
+          endpoint: string | null
+          error_message: string | null
+          id: string
+          payload: Json | null
+          result: Json | null
+          session_id: string | null
           status: string | null
-          unit_label: string | null
-          unit_price: number | null
         }
         Insert: {
-          active?: boolean | null
-          az_code: string
-          category?: string | null
-          confidence_level?: string | null
-          daftra_id?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          egs_code?: string | null
-          estimated_price?: number | null
-          gpc_brick_title?: string | null
-          gpc_class?: string | null
-          gpc_family?: string | null
-          gpc_segment?: string | null
-          gs1_gpc_brick?: string | null
-          image_url_2?: string | null
-          image_url_3?: string | null
-          item_type?: string | null
-          main_image_url?: string | null
-          name_ar?: string | null
-          name_en?: string | null
-          operational_track?: string | null
-          sector_ar?: string | null
-          source?: string | null
+          action_type: string
+          created_at?: string
+          endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          payload?: Json | null
+          result?: Json | null
+          session_id?: string | null
           status?: string | null
-          unit_label?: string | null
-          unit_price?: number | null
         }
         Update: {
-          active?: boolean | null
-          az_code?: string
-          category?: string | null
-          confidence_level?: string | null
-          daftra_id?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          egs_code?: string | null
-          estimated_price?: number | null
-          gpc_brick_title?: string | null
-          gpc_class?: string | null
-          gpc_family?: string | null
-          gpc_segment?: string | null
-          gs1_gpc_brick?: string | null
-          image_url_2?: string | null
-          image_url_3?: string | null
-          item_type?: string | null
-          main_image_url?: string | null
-          name_ar?: string | null
-          name_en?: string | null
-          operational_track?: string | null
-          sector_ar?: string | null
-          source?: string | null
+          action_type?: string
+          created_at?: string
+          endpoint?: string | null
+          error_message?: string | null
+          id?: string
+          payload?: Json | null
+          result?: Json | null
+          session_id?: string | null
           status?: string | null
-          unit_label?: string | null
-          unit_price?: number | null
+        }
+        Relationships: []
+      }
+      agent_decisions: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          decision_type: string
+          id: string
+          input: Json | null
+          model: string | null
+          output: Json | null
+          session_id: string | null
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          decision_type: string
+          id?: string
+          input?: Json | null
+          model?: string | null
+          output?: Json | null
+          session_id?: string | null
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          decision_type?: string
+          id?: string
+          input?: Json | null
+          model?: string | null
+          output?: Json | null
+          session_id?: string | null
+        }
+        Relationships: []
+      }
+      agent_sessions: {
+        Row: {
+          channel: string | null
+          customer_id: string | null
+          ended_at: string | null
+          id: string
+          metadata: Json | null
+          session_id: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          channel?: string | null
+          customer_id?: string | null
+          ended_at?: string | null
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          channel?: string | null
+          customer_id?: string | null
+          ended_at?: string | null
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          started_at?: string
+          status?: string
         }
         Relationships: []
       }
       ai_audit_logs: {
         Row: {
           action: string
+          api_calls_count: number | null
+          cost_estimate: number | null
           created_at: string
+          details: Json | null
           duration_ms: number | null
           entity_id: string | null
-          entity_type: string | null
+          entity_type: string
+          error_message: string | null
           id: string
-          metadata: Json | null
           status: string | null
           user_id: string | null
         }
         Insert: {
           action: string
+          api_calls_count?: number | null
+          cost_estimate?: number | null
           created_at?: string
+          details?: Json | null
           duration_ms?: number | null
           entity_id?: string | null
-          entity_type?: string | null
+          entity_type: string
+          error_message?: string | null
           id?: string
-          metadata?: Json | null
           status?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string
+          api_calls_count?: number | null
+          cost_estimate?: number | null
           created_at?: string
+          details?: Json | null
           duration_ms?: number | null
           entity_id?: string | null
-          entity_type?: string | null
+          entity_type?: string
+          error_message?: string | null
           id?: string
-          metadata?: Json | null
           status?: string | null
           user_id?: string | null
         }
@@ -142,72 +166,63 @@ export type Database = {
           completed_at: string | null
           consumer_id: string | null
           created_at: string
-          error: string | null
           errors: Json | null
           estimated_completion: string | null
           failed_count: number | null
           id: string
           job_id: string
           optimization_level: string | null
-          optimization_type: string | null
+          optimization_type: string
           processed_count: number | null
-          processed_products: number | null
-          product_ids: Json | null
+          product_ids: string[]
           progress_percent: number | null
-          result: Json | null
           results: Json | null
           started_at: string | null
           status: string
           success_count: number | null
-          total_products: number | null
+          total_products: number
           updated_at: string
         }
         Insert: {
           completed_at?: string | null
           consumer_id?: string | null
           created_at?: string
-          error?: string | null
           errors?: Json | null
           estimated_completion?: string | null
           failed_count?: number | null
           id?: string
           job_id: string
           optimization_level?: string | null
-          optimization_type?: string | null
+          optimization_type: string
           processed_count?: number | null
-          processed_products?: number | null
-          product_ids?: Json | null
+          product_ids: string[]
           progress_percent?: number | null
-          result?: Json | null
           results?: Json | null
           started_at?: string | null
           status?: string
           success_count?: number | null
-          total_products?: number | null
+          total_products: number
           updated_at?: string
         }
         Update: {
           completed_at?: string | null
           consumer_id?: string | null
           created_at?: string
-          error?: string | null
           errors?: Json | null
           estimated_completion?: string | null
           failed_count?: number | null
           id?: string
           job_id?: string
           optimization_level?: string | null
-          optimization_type?: string | null
+          optimization_type?: string
           processed_count?: number | null
-          processed_products?: number | null
-          product_ids?: Json | null
+          product_ids?: string[]
           progress_percent?: number | null
-          result?: Json | null
           results?: Json | null
           started_at?: string | null
           status?: string
           success_count?: number | null
-          total_products?: number | null
+          total_products?: number
           updated_at?: string
         }
         Relationships: []
@@ -256,6 +271,56 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      ai_settings: {
+        Row: {
+          content_sources: Json | null
+          created_at: string
+          datasheet_enabled: boolean | null
+          id: string
+          image_fetch_enabled: boolean | null
+          last_optimization_at: string | null
+          optimization_count: number | null
+          optimization_level: string
+          product_id: string
+          quote_auto_generation: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          content_sources?: Json | null
+          created_at?: string
+          datasheet_enabled?: boolean | null
+          id?: string
+          image_fetch_enabled?: boolean | null
+          last_optimization_at?: string | null
+          optimization_count?: number | null
+          optimization_level?: string
+          product_id: string
+          quote_auto_generation?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          content_sources?: Json | null
+          created_at?: string
+          datasheet_enabled?: boolean | null
+          id?: string
+          image_fetch_enabled?: boolean | null
+          last_optimization_at?: string | null
+          optimization_count?: number | null
+          optimization_level?: string
+          product_id?: string
+          quote_auto_generation?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_settings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       api_consumers: {
         Row: {
@@ -347,44 +412,77 @@ export type Database = {
       api_quotes: {
         Row: {
           api_endpoint: string | null
-          consumer_id: string | null
+          api_key_id: string | null
           created_at: string
+          created_by: string | null
           generated_at: string | null
           generated_by: string | null
-          generated_quote: Json | null
+          generated_quote: Json
           id: string
+          internal_notes: string | null
           product_id: string | null
-          quote_request_data: Json | null
+          quote_notes: string | null
+          quote_request_data: Json
           quote_token: string | null
           status: string
+          supplier_id: string | null
+          updated_at: string
+          validity_days: number | null
         }
         Insert: {
           api_endpoint?: string | null
-          consumer_id?: string | null
+          api_key_id?: string | null
           created_at?: string
+          created_by?: string | null
           generated_at?: string | null
           generated_by?: string | null
-          generated_quote?: Json | null
+          generated_quote: Json
           id?: string
+          internal_notes?: string | null
           product_id?: string | null
-          quote_request_data?: Json | null
+          quote_notes?: string | null
+          quote_request_data: Json
           quote_token?: string | null
           status?: string
+          supplier_id?: string | null
+          updated_at?: string
+          validity_days?: number | null
         }
         Update: {
           api_endpoint?: string | null
-          consumer_id?: string | null
+          api_key_id?: string | null
           created_at?: string
+          created_by?: string | null
           generated_at?: string | null
           generated_by?: string | null
-          generated_quote?: Json | null
+          generated_quote?: Json
           id?: string
+          internal_notes?: string | null
           product_id?: string | null
-          quote_request_data?: Json | null
+          quote_notes?: string | null
+          quote_request_data?: Json
           quote_token?: string | null
           status?: string
+          supplier_id?: string | null
+          updated_at?: string
+          validity_days?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "api_quotes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_quotes_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       approval_history: {
         Row: {
@@ -604,37 +702,43 @@ export type Database = {
         Row: {
           created_at: string
           delivered_at: string | null
-          direction: string | null
+          direction: string
+          error_message: string | null
           id: string
           interaction_type: string
           manufacturing_order_id: string | null
           payload: Json | null
           quote_request_id: string | null
           response_payload: Json | null
+          sent_at: string | null
           status: string | null
         }
         Insert: {
           created_at?: string
           delivered_at?: string | null
-          direction?: string | null
+          direction: string
+          error_message?: string | null
           id?: string
           interaction_type: string
           manufacturing_order_id?: string | null
           payload?: Json | null
           quote_request_id?: string | null
           response_payload?: Json | null
+          sent_at?: string | null
           status?: string | null
         }
         Update: {
           created_at?: string
           delivered_at?: string | null
-          direction?: string | null
+          direction?: string
+          error_message?: string | null
           id?: string
           interaction_type?: string
           manufacturing_order_id?: string | null
           payload?: Json | null
           quote_request_id?: string | null
           response_payload?: Json | null
+          sent_at?: string | null
           status?: string | null
         }
         Relationships: [
@@ -686,13 +790,6 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "duplicate_group_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "public_products"
             referencedColumns: ["id"]
           },
         ]
@@ -845,27 +942,36 @@ export type Database = {
       }
       integration_configs: {
         Row: {
-          config: Json
+          config: Json | null
           created_at: string
+          created_by: string | null
           id: string
+          last_error: string | null
+          last_sync_at: string | null
           name: string | null
           status: string
           type: string
           updated_at: string
         }
         Insert: {
-          config?: Json
+          config?: Json | null
           created_at?: string
+          created_by?: string | null
           id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
           name?: string | null
           status?: string
           type: string
           updated_at?: string
         }
         Update: {
-          config?: Json
+          config?: Json | null
           created_at?: string
+          created_by?: string | null
           id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
           name?: string | null
           status?: string
           type?: string
@@ -884,10 +990,12 @@ export type Database = {
           customer_id: string | null
           customer_name: string | null
           customer_phone: string | null
+          delivery_address: string | null
           delivery_date: string | null
           delivery_notes: string | null
           design_data: Json | null
           discount_amount: number | null
+          discount_percent: number | null
           estimated_completion: string | null
           estimated_completion_date: string | null
           estimated_start_date: string | null
@@ -898,7 +1006,7 @@ export type Database = {
           priority: string
           production_notes: string | null
           quality_notes: string | null
-          quantity: number | null
+          quantity: number
           quote_request_id: string | null
           specifications: Json | null
           status: string
@@ -916,10 +1024,12 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          delivery_address?: string | null
           delivery_date?: string | null
           delivery_notes?: string | null
           design_data?: Json | null
           discount_amount?: number | null
+          discount_percent?: number | null
           estimated_completion?: string | null
           estimated_completion_date?: string | null
           estimated_start_date?: string | null
@@ -930,7 +1040,7 @@ export type Database = {
           priority?: string
           production_notes?: string | null
           quality_notes?: string | null
-          quantity?: number | null
+          quantity?: number
           quote_request_id?: string | null
           specifications?: Json | null
           status?: string
@@ -948,10 +1058,12 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          delivery_address?: string | null
           delivery_date?: string | null
           delivery_notes?: string | null
           design_data?: Json | null
           discount_amount?: number | null
+          discount_percent?: number | null
           estimated_completion?: string | null
           estimated_completion_date?: string | null
           estimated_start_date?: string | null
@@ -962,7 +1074,7 @@ export type Database = {
           priority?: string
           production_notes?: string | null
           quality_notes?: string | null
-          quantity?: number | null
+          quantity?: number
           quote_request_id?: string | null
           specifications?: Json | null
           status?: string
@@ -984,10 +1096,11 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          issued_quantity: number | null
           product_code: string | null
           product_id: string | null
           product_name: string | null
-          requested_quantity: number | null
+          requested_quantity: number
           requisition_id: string
           status: string
           supplier_id: string | null
@@ -999,10 +1112,11 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          issued_quantity?: number | null
           product_code?: string | null
           product_id?: string | null
           product_name?: string | null
-          requested_quantity?: number | null
+          requested_quantity?: number
           requisition_id: string
           status?: string
           supplier_id?: string | null
@@ -1014,10 +1128,11 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          issued_quantity?: number | null
           product_code?: string | null
           product_id?: string | null
           product_name?: string | null
-          requested_quantity?: number | null
+          requested_quantity?: number
           requisition_id?: string
           status?: string
           supplier_id?: string | null
@@ -1041,7 +1156,9 @@ export type Database = {
           approval_id: string | null
           created_at: string
           id: string
+          issued_at: string | null
           manufacturing_order_id: string | null
+          notes: string | null
           requisition_number: string
           status: string
           updated_at: string
@@ -1050,7 +1167,9 @@ export type Database = {
           approval_id?: string | null
           created_at?: string
           id?: string
+          issued_at?: string | null
           manufacturing_order_id?: string | null
+          notes?: string | null
           requisition_number: string
           status?: string
           updated_at?: string
@@ -1059,7 +1178,9 @@ export type Database = {
           approval_id?: string | null
           created_at?: string
           id?: string
+          issued_at?: string | null
           manufacturing_order_id?: string | null
+          notes?: string | null
           requisition_number?: string
           status?: string
           updated_at?: string
@@ -1153,13 +1274,6 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "price_history_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "public_products"
             referencedColumns: ["id"]
           },
           {
@@ -1259,13 +1373,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "prices_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "public_products"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "prices_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
@@ -1278,38 +1385,47 @@ export type Database = {
         Row: {
           conditions: Json | null
           created_at: string
+          created_by: string | null
           id: string
           is_active: boolean
-          name: string | null
+          name: string
+          notes: string | null
           priority: number
           rule_type: string
-          status: string
           updated_at: string
-          value: number | null
+          valid_from: string | null
+          valid_to: string | null
+          value: number
         }
         Insert: {
           conditions?: Json | null
           created_at?: string
+          created_by?: string | null
           id?: string
           is_active?: boolean
-          name?: string | null
+          name: string
+          notes?: string | null
           priority?: number
           rule_type: string
-          status?: string
           updated_at?: string
-          value?: number | null
+          valid_from?: string | null
+          valid_to?: string | null
+          value: number
         }
         Update: {
           conditions?: Json | null
           created_at?: string
+          created_by?: string | null
           id?: string
           is_active?: boolean
-          name?: string | null
+          name?: string
+          notes?: string | null
           priority?: number
           rule_type?: string
-          status?: string
           updated_at?: string
-          value?: number | null
+          valid_from?: string | null
+          valid_to?: string | null
+          value?: number
         }
         Relationships: []
       }
@@ -1353,20 +1469,14 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "product_assets_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "public_products"
-            referencedColumns: ["id"]
-          },
         ]
       }
       product_datasheets: {
         Row: {
-          content: Json | null
+          content: Json
           created_at: string
           created_by: string | null
+          file_storage_path: string | null
           file_url: string | null
           format: string | null
           generated_at: string | null
@@ -1376,11 +1486,13 @@ export type Database = {
           product_id: string
           status: string
           updated_at: string
+          version: number | null
         }
         Insert: {
-          content?: Json | null
+          content: Json
           created_at?: string
           created_by?: string | null
+          file_storage_path?: string | null
           file_url?: string | null
           format?: string | null
           generated_at?: string | null
@@ -1390,11 +1502,13 @@ export type Database = {
           product_id: string
           status?: string
           updated_at?: string
+          version?: number | null
         }
         Update: {
-          content?: Json | null
+          content?: Json
           created_at?: string
           created_by?: string | null
+          file_storage_path?: string | null
           file_url?: string | null
           format?: string | null
           generated_at?: string | null
@@ -1404,48 +1518,134 @@ export type Database = {
           product_id?: string
           status?: string
           updated_at?: string
+          version?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "product_datasheets_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_images_ai: {
+        Row: {
+          ai_analysis: Json | null
+          ai_confidence_score: number | null
+          created_at: string
+          created_by: string | null
+          external_id: string | null
+          id: string
+          image_source: string
+          image_storage_path: string | null
+          image_type: string | null
+          image_url: string
+          is_primary: boolean | null
+          match_notes: string | null
+          metadata: Json | null
+          processing_status: string
+          product_id: string
+          sort_order: number | null
+          source_api: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          ai_confidence_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          external_id?: string | null
+          id?: string
+          image_source?: string
+          image_storage_path?: string | null
+          image_type?: string | null
+          image_url: string
+          is_primary?: boolean | null
+          match_notes?: string | null
+          metadata?: Json | null
+          processing_status?: string
+          product_id: string
+          sort_order?: number | null
+          source_api?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          ai_confidence_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          external_id?: string | null
+          id?: string
+          image_source?: string
+          image_storage_path?: string | null
+          image_type?: string | null
+          image_url?: string
+          is_primary?: boolean | null
+          match_notes?: string | null
+          metadata?: Json | null
+          processing_status?: string
+          product_id?: string
+          sort_order?: number | null
+          source_api?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_ai_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_requests: {
         Row: {
+          assigned_to: string | null
           category: string | null
           created_at: string
-          description: string | null
+          created_by: string | null
+          description: string
           estimated_budget: number | null
           id: string
+          notes: string | null
           priority: string
           quantity: number | null
           request_type: string
-          requested_by: string | null
           status: string
           title: string
           updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
           category?: string | null
           created_at?: string
-          description?: string | null
+          created_by?: string | null
+          description: string
           estimated_budget?: number | null
           id?: string
+          notes?: string | null
           priority?: string
           quantity?: number | null
-          request_type?: string
-          requested_by?: string | null
+          request_type: string
           status?: string
           title: string
           updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
           category?: string | null
           created_at?: string
-          description?: string | null
+          created_by?: string | null
+          description?: string
           estimated_budget?: number | null
           id?: string
+          notes?: string | null
           priority?: string
           quantity?: number | null
           request_type?: string
-          requested_by?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1454,17 +1654,20 @@ export type Database = {
       }
       products: {
         Row: {
-          active: boolean
+          ai_optimization_applied_at: string | null
           approved_at: string | null
           approved_by: string | null
           az_code: string
           brand: string | null
+          buy_price: number | null
           category: string | null
           category_id: string | null
           confidence_level: string | null
           content_optimization_score: number | null
+          craft_category: string | null
           created_at: string
           created_by: string | null
+          daftra_code: string | null
           daftra_id: string | null
           datasheet_generated: boolean | null
           default_price_id: string | null
@@ -1482,8 +1685,10 @@ export type Database = {
           gpc_segment: string | null
           gs1_gpc_brick: string | null
           id: string
+          image_match_score: number | null
           image_url_2: string | null
           image_url_3: string | null
+          images_count: number | null
           installation_notes: string | null
           internal_notes: string | null
           item_type: Database["public"]["Enums"]["item_type"]
@@ -1494,7 +1699,10 @@ export type Database = {
           name_ar: string
           name_en: string | null
           operational_track: string | null
+          optimization_notes: string | null
           price: number | null
+          price_confidence: string | null
+          price_source: string | null
           product_code: string | null
           search_keywords: string[] | null
           sector_ar: string | null
@@ -1503,26 +1711,31 @@ export type Database = {
           source: string | null
           specifications: Json | null
           status: Database["public"]["Enums"]["item_status"]
+          stock_balance: number | null
+          sync_status: Json | null
           tags: string[] | null
           technical_content: string | null
+          track_stock: boolean | null
           unit_id: string | null
-          unit_label: string | null
           unit_price: number | null
           updated_at: string
           warranty_info: string | null
         }
         Insert: {
-          active?: boolean
+          ai_optimization_applied_at?: string | null
           approved_at?: string | null
           approved_by?: string | null
           az_code: string
           brand?: string | null
+          buy_price?: number | null
           category?: string | null
           category_id?: string | null
           confidence_level?: string | null
           content_optimization_score?: number | null
+          craft_category?: string | null
           created_at?: string
           created_by?: string | null
+          daftra_code?: string | null
           daftra_id?: string | null
           datasheet_generated?: boolean | null
           default_price_id?: string | null
@@ -1540,8 +1753,10 @@ export type Database = {
           gpc_segment?: string | null
           gs1_gpc_brick?: string | null
           id?: string
+          image_match_score?: number | null
           image_url_2?: string | null
           image_url_3?: string | null
+          images_count?: number | null
           installation_notes?: string | null
           internal_notes?: string | null
           item_type?: Database["public"]["Enums"]["item_type"]
@@ -1552,7 +1767,10 @@ export type Database = {
           name_ar: string
           name_en?: string | null
           operational_track?: string | null
+          optimization_notes?: string | null
           price?: number | null
+          price_confidence?: string | null
+          price_source?: string | null
           product_code?: string | null
           search_keywords?: string[] | null
           sector_ar?: string | null
@@ -1561,26 +1779,31 @@ export type Database = {
           source?: string | null
           specifications?: Json | null
           status?: Database["public"]["Enums"]["item_status"]
+          stock_balance?: number | null
+          sync_status?: Json | null
           tags?: string[] | null
           technical_content?: string | null
+          track_stock?: boolean | null
           unit_id?: string | null
-          unit_label?: string | null
           unit_price?: number | null
           updated_at?: string
           warranty_info?: string | null
         }
         Update: {
-          active?: boolean
+          ai_optimization_applied_at?: string | null
           approved_at?: string | null
           approved_by?: string | null
           az_code?: string
           brand?: string | null
+          buy_price?: number | null
           category?: string | null
           category_id?: string | null
           confidence_level?: string | null
           content_optimization_score?: number | null
+          craft_category?: string | null
           created_at?: string
           created_by?: string | null
+          daftra_code?: string | null
           daftra_id?: string | null
           datasheet_generated?: boolean | null
           default_price_id?: string | null
@@ -1598,8 +1821,10 @@ export type Database = {
           gpc_segment?: string | null
           gs1_gpc_brick?: string | null
           id?: string
+          image_match_score?: number | null
           image_url_2?: string | null
           image_url_3?: string | null
+          images_count?: number | null
           installation_notes?: string | null
           internal_notes?: string | null
           item_type?: Database["public"]["Enums"]["item_type"]
@@ -1610,7 +1835,10 @@ export type Database = {
           name_ar?: string
           name_en?: string | null
           operational_track?: string | null
+          optimization_notes?: string | null
           price?: number | null
+          price_confidence?: string | null
+          price_source?: string | null
           product_code?: string | null
           search_keywords?: string[] | null
           sector_ar?: string | null
@@ -1619,10 +1847,12 @@ export type Database = {
           source?: string | null
           specifications?: Json | null
           status?: Database["public"]["Enums"]["item_status"]
+          stock_balance?: number | null
+          sync_status?: Json | null
           tags?: string[] | null
           technical_content?: string | null
+          track_stock?: boolean | null
           unit_id?: string | null
-          unit_label?: string | null
           unit_price?: number | null
           updated_at?: string
           warranty_info?: string | null
@@ -1689,7 +1919,7 @@ export type Database = {
           quote_valid_until: string | null
           quoted_at: string | null
           rejection_reason: string | null
-          request_id: string | null
+          request_id: string
           selling_price: number | null
           special_requirements: Json | null
           status: string
@@ -1726,7 +1956,7 @@ export type Database = {
           quote_valid_until?: string | null
           quoted_at?: string | null
           rejection_reason?: string | null
-          request_id?: string | null
+          request_id: string
           selling_price?: number | null
           special_requirements?: Json | null
           status?: string
@@ -1763,12 +1993,27 @@ export type Database = {
           quote_valid_until?: string | null
           quoted_at?: string | null
           rejection_reason?: string | null
-          request_id?: string | null
+          request_id?: string
           selling_price?: number | null
           special_requirements?: Json | null
           status?: string
           total_cost?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      supcloud_keepalive: {
+        Row: {
+          id: number
+          marker: string
+        }
+        Insert: {
+          id: number
+          marker?: string
+        }
+        Update: {
+          id?: number
+          marker?: string
         }
         Relationships: []
       }
@@ -1830,13 +2075,6 @@ export type Database = {
             columns: ["internal_product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "supplier_inventory_internal_product_id_fkey"
-            columns: ["internal_product_id"]
-            isOneToOne: false
-            referencedRelation: "public_products"
             referencedColumns: ["id"]
           },
           {
@@ -2099,114 +2337,7 @@ export type Database = {
       }
     }
     Views: {
-      public_products: {
-        Row: {
-          active: boolean | null
-          az_code: string | null
-          brand: string | null
-          category: string | null
-          created_at: string | null
-          daftra_id: string | null
-          description_ar: string | null
-          description_en: string | null
-          egs_code: string | null
-          estimated_price: number | null
-          gpc_brick_title: string | null
-          gpc_class: string | null
-          gpc_family: string | null
-          gpc_segment: string | null
-          id: string | null
-          image_url_2: string | null
-          image_url_3: string | null
-          item_type: Database["public"]["Enums"]["item_type"] | null
-          main_image_url: string | null
-          marketing_content: string | null
-          name_ar: string | null
-          name_en: string | null
-          operational_track: string | null
-          product_code: string | null
-          short_description_ar: string | null
-          short_description_en: string | null
-          status: Database["public"]["Enums"]["item_status"] | null
-          tags: string[] | null
-          technical_content: string | null
-          unit_label: string | null
-          unit_price: number | null
-          updated_at: string | null
-          warranty_info: string | null
-        }
-        Insert: {
-          active?: boolean | null
-          az_code?: string | null
-          brand?: string | null
-          category?: string | null
-          created_at?: string | null
-          daftra_id?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          egs_code?: string | null
-          estimated_price?: number | null
-          gpc_brick_title?: string | null
-          gpc_class?: string | null
-          gpc_family?: string | null
-          gpc_segment?: string | null
-          id?: string | null
-          image_url_2?: string | null
-          image_url_3?: string | null
-          item_type?: Database["public"]["Enums"]["item_type"] | null
-          main_image_url?: string | null
-          marketing_content?: string | null
-          name_ar?: string | null
-          name_en?: string | null
-          operational_track?: string | null
-          product_code?: string | null
-          short_description_ar?: string | null
-          short_description_en?: string | null
-          status?: Database["public"]["Enums"]["item_status"] | null
-          tags?: string[] | null
-          technical_content?: string | null
-          unit_label?: string | null
-          unit_price?: number | null
-          updated_at?: string | null
-          warranty_info?: string | null
-        }
-        Update: {
-          active?: boolean | null
-          az_code?: string | null
-          brand?: string | null
-          category?: string | null
-          created_at?: string | null
-          daftra_id?: string | null
-          description_ar?: string | null
-          description_en?: string | null
-          egs_code?: string | null
-          estimated_price?: number | null
-          gpc_brick_title?: string | null
-          gpc_class?: string | null
-          gpc_family?: string | null
-          gpc_segment?: string | null
-          id?: string | null
-          image_url_2?: string | null
-          image_url_3?: string | null
-          item_type?: Database["public"]["Enums"]["item_type"] | null
-          main_image_url?: string | null
-          marketing_content?: string | null
-          name_ar?: string | null
-          name_en?: string | null
-          operational_track?: string | null
-          product_code?: string | null
-          short_description_ar?: string | null
-          short_description_en?: string | null
-          status?: Database["public"]["Enums"]["item_status"] | null
-          tags?: string[] | null
-          technical_content?: string | null
-          unit_label?: string | null
-          unit_price?: number | null
-          updated_at?: string | null
-          warranty_info?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       generate_order_number: { Args: never; Returns: string }
@@ -2223,8 +2354,6 @@ export type Database = {
         Args: { _category?: string; _family?: string; _type: string }
         Returns: string
       }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "editor" | "viewer"
