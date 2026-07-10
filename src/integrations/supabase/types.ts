@@ -688,6 +688,13 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "duplicate_group_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
+            referencedColumns: ["id"]
+          },
         ]
       }
       duplicate_groups: {
@@ -1149,6 +1156,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "price_history_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
@@ -1245,6 +1259,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "prices_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "prices_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
@@ -1330,6 +1351,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_assets_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
             referencedColumns: ["id"]
           },
         ]
@@ -1805,6 +1833,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "supplier_inventory_internal_product_id_fkey"
+            columns: ["internal_product_id"]
+            isOneToOne: false
+            referencedRelation: "public_products"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "supplier_inventory_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
@@ -2064,7 +2099,114 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_products: {
+        Row: {
+          active: boolean | null
+          az_code: string | null
+          brand: string | null
+          category: string | null
+          created_at: string | null
+          daftra_id: string | null
+          description_ar: string | null
+          description_en: string | null
+          egs_code: string | null
+          estimated_price: number | null
+          gpc_brick_title: string | null
+          gpc_class: string | null
+          gpc_family: string | null
+          gpc_segment: string | null
+          id: string | null
+          image_url_2: string | null
+          image_url_3: string | null
+          item_type: Database["public"]["Enums"]["item_type"] | null
+          main_image_url: string | null
+          marketing_content: string | null
+          name_ar: string | null
+          name_en: string | null
+          operational_track: string | null
+          product_code: string | null
+          short_description_ar: string | null
+          short_description_en: string | null
+          status: Database["public"]["Enums"]["item_status"] | null
+          tags: string[] | null
+          technical_content: string | null
+          unit_label: string | null
+          unit_price: number | null
+          updated_at: string | null
+          warranty_info: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          az_code?: string | null
+          brand?: string | null
+          category?: string | null
+          created_at?: string | null
+          daftra_id?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          egs_code?: string | null
+          estimated_price?: number | null
+          gpc_brick_title?: string | null
+          gpc_class?: string | null
+          gpc_family?: string | null
+          gpc_segment?: string | null
+          id?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
+          item_type?: Database["public"]["Enums"]["item_type"] | null
+          main_image_url?: string | null
+          marketing_content?: string | null
+          name_ar?: string | null
+          name_en?: string | null
+          operational_track?: string | null
+          product_code?: string | null
+          short_description_ar?: string | null
+          short_description_en?: string | null
+          status?: Database["public"]["Enums"]["item_status"] | null
+          tags?: string[] | null
+          technical_content?: string | null
+          unit_label?: string | null
+          unit_price?: number | null
+          updated_at?: string | null
+          warranty_info?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          az_code?: string | null
+          brand?: string | null
+          category?: string | null
+          created_at?: string | null
+          daftra_id?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          egs_code?: string | null
+          estimated_price?: number | null
+          gpc_brick_title?: string | null
+          gpc_class?: string | null
+          gpc_family?: string | null
+          gpc_segment?: string | null
+          id?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
+          item_type?: Database["public"]["Enums"]["item_type"] | null
+          main_image_url?: string | null
+          marketing_content?: string | null
+          name_ar?: string | null
+          name_en?: string | null
+          operational_track?: string | null
+          product_code?: string | null
+          short_description_ar?: string | null
+          short_description_en?: string | null
+          status?: Database["public"]["Enums"]["item_status"] | null
+          tags?: string[] | null
+          technical_content?: string | null
+          unit_label?: string | null
+          unit_price?: number | null
+          updated_at?: string | null
+          warranty_info?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       generate_order_number: { Args: never; Returns: string }
