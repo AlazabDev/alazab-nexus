@@ -11,19 +11,52 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+    return new Response(JSON.stringify({ success: false, error: "Server not configured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Require a Bearer token and verify it belongs to an editor/admin user.
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (!authHeader.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data: userData, error: userErr } = await userClient.auth.getUser();
+  if (userErr || !userData?.user) {
+    return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const { data: roleRow } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .in("role", ["editor", "admin"])
+    .maybeSingle();
+  if (!roleRow) {
+    return new Response(JSON.stringify({ success: false, error: "Forbidden" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { productId, productData } = await req.json();
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error("Missing Supabase credentials");
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Check for duplicates using multiple criteria
     const duplicates = await findDuplicates(supabase, productId, productData);
 
     return new Response(
@@ -42,10 +75,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Duplicate check error:", error);
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      }),
+      JSON.stringify({ success: false, error: "Internal server error" }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
@@ -54,10 +84,9 @@ serve(async (req) => {
   }
 });
 
-async function findDuplicates(supabase: any, productId: string, productData: any) {
+async function findDuplicates(supabase: any, productId: string, _productData: any) {
   const duplicates: any[] = [];
 
-  // Get the product being checked
   const { data: product, error: productError } = await supabase
     .from("products")
     .select("*")
@@ -68,7 +97,6 @@ async function findDuplicates(supabase: any, productId: string, productData: any
     throw new Error("Product not found");
   }
 
-  // Check 1: Exact code match
   const { data: codeMatches } = await supabase
     .from("products")
     .select("id, name_ar, name_en, az_code, status")
@@ -88,7 +116,6 @@ async function findDuplicates(supabase: any, productId: string, productData: any
     });
   }
 
-  // Check 2: Similar names (using Levenshtein distance approximation)
   const { data: allProducts } = await supabase
     .from("products")
     .select("id, name_ar, name_en, az_code, status")
@@ -98,21 +125,19 @@ async function findDuplicates(supabase: any, productId: string, productData: any
   if (allProducts) {
     allProducts.forEach((existing: any) => {
       const similarity = calculateSimilarity(product.name_ar, existing.name_ar);
-
       if (similarity > 0.75 && !duplicates.find((d) => d.id === existing.id)) {
         duplicates.push({
           id: existing.id,
           name_ar: existing.name_ar,
           name_en: existing.name_en,
           type: "name_similarity",
-          similarity: similarity,
+          similarity,
           reason: `تشابه في الاسم العربي (${(similarity * 100).toFixed(0)}%)`,
         });
       }
     });
   }
 
-  // Check 3: Same GPC family and description
   const { data: familyMatches } = await supabase
     .from("products")
     .select("id, name_ar, name_en, gpc_family")
@@ -135,41 +160,29 @@ async function findDuplicates(supabase: any, productId: string, productData: any
     });
   }
 
-  // Sort by similarity descending
   return duplicates.sort((a, b) => b.similarity - a.similarity).slice(0, 10);
 }
 
 function calculateSimilarity(str1: string, str2: string): number {
   if (!str1 || !str2) return 0;
-
   const s1 = str1.toLowerCase().trim();
   const s2 = str2.toLowerCase().trim();
-
-  // Exact match
   if (s1 === s2) return 1.0;
-
-  // Check if one contains the other
   if (s1.includes(s2) || s2.includes(s1)) return 0.9;
-
-  // Calculate Levenshtein distance approximation
   const longer = s1.length > s2.length ? s1 : s2;
   const shorter = s1.length > s2.length ? s2 : s1;
-
   if (longer.length === 0) return 1.0;
-
   const editDistance = levenshteinDistance(longer, shorter);
   return (longer.length - editDistance) / longer.length;
 }
 
 function levenshteinDistance(s1: string, s2: string): number {
   const costs: any[] = [];
-
   for (let i = 0; i <= s1.length; i++) {
     let lastValue = i;
     for (let j = 0; j <= s2.length; j++) {
-      if (i === 0) {
-        costs[j] = j;
-      } else if (j > 0) {
+      if (i === 0) costs[j] = j;
+      else if (j > 0) {
         let newValue = costs[j - 1];
         if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
           newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
@@ -180,6 +193,5 @@ function levenshteinDistance(s1: string, s2: string): number {
     }
     if (i > 0) costs[s2.length] = lastValue;
   }
-
   return costs[s2.length];
 }

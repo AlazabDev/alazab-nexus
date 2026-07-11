@@ -20,7 +20,11 @@ export const Route = createFileRoute("/api/public/v1/assets")({
             .select("asset_role, sort_order, assets(id, file_url, file_name, file_type, file_size)")
             .eq("product_id", productId)
             .order("sort_order");
-          if (error) return json({ error: error.message }, 500, { request });
+          if (error) {
+            console.error("[public/assets] product assets failed", error);
+            return json({ error: "Internal server error" }, 500, { request });
+          }
+
           await logCall({
             consumer: auth.consumer,
             request,
@@ -38,7 +42,11 @@ export const Route = createFileRoute("/api/public/v1/assets")({
           .eq("status", "active")
           .order("created_at", { ascending: false })
           .limit(limit);
-        if (error) return json({ error: error.message }, 500, { request });
+        if (error) {
+          console.error("[public/assets] list failed", error);
+          return json({ error: "Internal server error" }, 500, { request });
+        }
+
         await logCall({
           consumer: auth.consumer,
           request,

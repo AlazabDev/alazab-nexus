@@ -36,13 +36,25 @@ export const Route = createFileRoute("/api/public/v1/products")({
           .order("updated_at", { ascending: false })
           .range(offset, offset + limit - 1);
         if (status) q = q.eq("status", status as "draft");
-        if (search)
-          q = q.or(
-            `name_ar.ilike.%${search}%,name_en.ilike.%${search}%,az_code.ilike.%${search}%,egs_code.ilike.%${search}%`,
-          );
+        if (search) {
+          // Escape PostgREST filter metacharacters and wildcards to prevent
+          // injection of additional OR conditions through the `q` param.
+          const safe = search
+            .replace(/[\\%_,()"']/g, "")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 100);
+          if (safe.length > 0) {
+            const pattern = `%${safe}%`;
+            q = q.or(
+              `name_ar.ilike.${pattern},name_en.ilike.${pattern},az_code.ilike.${pattern},egs_code.ilike.${pattern}`,
+            );
+          }
+        }
 
         const { data, error, count } = await q;
         if (error) {
+          console.error("[public/products] list failed", error);
           await logCall({
             consumer: auth.consumer,
             request,
@@ -51,8 +63,9 @@ export const Route = createFileRoute("/api/public/v1/products")({
             startedAt: started,
             error: error.message,
           });
-          return json({ error: error.message }, 500, { request });
+          return json({ error: "Internal server error" }, 500, { request });
         }
+
         await logCall({
           consumer: auth.consumer,
           request,

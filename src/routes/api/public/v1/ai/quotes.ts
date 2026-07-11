@@ -76,8 +76,9 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
           const { data: pricingRules } = await supabaseAdmin
             .from('pricing_rules')
             .select('*')
-            .eq('status', 'active')
+            .eq('is_active', true)
             .maybeSingle();
+
 
           // Generate quote using AI
           const generatedQuote = await generateQuoteFromRequest(requestData as any, (pricingRules || undefined) as any);
@@ -106,13 +107,14 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
                 terms_conditions: generatedQuote.terms_conditions,
                 notes: generatedQuote.notes,
               } as never,
-              status: 'approved',
+              status: 'approved' as never,
               generated_by: 'google/gemini-2.5-flash',
               generated_at: new Date().toISOString(),
               api_endpoint: '/api/public/v1/ai/quotes',
               quote_token: quoteToken,
               consumer_id: consumer?.id ?? null,
-            })
+            } as never)
+
             .select()
             .single();
 

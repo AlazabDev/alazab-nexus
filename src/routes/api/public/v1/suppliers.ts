@@ -19,7 +19,11 @@ export const Route = createFileRoute("/api/public/v1/suppliers")({
           )
           .eq("status", "active")
           .order("name");
-        if (error) return json({ error: error.message }, 500, { request });
+        if (error) {
+          console.error("[public/suppliers] list failed", error);
+          return json({ error: "Internal server error" }, 500, { request });
+        }
+
         await logCall({
           consumer: auth.consumer,
           request,

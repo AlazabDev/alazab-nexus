@@ -143,17 +143,19 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
             action: 'generate_datasheet',
             entity_type: 'datasheet',
             status: 'error',
-            metadata: { error: error instanceof Error ? error.message : String(error) },
+            metadata: { error: error instanceof Error ? error.message : String(error) } as never,
             duration_ms: Date.now() - started,
-          });
+          } as never);
+
 
           return json(
             {
-              error: error instanceof Error ? error.message : 'Datasheet generation failed',
+              error: 'Datasheet generation failed',
             },
             500,
             { request },
           );
+
         }
       },
     },

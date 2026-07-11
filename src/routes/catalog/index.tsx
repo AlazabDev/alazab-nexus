@@ -305,10 +305,11 @@ function CatalogPage() {
   // إحصائيات سريعة
   useEffect(() => {
     (async () => {
+      const base = () => supabase.from("products").select("*", { count: "exact", head: true });
       const [t, p, s] = await Promise.all([
-        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true),
-        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true).not("unit_price", "is", null),
-        supabase.from("products").select("*", { count: "exact", head: true }).eq("active", true).not("daftra_id", "is", null),
+        base(),
+        base().not("unit_price", "is", null),
+        base().not("daftra_id", "is", null),
       ]);
       setStats({ total: t.count ?? 0, priced: p.count ?? 0, synced: s.count ?? 0 });
     })();
@@ -318,9 +319,9 @@ function CatalogPage() {
     setLoading(true);
     let q = supabase.from("products")
       .select("id,az_code,name_ar,name_en,description_ar,brand,item_type,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,gpc_class,operational_track,status", { count: "exact" })
-      .eq("active", true)
       .not("status", "in", "(archived,rejected)")
       .range((pg - 1) * PAGE, pg * PAGE - 1);
+
 
     if (f.q)     q = q.or(`name_ar.ilike.%${f.q}%,az_code.ilike.%${f.q}%,name_en.ilike.%${f.q}%`);
     if (f.brand) q = q.eq("brand", f.brand);

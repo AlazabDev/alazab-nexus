@@ -97,10 +97,11 @@ export const Route = createFileRoute('/api/private/v1/ai/batch-optimize')({
 
           return json(
             {
-              error: error instanceof Error ? error.message : 'Batch optimization failed',
+              error: 'Batch optimization failed',
             },
             500
           );
+
         }
       },
     },
