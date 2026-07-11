@@ -5,8 +5,12 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { updateManufacturingOrderStatus } from "@/lib/manufacturing-orders.functions";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -124,22 +128,20 @@ function ManufacturingOrdersPage() {
     queryFn: fetchOrderStats,
   });
 
+  const updateStatus = useServerFn(updateManufacturingOrderStatus);
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const updates: any = { status };
-      if (status === "in_production")
-        updates.actual_start_date = new Date().toISOString().split("T")[0];
-      if (status === "delivered")
-        updates.actual_completion_date = new Date().toISOString().split("T")[0];
-
-      const { error } = await supabase.from("manufacturing_orders").update(updates).eq("id", id);
-      if (error) throw error;
-    },
+    mutationFn: async ({ id, status }: { id: string; status: string }) =>
+      updateStatus({ data: { id, status } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["manufacturing-orders"] });
       queryClient.invalidateQueries({ queryKey: ["manufacturing-stats"] });
     },
+    onError: (err: unknown) => {
+      const msg = err instanceof Error ? err.message : "تعذر تحديث الحالة";
+      toast.error(msg);
+    },
   });
+
 
   const statCards = [
     { label: "اجمالي الاوامر", value: stats?.total || 0, icon: FileText, color: "text-primary" },

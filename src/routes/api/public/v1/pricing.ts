@@ -22,7 +22,11 @@ export const Route = createFileRoute("/api/public/v1/pricing")({
           )
           .order("updated_at", { ascending: false })
           .limit(limit);
-        if (error) return json({ error: error.message }, 500, { request });
+        if (error) {
+          console.error("[public/pricing] list failed", error);
+          return json({ error: "Internal server error" }, 500, { request });
+        }
+
         await logCall({
           consumer: auth.consumer,
           request,

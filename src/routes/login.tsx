@@ -16,7 +16,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -29,20 +28,10 @@ function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + "/dashboard" },
-        });
-        if (error) throw error;
-        toast.success("تم إنشاء الحساب. يرجى التحقق من بريدك الإلكتروني.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("تم تسجيل الدخول بنجاح");
-        navigate({ to: "/dashboard" });
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("تم تسجيل الدخول بنجاح");
+      navigate({ to: "/dashboard" });
     } catch (err: any) {
       toast.error(err.message ?? "حدث خطأ");
     } finally {
@@ -107,13 +96,9 @@ function LoginPage() {
             </div>
             <div className="font-bold">Alazab PAOP</div>
           </div>
-          <h2 className="text-2xl font-bold">
-            {mode === "signin" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
-          </h2>
+          <h2 className="text-2xl font-bold">تسجيل الدخول</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {mode === "signin"
-              ? "ادخل بياناتك للوصول إلى المنصة"
-              : "أول حساب يُسجَّل يحصل على صلاحية مدير تلقائياً"}
+            الوصول إلى المنصة للمستخدمين المُصرح لهم فقط. للحصول على حساب، تواصل مع مدير النظام.
           </p>
           <form onSubmit={handleSubmit} className="space-y-4 mt-6">
             <div>
@@ -142,20 +127,15 @@ function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "جاري المعالجة..." : mode === "signin" ? "دخول" : "إنشاء الحساب"}
+              {loading ? "جاري المعالجة..." : "دخول"}
             </Button>
           </form>
-          <div className="mt-6 text-sm text-center text-muted-foreground">
-            {mode === "signin" ? "ليس لديك حساب؟" : "لديك حساب بالفعل؟"}{" "}
-            <button
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-              className="text-accent font-semibold hover:underline"
-            >
-              {mode === "signin" ? "إنشاء حساب" : "تسجيل الدخول"}
-            </button>
-          </div>
+          <p className="mt-6 text-xs text-center text-muted-foreground">
+            بالدخول، أنت توافق على سياسات المنصة الأمنية.
+          </p>
         </div>
       </div>
     </div>
   );
 }
+

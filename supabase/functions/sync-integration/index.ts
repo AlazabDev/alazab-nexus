@@ -7,24 +7,62 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+    return new Response(JSON.stringify({ success: false, error: "Server not configured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Require a Bearer token belonging to an admin (integration sync is privileged).
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (!authHeader.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
+  });
+  const { data: userData, error: userErr } = await userClient.auth.getUser();
+  if (userErr || !userData?.user) {
+    return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const { data: roleRow } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (!roleRow) {
+    return new Response(JSON.stringify({ success: false, error: "Forbidden" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { integrationId } = await req.json();
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error("Missing Supabase credentials");
+    if (typeof integrationId !== "string" || integrationId.length > 64) {
+      return new Response(JSON.stringify({ success: false, error: "Invalid integrationId" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get integration config
     const { data: config, error: configError } = await supabase
       .from("integration_configs")
       .select("*")
@@ -32,10 +70,12 @@ serve(async (req) => {
       .single();
 
     if (configError || !config) {
-      throw new Error(`Integration not found: ${integrationId}`);
+      return new Response(JSON.stringify({ success: false, error: "Integration not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Route to appropriate sync function
     let syncResult;
     switch (integrationId) {
       case "daftra":
@@ -51,10 +91,12 @@ serve(async (req) => {
         syncResult = await syncAzureOpenAI(supabase, config);
         break;
       default:
-        throw new Error(`Unknown integration: ${integrationId}`);
+        return new Response(JSON.stringify({ success: false, error: "Unknown integration" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
     }
 
-    // Log sync activity
     await supabase.from("sync_logs").insert({
       integration_type: integrationId,
       status: "success",
@@ -78,10 +120,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Sync error:", error);
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      }),
+      JSON.stringify({ success: false, error: "Internal server error" }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
@@ -90,58 +129,36 @@ serve(async (req) => {
   }
 });
 
-async function syncDaftra(supabase: any, config: any) {
-  console.log("Syncing Daftra...");
-
-  // Get all approved products
+async function syncDaftra(supabase: any, _config: any) {
   const { data: products, error } = await supabase
     .from("products")
     .select("id, name_ar, name_en, az_code, gpc_family, description_ar, status")
     .eq("status", "approved");
-
   if (error) throw error;
-
-  // Map and sync to Daftra (mock implementation)
-  const synced = products.length;
-
   return {
-    count: synced,
-    details: {
-      timestamp: new Date().toISOString(),
-      total: synced,
-      status: "completed",
-    },
+    count: products.length,
+    details: { timestamp: new Date().toISOString(), total: products.length, status: "completed" },
   };
 }
 
-async function syncBotGateway(supabase: any, config: any) {
-  console.log("Syncing Bot Gateway...");
-
-  // Get products for bot catalog
+async function syncBotGateway(supabase: any, _config: any) {
   const { data: products, error } = await supabase
     .from("products")
     .select("id, name_ar, name_en, az_code, description_ar")
     .eq("status", "approved")
     .limit(1000);
-
   if (error) throw error;
-
-  const synced = products.length;
-
   return {
-    count: synced,
+    count: products.length,
     details: {
       timestamp: new Date().toISOString(),
-      products: synced,
+      products: products.length,
       status: "catalog_updated",
     },
   };
 }
 
-async function syncERPNext(supabase: any, config: any) {
-  console.log("Syncing ERPNext...");
-
-  // ERPNext integration (planned for Q3-Q4 2026)
+async function syncERPNext(_supabase: any, _config: any) {
   return {
     count: 0,
     details: {
@@ -152,25 +169,18 @@ async function syncERPNext(supabase: any, config: any) {
   };
 }
 
-async function syncAzureOpenAI(supabase: any, config: any) {
-  console.log("Syncing Azure OpenAI...");
-
-  // Azure OpenAI integration for product analysis
+async function syncAzureOpenAI(supabase: any, _config: any) {
   const { data: productsNeedingAnalysis, error } = await supabase
     .from("products")
     .select("id, name_ar, description_ar")
     .is("ai_analysis", null)
     .limit(100);
-
   if (error) throw error;
-
-  const synced = productsNeedingAnalysis.length;
-
   return {
-    count: synced,
+    count: productsNeedingAnalysis.length,
     details: {
       timestamp: new Date().toISOString(),
-      analyzed: synced,
+      analyzed: productsNeedingAnalysis.length,
       status: "analysis_queued",
     },
   };

@@ -82,11 +82,12 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
 
           return json(
             {
-              error: error instanceof Error ? error.message : 'Optimization failed',
+              error: 'Optimization failed',
             },
             500,
             { request },
           );
+
         }
       },
     },

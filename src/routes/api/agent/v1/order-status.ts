@@ -49,8 +49,10 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
         const { data, error } = orderId || orderNumber ? await query.maybeSingle() : await query;
 
         if (error) {
-          return json({ success: false, error: error.message }, 500);
+          console.error("[agent/order-status] read failed", error);
+          return json({ success: false, error: "Internal server error" }, 500);
         }
+
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
           return json({ success: false, error: "Order not found" }, 404);
@@ -177,8 +179,10 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
           const { data, error } = await query.select().single();
 
           if (error) {
-            return json({ success: false, error: error.message }, 500);
+            console.error("[agent/order-status] update failed", error);
+            return json({ success: false, error: "Internal server error" }, 500);
           }
+
 
           // ارسال اشعار للشات بوت اذا تغيرت الحالة
           if (body.status && body.notify_customer) {
