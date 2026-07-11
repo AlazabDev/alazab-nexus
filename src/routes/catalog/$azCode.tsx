@@ -52,14 +52,14 @@ export const Route = createFileRoute("/catalog/$azCode")({
     const { data, error } = await supabase
       .from("products")
       .select(
-        "id,az_code,daftra_id,egs_code,name_ar,name_en,description_ar,description_en,brand,item_type,unit_label,category,gpc_class,gpc_family,gpc_segment,gpc_brick_title,operational_track,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,status"
+        "id,az_code,daftra_id,egs_code,name_ar,name_en,description_ar,description_en,brand,item_type,unit_label,category,gpc_class,gpc_family,gpc_segment,gpc_brick_title,operational_track,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,status" as never,
       )
       .eq("az_code", params.azCode)
-      .eq("active", true)
       .maybeSingle();
     if (error || !data) throw notFound();
-    return { product: data as PublicProduct };
+    return { product: data as unknown as PublicProduct };
   },
+
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [

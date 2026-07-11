@@ -72,7 +72,11 @@ export const updateManufacturingOrderStatus = createServerFn({ method: "POST" })
       );
     }
 
-    const updates: Record<string, unknown> = { status: data.status };
+    const updates: {
+      status: typeof data.status;
+      actual_start_date?: string;
+      actual_completion_date?: string;
+    } = { status: data.status };
     const today = new Date().toISOString().split("T")[0];
     if (data.status === "in_production") updates.actual_start_date = today;
     if (data.status === "delivered") updates.actual_completion_date = today;
@@ -81,6 +85,7 @@ export const updateManufacturingOrderStatus = createServerFn({ method: "POST" })
       .from("manufacturing_orders")
       .update(updates)
       .eq("id", data.id);
+
     if (updErr) {
       console.error("[manufacturing-orders] update failed", updErr);
       throw new Error("Failed to update order");
