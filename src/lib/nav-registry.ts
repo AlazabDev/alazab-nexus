@@ -21,8 +21,15 @@ import {
   History,
   Settings,
   Wrench,
+  Shield,
+  Layers,
+  GitBranch,
+  Ruler,
+  Users,
+  Key,
   type LucideIcon,
 } from "lucide-react";
+
 
 export interface NavItem {
   title: string;
@@ -72,8 +79,15 @@ export const NAV_ITEMS: NavItem[] = [
 
   // النظام
   { title: "Build Health", to: "/build-health", icon: Wrench, group: "النظام" },
+  { title: "لوحة الإدارة", to: "/admin", icon: Shield, group: "النظام", keywords: ["admin", "إدارة"], shortcut: "G A" },
+  { title: "المستخدمون والأدوار", to: "/admin/users", icon: Users, group: "النظام", keywords: ["users", "roles"] },
+  { title: "مفاتيح API", to: "/admin/api-keys", icon: Key, group: "النظام" },
+  { title: "الفئات", to: "/admin/categories", icon: Layers, group: "النظام" },
+  { title: "العائلات", to: "/admin/families", icon: GitBranch, group: "النظام" },
+  { title: "الوحدات", to: "/admin/units", icon: Ruler, group: "النظام" },
   { title: "الإعدادات", to: "/settings", icon: Settings, group: "النظام", shortcut: "G ," },
 ];
+
 
 // Map from route prefix → label (for breadcrumbs).
 export const ROUTE_LABELS: Record<string, string> = Object.fromEntries(

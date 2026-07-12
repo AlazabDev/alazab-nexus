@@ -26,6 +26,7 @@ import { Route as AuthenticatedBuildHealthRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAuditLogsRouteImport } from './routes/_authenticated/audit-logs'
 import { Route as AuthenticatedAiReviewRouteImport } from './routes/_authenticated/ai-review'
 import { Route as AuthenticatedAiChatRouteImport } from './routes/_authenticated/ai-chat'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedSuppliersIndexRouteImport } from './routes/_authenticated/suppliers/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedRequestsIndexRouteImport } from './routes/_authenticated/requests/index'
@@ -40,6 +41,7 @@ import { Route as AuthenticatedApprovalsIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedApiCenterIndexRouteImport } from './routes/_authenticated/api-center/index'
 import { Route as AuthenticatedAnalyticsIndexRouteImport } from './routes/_authenticated/analytics/index'
 import { Route as AuthenticatedAiStudioIndexRouteImport } from './routes/_authenticated/ai-studio/index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedSuppliersIdRouteImport } from './routes/_authenticated/suppliers/$id'
 import { Route as AuthenticatedRequestsIdRouteImport } from './routes/_authenticated/requests/$id'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products/new'
@@ -53,6 +55,11 @@ import { Route as AuthenticatedAiStudioImagesRouteImport } from './routes/_authe
 import { Route as AuthenticatedAiStudioDatasheetsRouteImport } from './routes/_authenticated/ai-studio/datasheets'
 import { Route as AuthenticatedAiStudioBulkRouteImport } from './routes/_authenticated/ai-studio/bulk'
 import { Route as AuthenticatedAiChatHistoryRouteImport } from './routes/_authenticated/ai-chat/history'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminUnitsRouteImport } from './routes/_authenticated/admin/units'
+import { Route as AuthenticatedAdminFamiliesRouteImport } from './routes/_authenticated/admin/families'
+import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
+import { Route as AuthenticatedAdminApiKeysRouteImport } from './routes/_authenticated/admin/api-keys'
 import { Route as ApiPublicV1SuppliersRouteImport } from './routes/api/public/v1/suppliers'
 import { Route as ApiPublicV1ProductsRouteImport } from './routes/api/public/v1/products'
 import { Route as ApiPublicV1PricingRouteImport } from './routes/api/public/v1/pricing'
@@ -160,6 +167,11 @@ const AuthenticatedAiChatRoute = AuthenticatedAiChatRouteImport.update({
   path: '/ai-chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSuppliersIndexRoute =
   AuthenticatedSuppliersIndexRouteImport.update({
     id: '/suppliers/',
@@ -244,6 +256,11 @@ const AuthenticatedAiStudioIndexRoute =
     path: '/ai-studio/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedSuppliersIdRoute =
   AuthenticatedSuppliersIdRouteImport.update({
     id: '/suppliers/$id',
@@ -319,6 +336,34 @@ const AuthenticatedAiChatHistoryRoute =
     id: '/history',
     path: '/history',
     getParentRoute: () => AuthenticatedAiChatRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminUnitsRoute = AuthenticatedAdminUnitsRouteImport.update({
+  id: '/units',
+  path: '/units',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminFamiliesRoute =
+  AuthenticatedAdminFamiliesRouteImport.update({
+    id: '/families',
+    path: '/families',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminCategoriesRoute =
+  AuthenticatedAdminCategoriesRouteImport.update({
+    id: '/categories',
+    path: '/categories',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminApiKeysRoute =
+  AuthenticatedAdminApiKeysRouteImport.update({
+    id: '/api-keys',
+    path: '/api-keys',
+    getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const ApiPublicV1SuppliersRoute = ApiPublicV1SuppliersRouteImport.update({
   id: '/api/public/v1/suppliers',
@@ -410,6 +455,7 @@ const ApiPrivateV1AiBatchOptimizeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/ai-chat': typeof AuthenticatedAiChatRouteWithChildren
   '/ai-review': typeof AuthenticatedAiReviewRoute
   '/audit-logs': typeof AuthenticatedAuditLogsRoute
@@ -424,6 +470,11 @@ export interface FileRoutesByFullPath {
   '/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
   '/catalog/': typeof CatalogIndexRoute
+  '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
+  '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
+  '/admin/families': typeof AuthenticatedAdminFamiliesRoute
+  '/admin/units': typeof AuthenticatedAdminUnitsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
@@ -437,6 +488,7 @@ export interface FileRoutesByFullPath {
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/requests/$id': typeof AuthenticatedRequestsIdRoute
   '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/ai-studio/': typeof AuthenticatedAiStudioIndexRoute
   '/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center/': typeof AuthenticatedApiCenterIndexRoute
@@ -485,6 +537,11 @@ export interface FileRoutesByTo {
   '/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
   '/catalog': typeof CatalogIndexRoute
+  '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
+  '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
+  '/admin/families': typeof AuthenticatedAdminFamiliesRoute
+  '/admin/units': typeof AuthenticatedAdminUnitsRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
@@ -498,6 +555,7 @@ export interface FileRoutesByTo {
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/requests/$id': typeof AuthenticatedRequestsIdRoute
   '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/ai-studio': typeof AuthenticatedAiStudioIndexRoute
   '/analytics': typeof AuthenticatedAnalyticsIndexRoute
   '/api-center': typeof AuthenticatedApiCenterIndexRoute
@@ -534,6 +592,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/ai-chat': typeof AuthenticatedAiChatRouteWithChildren
   '/_authenticated/ai-review': typeof AuthenticatedAiReviewRoute
   '/_authenticated/audit-logs': typeof AuthenticatedAuditLogsRoute
@@ -548,6 +607,11 @@ export interface FileRoutesById {
   '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
   '/catalog/': typeof CatalogIndexRoute
+  '/_authenticated/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
+  '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
+  '/_authenticated/admin/families': typeof AuthenticatedAdminFamiliesRoute
+  '/_authenticated/admin/units': typeof AuthenticatedAdminUnitsRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
   '/_authenticated/ai-studio/bulk': typeof AuthenticatedAiStudioBulkRoute
   '/_authenticated/ai-studio/datasheets': typeof AuthenticatedAiStudioDatasheetsRoute
@@ -561,6 +625,7 @@ export interface FileRoutesById {
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
   '/_authenticated/requests/$id': typeof AuthenticatedRequestsIdRoute
   '/_authenticated/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/ai-studio/': typeof AuthenticatedAiStudioIndexRoute
   '/_authenticated/analytics/': typeof AuthenticatedAnalyticsIndexRoute
   '/_authenticated/api-center/': typeof AuthenticatedApiCenterIndexRoute
@@ -597,6 +662,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/admin'
     | '/ai-chat'
     | '/ai-review'
     | '/audit-logs'
@@ -611,6 +677,11 @@ export interface FileRouteTypes {
     | '/support'
     | '/catalog/$azCode'
     | '/catalog/'
+    | '/admin/api-keys'
+    | '/admin/categories'
+    | '/admin/families'
+    | '/admin/units'
+    | '/admin/users'
     | '/ai-chat/history'
     | '/ai-studio/bulk'
     | '/ai-studio/datasheets'
@@ -624,6 +695,7 @@ export interface FileRouteTypes {
     | '/products/new'
     | '/requests/$id'
     | '/suppliers/$id'
+    | '/admin/'
     | '/ai-studio/'
     | '/analytics/'
     | '/api-center/'
@@ -672,6 +744,11 @@ export interface FileRouteTypes {
     | '/support'
     | '/catalog/$azCode'
     | '/catalog'
+    | '/admin/api-keys'
+    | '/admin/categories'
+    | '/admin/families'
+    | '/admin/units'
+    | '/admin/users'
     | '/ai-chat/history'
     | '/ai-studio/bulk'
     | '/ai-studio/datasheets'
@@ -685,6 +762,7 @@ export interface FileRouteTypes {
     | '/products/new'
     | '/requests/$id'
     | '/suppliers/$id'
+    | '/admin'
     | '/ai-studio'
     | '/analytics'
     | '/api-center'
@@ -720,6 +798,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/admin'
     | '/_authenticated/ai-chat'
     | '/_authenticated/ai-review'
     | '/_authenticated/audit-logs'
@@ -734,6 +813,11 @@ export interface FileRouteTypes {
     | '/_authenticated/support'
     | '/catalog/$azCode'
     | '/catalog/'
+    | '/_authenticated/admin/api-keys'
+    | '/_authenticated/admin/categories'
+    | '/_authenticated/admin/families'
+    | '/_authenticated/admin/units'
+    | '/_authenticated/admin/users'
     | '/_authenticated/ai-chat/history'
     | '/_authenticated/ai-studio/bulk'
     | '/_authenticated/ai-studio/datasheets'
@@ -747,6 +831,7 @@ export interface FileRouteTypes {
     | '/_authenticated/products/new'
     | '/_authenticated/requests/$id'
     | '/_authenticated/suppliers/$id'
+    | '/_authenticated/admin/'
     | '/_authenticated/ai-studio/'
     | '/_authenticated/analytics/'
     | '/_authenticated/api-center/'
@@ -922,6 +1007,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/suppliers/': {
       id: '/_authenticated/suppliers/'
       path: '/suppliers'
@@ -1020,6 +1112,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiStudioIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/suppliers/$id': {
       id: '/_authenticated/suppliers/$id'
       path: '/suppliers/$id'
@@ -1110,6 +1209,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/ai-chat/history'
       preLoaderRoute: typeof AuthenticatedAiChatHistoryRouteImport
       parentRoute: typeof AuthenticatedAiChatRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/units': {
+      id: '/_authenticated/admin/units'
+      path: '/units'
+      fullPath: '/admin/units'
+      preLoaderRoute: typeof AuthenticatedAdminUnitsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/families': {
+      id: '/_authenticated/admin/families'
+      path: '/families'
+      fullPath: '/admin/families'
+      preLoaderRoute: typeof AuthenticatedAdminFamiliesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/categories': {
+      id: '/_authenticated/admin/categories'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AuthenticatedAdminCategoriesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/api-keys': {
+      id: '/_authenticated/admin/api-keys'
+      path: '/api-keys'
+      fullPath: '/admin/api-keys'
+      preLoaderRoute: typeof AuthenticatedAdminApiKeysRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/api/public/v1/suppliers': {
       id: '/api/public/v1/suppliers'
@@ -1226,6 +1360,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminApiKeysRoute: typeof AuthenticatedAdminApiKeysRoute
+  AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
+  AuthenticatedAdminFamiliesRoute: typeof AuthenticatedAdminFamiliesRoute
+  AuthenticatedAdminUnitsRoute: typeof AuthenticatedAdminUnitsRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminApiKeysRoute: AuthenticatedAdminApiKeysRoute,
+  AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
+  AuthenticatedAdminFamiliesRoute: AuthenticatedAdminFamiliesRoute,
+  AuthenticatedAdminUnitsRoute: AuthenticatedAdminUnitsRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedAiChatRouteChildren {
   AuthenticatedAiChatHistoryRoute: typeof AuthenticatedAiChatHistoryRoute
 }
@@ -1238,6 +1393,7 @@ const AuthenticatedAiChatRouteWithChildren =
   AuthenticatedAiChatRoute._addFileChildren(AuthenticatedAiChatRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedAiChatRoute: typeof AuthenticatedAiChatRouteWithChildren
   AuthenticatedAiReviewRoute: typeof AuthenticatedAiReviewRoute
   AuthenticatedAuditLogsRoute: typeof AuthenticatedAuditLogsRoute
@@ -1279,6 +1435,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedAiChatRoute: AuthenticatedAiChatRouteWithChildren,
   AuthenticatedAiReviewRoute: AuthenticatedAiReviewRoute,
   AuthenticatedAuditLogsRoute: AuthenticatedAuditLogsRoute,
@@ -1369,13 +1526,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
