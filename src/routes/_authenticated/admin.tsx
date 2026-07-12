@@ -31,7 +31,17 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
 });
 
-export const ADMIN_NAV = [
+type AdminNavItem = {
+  to: string;
+  label: string;
+  icon: any;
+  section: "general" | "access" | "reference" | "resources";
+  exact?: boolean;
+  adminOnly?: boolean;
+  external?: boolean;
+};
+
+export const ADMIN_NAV: AdminNavItem[] = [
   { to: "/admin", label: "نظرة عامة", icon: LayoutGrid, exact: true, section: "general" },
   { to: "/admin/users", label: "المستخدمون والأدوار", icon: Users, section: "access", adminOnly: true },
   { to: "/admin/api-keys", label: "مفاتيح API", icon: Key, section: "access", adminOnly: true },
@@ -43,7 +53,8 @@ export const ADMIN_NAV = [
   { to: "/pricing", label: "قواعد التسعير", icon: DollarSign, section: "resources", external: true, adminOnly: true },
   { to: "/ai-studio", label: "إعدادات الذكاء الاصطناعي", icon: Sparkles, section: "resources", external: true, adminOnly: true },
   { to: "/notifications", label: "الإشعارات", icon: Bell, section: "resources", external: true },
-] as const;
+];
+
 
 const SECTIONS: Record<string, string> = {
   general: "عام",

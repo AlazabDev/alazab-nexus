@@ -77,14 +77,16 @@ export function ReferenceTable({
       for (const f of fields) {
         clean[f.name] = payload[f.name] === "" ? null : payload[f.name];
       }
+      const client = supabase.from(table) as any;
       if (editing?.id) {
-        const { error } = await supabase.from(table).update(clean).eq("id", editing.id);
+        const { error } = await client.update(clean).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from(table).insert(clean as any);
+        const { error } = await client.insert(clean);
         if (error) throw error;
       }
     },
+
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["ref", table] });
       qc.invalidateQueries({ queryKey: ["admin-count", table] });
