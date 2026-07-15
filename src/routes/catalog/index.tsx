@@ -187,7 +187,6 @@ function CatalogPage() {
   const [loading, setLoading]     = useState(true);
   const [page, setPage]           = useState(1);
   const [view, setView]           = useState<"grid" | "list">("grid");
-  const [selected, setSelected]   = useState<Product | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [stats, setStats]         = useState({ total: 0, priced: 0, synced: 0 });
   const [filters, setFilters]     = useState<Filters>({
