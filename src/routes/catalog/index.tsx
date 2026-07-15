@@ -389,9 +389,6 @@ function CatalogPage() {
           </div>
         )}
       </main>
-
-      {/* Modal */}
-      {selected && <ProductModal p={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }
