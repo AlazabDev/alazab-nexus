@@ -95,17 +95,17 @@ function BrandDot({ brand }: { brand: string | null }) {
   );
 }
 
-function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
+function ProductCard({ p }: { p: Product }) {
   const [imgErr, setImgErr] = useState(!imgSrc(p));
-
   const price = priceLabel(p);
 
   return (
-    <article
-      onClick={onClick}
+    <Link
+      to="/catalog/$azCode"
+      params={{ azCode: p.az_code }}
       className="group bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden cursor-pointer
                  transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,.1)]
-                 flex flex-col"
+                 hover:border-[#C9A84C] flex flex-col"
     >
       <div className="relative w-full h-48 bg-[#F5F3EE] overflow-hidden">
         {!imgErr ? (
@@ -144,17 +144,18 @@ function ProductCard({ p, onClick }: { p: Product; onClick: () => void }) {
           ? <span className="text-sm font-bold text-[#0F6E56]">{price}</span>
           : <span className="text-xs text-[#B0A89E]">بدون سعر</span>}
       </div>
-    </article>
+    </Link>
   );
 }
 
-function ProductRow({ p, onClick }: { p: Product; onClick: () => void }) {
+function ProductRow({ p }: { p: Product }) {
   const [imgErr, setImgErr] = useState(!imgSrc(p));
   const price = priceLabel(p);
 
   return (
-    <article
-      onClick={onClick}
+    <Link
+      to="/catalog/$azCode"
+      params={{ azCode: p.az_code }}
       className="flex items-center gap-4 bg-white rounded-xl border border-[#E8E4DC] px-4 py-3
                  cursor-pointer hover:border-[#C9A84C] hover:shadow-sm transition-all duration-150"
     >
@@ -173,116 +174,11 @@ function ProductRow({ p, onClick }: { p: Product; onClick: () => void }) {
         </div>
       </div>
       {price && <span className="text-sm font-bold text-[#0F6E56] shrink-0">{price}</span>}
-    </article>
+      <ChevronLeft className="size-4 text-[#B0A89E] shrink-0" />
+    </Link>
   );
 }
 
-// ── Modal ──────────────────────────────────────────────────
-function ProductModal({ p, onClose }: { p: Product; onClose: () => void }) {
-  const [activeImg, setActiveImg] = useState(imgSrc(p));
-  const imgs = [p.main_image_url, p.image_url_2, p.image_url_3]
-    .filter(Boolean).map(String);
-  const price = priceLabel(p);
-  const bm = BRAND_META[p.brand ?? ""];
-
-  useEffect(() => {
-    const fn = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", fn);
-    return () => document.removeEventListener("keydown", fn);
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* Header */}
-        <div className="sticky top-0 bg-white flex items-start justify-between p-5 border-b border-[#F0EDE8] gap-3">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-base font-bold leading-snug">{p.name_ar}</h2>
-            {p.name_en && <p className="text-xs text-[#8C8680] mt-0.5">{p.name_en}</p>}
-          </div>
-          <button onClick={onClose} className="size-8 rounded-full bg-[#F5F3EE] flex items-center justify-center shrink-0 hover:bg-[#EAE6DE] transition">
-            <X className="size-4" />
-          </button>
-        </div>
-
-        {/* Main image */}
-        <div className="w-full h-64 bg-[#F5F3EE] flex items-center justify-center">
-          {activeImg ? (
-            <img src={activeImg} alt={p.name_ar} className="w-full h-full object-contain p-4" onError={(e) => (e.currentTarget.style.display = "none")} />
-          ) : (
-            <Package className="size-14 text-[#C5BEE8]" />
-          )}
-        </div>
-
-
-        {/* Thumbs */}
-        {imgs.length > 1 && (
-          <div className="flex gap-2 px-5 py-3">
-            {imgs.map((url) => (
-              <button key={url} onClick={() => setActiveImg(url)}
-                className={`size-14 rounded-lg overflow-hidden border-2 transition ${activeImg === url ? "border-[#C9A84C]" : "border-transparent"}`}>
-                <img src={url} alt="" className="size-full object-cover" />
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Details */}
-        <div className="p-5 space-y-4">
-          {bm && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
-              style={{ color: bm.color, background: bm.bg }}>
-              {bm.label}
-            </span>
-          )}
-
-          {p.description_ar && (
-            <p className="text-sm text-[#4A4540] leading-relaxed">{p.description_ar}</p>
-          )}
-
-          <table className="w-full text-sm">
-            <tbody>
-              {[
-                ["الكود", p.az_code],
-                ["النوع", TYPE_LABELS[p.item_type ?? ""] ?? p.item_type],
-                ["الفئة", p.gpc_class],
-                ["السعر", price ?? "—"],
-              ].filter(([, v]) => v).map(([k, v]) => (
-                <tr key={k} className="border-b border-[#F0EDE8]">
-                  <td className="py-2 text-[#8C8680] w-1/3">{k}</td>
-                  <td className="py-2 font-medium">{v}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="grid grid-cols-[1fr_auto] items-center gap-4 pt-2">
-            <Link
-              to="/catalog/$azCode"
-              params={{ azCode: p.az_code }}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-white transition"
-              style={{ background: "#0D1B2A" }}
-            >
-              عرض التفاصيل <ExternalLink className="size-4" />
-            </Link>
-            <div className="flex flex-col items-center gap-1 p-2 rounded-xl bg-white border border-[#E8E4DC]">
-              <QRCodeSVG
-                value={typeof window !== "undefined" ? `${window.location.origin}/catalog/${p.az_code}` : `/catalog/${p.az_code}`}
-                size={64}
-                level="M"
-                includeMargin={false}
-              />
-              <span className="text-[9px] text-[#8C8680]" style={{ fontFamily: MONO_STACK }}>QR</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── Main Page ──────────────────────────────────────────────
 function CatalogPage() {
