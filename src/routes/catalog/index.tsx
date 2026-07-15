@@ -357,11 +357,11 @@ function CatalogPage() {
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((p) => <ProductCard key={p.id} p={p} onClick={() => setSelected(p)} />)}
+            {products.map((p) => <ProductCard key={p.id} p={p} />)}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {products.map((p) => <ProductRow key={p.id} p={p} onClick={() => setSelected(p)} />)}
+            {products.map((p) => <ProductRow key={p.id} p={p} />)}
           </div>
         )}
 
