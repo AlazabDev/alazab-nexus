@@ -57,6 +57,7 @@ import { Route as AuthenticatedAiStudioBulkRouteImport } from './routes/_authent
 import { Route as AuthenticatedAiChatHistoryRouteImport } from './routes/_authenticated/ai-chat/history'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedAdminUnitsRouteImport } from './routes/_authenticated/admin/units'
+import { Route as AuthenticatedAdminIntegrationsRouteImport } from './routes/_authenticated/admin/integrations'
 import { Route as AuthenticatedAdminFamiliesRouteImport } from './routes/_authenticated/admin/families'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
 import { Route as AuthenticatedAdminApiKeysRouteImport } from './routes/_authenticated/admin/api-keys'
@@ -347,6 +348,12 @@ const AuthenticatedAdminUnitsRoute = AuthenticatedAdminUnitsRouteImport.update({
   path: '/units',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminIntegrationsRoute =
+  AuthenticatedAdminIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminFamiliesRoute =
   AuthenticatedAdminFamiliesRouteImport.update({
     id: '/families',
@@ -473,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/families': typeof AuthenticatedAdminFamiliesRoute
+  '/admin/integrations': typeof AuthenticatedAdminIntegrationsRoute
   '/admin/units': typeof AuthenticatedAdminUnitsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
@@ -540,6 +548,7 @@ export interface FileRoutesByTo {
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/families': typeof AuthenticatedAdminFamiliesRoute
+  '/admin/integrations': typeof AuthenticatedAdminIntegrationsRoute
   '/admin/units': typeof AuthenticatedAdminUnitsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
@@ -610,6 +619,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/families': typeof AuthenticatedAdminFamiliesRoute
+  '/_authenticated/admin/integrations': typeof AuthenticatedAdminIntegrationsRoute
   '/_authenticated/admin/units': typeof AuthenticatedAdminUnitsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/ai-chat/history': typeof AuthenticatedAiChatHistoryRoute
@@ -680,6 +690,7 @@ export interface FileRouteTypes {
     | '/admin/api-keys'
     | '/admin/categories'
     | '/admin/families'
+    | '/admin/integrations'
     | '/admin/units'
     | '/admin/users'
     | '/ai-chat/history'
@@ -747,6 +758,7 @@ export interface FileRouteTypes {
     | '/admin/api-keys'
     | '/admin/categories'
     | '/admin/families'
+    | '/admin/integrations'
     | '/admin/units'
     | '/admin/users'
     | '/ai-chat/history'
@@ -816,6 +828,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/api-keys'
     | '/_authenticated/admin/categories'
     | '/_authenticated/admin/families'
+    | '/_authenticated/admin/integrations'
     | '/_authenticated/admin/units'
     | '/_authenticated/admin/users'
     | '/_authenticated/ai-chat/history'
@@ -1224,6 +1237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUnitsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/integrations': {
+      id: '/_authenticated/admin/integrations'
+      path: '/integrations'
+      fullPath: '/admin/integrations'
+      preLoaderRoute: typeof AuthenticatedAdminIntegrationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/families': {
       id: '/_authenticated/admin/families'
       path: '/families'
@@ -1364,6 +1384,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminApiKeysRoute: typeof AuthenticatedAdminApiKeysRoute
   AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
   AuthenticatedAdminFamiliesRoute: typeof AuthenticatedAdminFamiliesRoute
+  AuthenticatedAdminIntegrationsRoute: typeof AuthenticatedAdminIntegrationsRoute
   AuthenticatedAdminUnitsRoute: typeof AuthenticatedAdminUnitsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -1373,6 +1394,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminApiKeysRoute: AuthenticatedAdminApiKeysRoute,
   AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
   AuthenticatedAdminFamiliesRoute: AuthenticatedAdminFamiliesRoute,
+  AuthenticatedAdminIntegrationsRoute: AuthenticatedAdminIntegrationsRoute,
   AuthenticatedAdminUnitsRoute: AuthenticatedAdminUnitsRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
