@@ -49,7 +49,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { to: "/admin/families", label: "العائلات", icon: GitBranch, section: "reference" },
   { to: "/admin/units", label: "الوحدات", icon: Ruler, section: "reference" },
   { to: "/suppliers", label: "الموردون", icon: Truck, section: "reference", external: true },
-  { to: "/integrations", label: "التكاملات", icon: Network, section: "resources", external: true, adminOnly: true },
+  { to: "/admin/integrations", label: "التكاملات", icon: Network, section: "resources", adminOnly: true },
   { to: "/pricing", label: "قواعد التسعير", icon: DollarSign, section: "resources", external: true, adminOnly: true },
   { to: "/ai-studio", label: "إعدادات الذكاء الاصطناعي", icon: Sparkles, section: "resources", external: true, adminOnly: true },
   { to: "/notifications", label: "الإشعارات", icon: Bell, section: "resources", external: true },
