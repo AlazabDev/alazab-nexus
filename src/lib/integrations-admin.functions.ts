@@ -41,12 +41,13 @@ export const testIntegrationConnection = createServerFn({ method: "POST" })
     switch (data.type) {
       case "erpnext": {
         if (!endpoint) return { ok: false, message: "أدخل عنوان ERPNext" };
-        const auth = data.apiKey && data.extra?.apiSecret
-          ? { Authorization: `token ${data.apiKey}:${data.extra.apiSecret}` }
-          : {};
+        const headers: Record<string, string> = { Accept: "application/json" };
+        if (data.apiKey && data.extra?.apiSecret) {
+          headers.Authorization = `token ${data.apiKey}:${data.extra.apiSecret}`;
+        }
         const r = await timedFetch(`${endpoint}/api/method/frappe.auth.get_logged_user`, {
           method: "GET",
-          headers: { Accept: "application/json", ...auth },
+          headers,
         });
         return { ok: r.ok, status: r.status, latency: r.latency, message: r.ok ? "متصل" : r.error || `HTTP ${r.status}` };
       }
