@@ -3,10 +3,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import {
-  Search, Grid3X3, List, X,
-  Package, ExternalLink, QrCode as QrIcon,
+  Search, Grid3X3, List,
+  Package, ChevronLeft,
 } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
 
 type ItemType = Database["public"]["Enums"]["item_type"];
 
