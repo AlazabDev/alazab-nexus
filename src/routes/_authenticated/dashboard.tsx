@@ -15,8 +15,6 @@ import {
   ArrowLeft,
   History,
   TrendingUp,
-  Plus,
-  Zap,
   LayoutDashboard,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/kpi-card";
@@ -175,6 +173,22 @@ function Dashboard() {
     approve: "اعتماد",
   };
 
+  const primaryKpis = [
+    { label: "اجمالي البنود", value: stats?.products, icon: Package, tone: "primary" as const, to: "/products" },
+    { label: "بنود معتمدة", value: stats?.approved, icon: CheckCircle2, tone: "success" as const, to: "/products" },
+    { label: "تحتاج مراجعة", value: stats?.needsReview, icon: AlertTriangle, tone: "warning" as const, to: "/products" },
+    { label: "مسودات", value: stats?.draft, icon: Clock, tone: "muted" as const, to: "/products" },
+  ];
+  const secondaryKpis = [
+    { label: "الأصول الرقمية", value: stats?.assets, icon: Image, tone: "accent" as const, to: "/assets" },
+    { label: "سجلات الأسعار", value: stats?.prices, icon: DollarSign, tone: "accent" as const, to: "/pricing" },
+    { label: "الموردون", value: stats?.suppliers, icon: Truck, tone: "accent" as const, to: "/suppliers" },
+    { label: "تكاملات API", value: stats?.integrations, icon: Network, tone: "accent" as const, to: "/api-center" },
+  ];
+  const approvalPct = stats?.products
+    ? Math.round(((stats.approved ?? 0) / stats.products) * 100)
+    : 0;
+
   return (
     <>
       <PageHeader
@@ -191,125 +205,68 @@ function Dashboard() {
         }
       />
       <div className="p-4 md:p-6 space-y-6 max-w-[1600px] mx-auto">
-
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        <KPICard
-          label="اجمالي البنود"
-          value={stats?.products}
-          icon={Package}
-          tone="primary"
-          onClick={() => navigate({ to: "/products" })}
-        />
-        <KPICard
-          label="بنود معتمدة"
-          value={stats?.approved}
-          icon={CheckCircle2}
-          tone="success"
-          onClick={() => navigate({ to: "/products" })}
-        />
-        <KPICard
-          label="مسودات"
-          value={stats?.draft}
-          icon={Clock}
-          tone="muted"
-          onClick={() => navigate({ to: "/products" })}
-        />
-        <KPICard
-          label="تحتاج مراجعة"
-          value={stats?.needsReview}
-          icon={AlertTriangle}
-          tone="warning"
-          onClick={() => navigate({ to: "/products" })}
-        />
-        <KPICard
-          label="الاصول الرقمية"
-          value={stats?.assets}
-          icon={Image}
-          tone="primary"
-          onClick={() => navigate({ to: "/assets" })}
-        />
-        <KPICard
-          label="سجلات الاسعار"
-          value={stats?.prices}
-          icon={DollarSign}
-          tone="primary"
-          onClick={() => navigate({ to: "/pricing" })}
-        />
-        <KPICard
-          label="الموردون"
-          value={stats?.suppliers}
-          icon={Truck}
-          tone="primary"
-          onClick={() => navigate({ to: "/suppliers" })}
-        />
-        <KPICard
-          label="تكاملات API"
-          value={stats?.integrations}
-          icon={Network}
-          tone="primary"
-          onClick={() => navigate({ to: "/api-center" })}
-        />
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card className="p-5 surface-elevated border-0">
-          <div className="flex items-center gap-2 mb-3">
-            <Plus className="size-5 text-accent" />
-            <h3 className="font-bold">الإجراءات السريعة</h3>
-          </div>
-          <div className="space-y-2">
-            <button
-              onClick={() => navigate({ to: "/products" })}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-border hover:bg-secondary transition-colors text-right"
-            >
-              إنشاء بند جديد
-            </button>
-            <button
-              onClick={() => navigate({ to: "/import" })}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-border hover:bg-secondary transition-colors text-right"
-            >
-              استيراد بنود
-            </button>
-            <button
-              onClick={() => navigate({ to: "/pricing" })}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-border hover:bg-secondary transition-colors text-right"
-            >
-              إدارة التسعير
-            </button>
-          </div>
-        </Card>
-
-        <Card className="p-5 surface-elevated border-0 md:col-span-2">
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="size-5 text-warning" />
-            <h3 className="font-bold">حالة النظام</h3>
-          </div>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">نسبة اكتمال البيانات</span>
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-success" style={{ width: "87%" }} />
-                </div>
-                <span className="num text-xs font-medium">87%</span>
+        {/* Hero summary */}
+        <Card className="relative overflow-hidden p-5 md:p-6 border-0 surface-elevated bg-gradient-to-l from-primary/10 via-accent/5 to-transparent">
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] items-center">
+            <div className="min-w-0">
+              <div className="text-xs text-muted-foreground mb-1">نسبة الاعتماد الحالية</div>
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-4xl font-bold num">{approvalPct}%</span>
+                <span className="text-sm text-muted-foreground num">
+                  {stats?.approved ?? 0} / {stats?.products ?? 0} بند معتمد
+                </span>
+              </div>
+              <div className="h-2 mt-3 bg-secondary rounded-full overflow-hidden max-w-md">
+                <div
+                  className="h-full bg-gradient-to-l from-success to-accent transition-all"
+                  style={{ width: `${approvalPct}%` }}
+                />
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">البنود المعتمدة</span>
-              <span className="num font-medium">
-                {stats?.approved}/{stats?.products}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">انتظار المراجعة</span>
-              <span className={`num font-medium ${stats?.needsReview ? "text-warning" : ""}`}>
-                {stats?.needsReview}
-              </span>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to="/products"
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition"
+              >
+                إدارة المنتجات
+              </Link>
+              <Link
+                to="/import"
+                className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition"
+              >
+                استيراد
+              </Link>
             </div>
           </div>
         </Card>
-      </div>
+
+        {/* Primary KPIs */}
+        <div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2 px-1">
+            مؤشرات المحتوى
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {primaryKpis.map((k) => (
+              <KPICard key={k.label} {...k} onClick={() => navigate({ to: k.to })} />
+            ))}
+          </div>
+        </div>
+
+        {/* Secondary KPIs */}
+        <div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2 px-1">
+            الموارد والتكاملات
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {secondaryKpis.map((k) => (
+              <KPICard key={k.label} {...k} onClick={() => navigate({ to: k.to })} />
+            ))}
+          </div>
+        </div>
+
+
+
+
 
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Monthly Activity Chart */}
