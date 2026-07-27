@@ -15,8 +15,6 @@ import {
   ArrowLeft,
   History,
   TrendingUp,
-  Plus,
-  Zap,
   LayoutDashboard,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/kpi-card";
