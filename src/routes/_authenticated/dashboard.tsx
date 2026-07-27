@@ -267,64 +267,8 @@ function Dashboard() {
         </div>
 
 
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card className="p-5 surface-elevated border-0">
-          <div className="flex items-center gap-2 mb-3">
-            <Plus className="size-5 text-accent" />
-            <h3 className="font-bold">الإجراءات السريعة</h3>
-          </div>
-          <div className="space-y-2">
-            <button
-              onClick={() => navigate({ to: "/products" })}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-border hover:bg-secondary transition-colors text-right"
-            >
-              إنشاء بند جديد
-            </button>
-            <button
-              onClick={() => navigate({ to: "/import" })}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-border hover:bg-secondary transition-colors text-right"
-            >
-              استيراد بنود
-            </button>
-            <button
-              onClick={() => navigate({ to: "/pricing" })}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-border hover:bg-secondary transition-colors text-right"
-            >
-              إدارة التسعير
-            </button>
-          </div>
-        </Card>
 
-        <Card className="p-5 surface-elevated border-0 md:col-span-2">
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="size-5 text-warning" />
-            <h3 className="font-bold">حالة النظام</h3>
-          </div>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">نسبة اكتمال البيانات</span>
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-success" style={{ width: "87%" }} />
-                </div>
-                <span className="num text-xs font-medium">87%</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">البنود المعتمدة</span>
-              <span className="num font-medium">
-                {stats?.approved}/{stats?.products}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">انتظار المراجعة</span>
-              <span className={`num font-medium ${stats?.needsReview ? "text-warning" : ""}`}>
-                {stats?.needsReview}
-              </span>
-            </div>
-          </div>
-        </Card>
-      </div>
+
 
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Monthly Activity Chart */}
