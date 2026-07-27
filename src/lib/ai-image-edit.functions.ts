@@ -7,11 +7,66 @@ const BUCKET = "product-assets";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-2.5-flash-image";
 
+const ALLOWED_HOSTS = [
+  "eesxiwdeeipfzyarycgo.supabase.co",
+  "eesxiwdeeipfzyarycgo.storage.supabase.co",
+  "images.unsplash.com",
+  "cdn.shopify.com",
+  "res.cloudinary.com",
+  "i.imgur.com",
+];
+const MAX_BYTES = 15 * 1024 * 1024;
+
+function isPrivateOrLiteralIp(host: string): boolean {
+  const m = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m) {
+    const a = parseInt(m[1]);
+    const b = parseInt(m[2]);
+    if (a === 10 || a === 127 || a === 0) return true;
+    if (a === 169 && b === 254) return true; // link-local incl. 169.254.169.254 metadata
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && b === 168) return true;
+    return false;
+  }
+  if (host.startsWith("[") || host.includes(":")) return true; // IPv6 literal
+  return false;
+}
+
 async function fetchImageAsDataUrl(url: string): Promise<string> {
-  const res = await fetch(url);
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error("Invalid source URL");
+  }
+  if (parsed.protocol !== "https:") throw new Error("Only https URLs are allowed");
+  const host = parsed.hostname.toLowerCase();
+  if (
+    isPrivateOrLiteralIp(host) ||
+    host === "localhost" ||
+    host.endsWith(".internal") ||
+    host.endsWith(".local")
+  ) {
+    throw new Error("Source URL host is not allowed");
+  }
+  const allowed = ALLOWED_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+  if (!allowed) throw new Error(`Source host not in allowlist: ${host}`);
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+  let res: Response;
+  try {
+    res = await fetch(parsed.toString(), { redirect: "error", signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) throw new Error(`Failed to fetch source image: ${res.status}`);
   const mime = res.headers.get("content-type") || "image/jpeg";
+  if (!mime.startsWith("image/")) throw new Error("Source URL did not return an image");
+  const declared = Number(res.headers.get("content-length") || 0);
+  if (declared && declared > MAX_BYTES) throw new Error("Source image too large");
   const buf = new Uint8Array(await res.arrayBuffer());
+  if (buf.byteLength > MAX_BYTES) throw new Error("Source image too large");
   let bin = "";
   for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
   return `data:${mime};base64,${btoa(bin)}`;
