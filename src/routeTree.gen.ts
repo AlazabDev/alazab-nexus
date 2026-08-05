@@ -22,6 +22,7 @@ import { Route as AuthenticatedContentReviewRouteImport } from './routes/_authen
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedIntegrationsRouteImport } from './routes/_authenticated/integrations'
 import { Route as AuthenticatedManufacturingOrdersRouteImport } from './routes/_authenticated/manufacturing-orders'
+import { Route as AuthenticatedProductAgentRouteImport } from './routes/_authenticated/product-agent'
 import { Route as AuthenticatedQuoteRequestsRouteImport } from './routes/_authenticated/quote-requests'
 import { Route as AuthenticatedSupplierInventoryRouteImport } from './routes/_authenticated/supplier-inventory'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
@@ -55,6 +56,7 @@ import { Route as AuthenticatedNotificationsIndexRouteImport } from './routes/_a
 import { Route as AuthenticatedPricingIndexRouteImport } from './routes/_authenticated/pricing/index'
 import { Route as AuthenticatedProductsIndexRouteImport } from './routes/_authenticated/products/index'
 import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products/$id'
+import { Route as AuthenticatedProductsDashboardRouteImport } from './routes/_authenticated/products/dashboard'
 import { Route as AuthenticatedProductsNewRouteImport } from './routes/_authenticated/products/new'
 import { Route as AuthenticatedRequestsIndexRouteImport } from './routes/_authenticated/requests/index'
 import { Route as AuthenticatedRequestsIdRouteImport } from './routes/_authenticated/requests/$id'
@@ -144,6 +146,12 @@ const AuthenticatedManufacturingOrdersRoute =
   AuthenticatedManufacturingOrdersRouteImport.update({
     id: '/manufacturing-orders',
     path: '/manufacturing-orders',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProductAgentRoute =
+  AuthenticatedProductAgentRouteImport.update({
+    id: '/product-agent',
+    path: '/product-agent',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedQuoteRequestsRoute =
@@ -337,6 +345,12 @@ const AuthenticatedProductsIdRoute = AuthenticatedProductsIdRouteImport.update({
   path: '/products/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProductsDashboardRoute =
+  AuthenticatedProductsDashboardRouteImport.update({
+    id: '/products/dashboard',
+    path: '/products/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProductsNewRoute =
   AuthenticatedProductsNewRouteImport.update({
     id: '/products/new',
@@ -472,6 +486,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/manufacturing-orders': typeof AuthenticatedManufacturingOrdersRoute
+  '/product-agent': typeof AuthenticatedProductAgentRoute
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
@@ -493,6 +508,7 @@ export interface FileRoutesByFullPath {
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
+  '/products/dashboard': typeof AuthenticatedProductsDashboardRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/requests/$id': typeof AuthenticatedRequestsIdRoute
   '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
@@ -540,6 +556,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/manufacturing-orders': typeof AuthenticatedManufacturingOrdersRoute
+  '/product-agent': typeof AuthenticatedProductAgentRoute
   '/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
@@ -561,6 +578,7 @@ export interface FileRoutesByTo {
   '/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/products/$id': typeof AuthenticatedProductsIdRoute
+  '/products/dashboard': typeof AuthenticatedProductsDashboardRoute
   '/products/new': typeof AuthenticatedProductsNewRoute
   '/requests/$id': typeof AuthenticatedRequestsIdRoute
   '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
@@ -611,6 +629,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/manufacturing-orders': typeof AuthenticatedManufacturingOrdersRoute
+  '/_authenticated/product-agent': typeof AuthenticatedProductAgentRoute
   '/_authenticated/quote-requests': typeof AuthenticatedQuoteRequestsRoute
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
@@ -632,6 +651,7 @@ export interface FileRoutesById {
   '/_authenticated/assets/duplicates': typeof AuthenticatedAssetsDuplicatesRoute
   '/_authenticated/assets/unlinked': typeof AuthenticatedAssetsUnlinkedRoute
   '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
+  '/_authenticated/products/dashboard': typeof AuthenticatedProductsDashboardRoute
   '/_authenticated/products/new': typeof AuthenticatedProductsNewRoute
   '/_authenticated/requests/$id': typeof AuthenticatedRequestsIdRoute
   '/_authenticated/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
@@ -682,6 +702,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/integrations'
     | '/manufacturing-orders'
+    | '/product-agent'
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
@@ -703,6 +724,7 @@ export interface FileRouteTypes {
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
+    | '/products/dashboard'
     | '/products/new'
     | '/requests/$id'
     | '/suppliers/$id'
@@ -750,6 +772,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/integrations'
     | '/manufacturing-orders'
+    | '/product-agent'
     | '/quote-requests'
     | '/supplier-inventory'
     | '/support'
@@ -771,6 +794,7 @@ export interface FileRouteTypes {
     | '/assets/duplicates'
     | '/assets/unlinked'
     | '/products/$id'
+    | '/products/dashboard'
     | '/products/new'
     | '/requests/$id'
     | '/suppliers/$id'
@@ -820,6 +844,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/integrations'
     | '/_authenticated/manufacturing-orders'
+    | '/_authenticated/product-agent'
     | '/_authenticated/quote-requests'
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
@@ -841,6 +866,7 @@ export interface FileRouteTypes {
     | '/_authenticated/assets/duplicates'
     | '/_authenticated/assets/unlinked'
     | '/_authenticated/products/$id'
+    | '/_authenticated/products/dashboard'
     | '/_authenticated/products/new'
     | '/_authenticated/requests/$id'
     | '/_authenticated/suppliers/$id'
@@ -990,6 +1016,13 @@ declare module '@tanstack/react-router' {
       path: '/manufacturing-orders'
       fullPath: '/manufacturing-orders'
       preLoaderRoute: typeof AuthenticatedManufacturingOrdersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/product-agent': {
+      id: '/_authenticated/product-agent'
+      path: '/product-agent'
+      fullPath: '/product-agent'
+      preLoaderRoute: typeof AuthenticatedProductAgentRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/quote-requests': {
@@ -1223,6 +1256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/products/dashboard': {
+      id: '/_authenticated/products/dashboard'
+      path: '/products/dashboard'
+      fullPath: '/products/dashboard'
+      preLoaderRoute: typeof AuthenticatedProductsDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/products/new': {
       id: '/_authenticated/products/new'
       path: '/products/new'
@@ -1425,6 +1465,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIntegrationsRoute: typeof AuthenticatedIntegrationsRoute
   AuthenticatedManufacturingOrdersRoute: typeof AuthenticatedManufacturingOrdersRoute
+  AuthenticatedProductAgentRoute: typeof AuthenticatedProductAgentRoute
   AuthenticatedQuoteRequestsRoute: typeof AuthenticatedQuoteRequestsRoute
   AuthenticatedSupplierInventoryRoute: typeof AuthenticatedSupplierInventoryRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
@@ -1437,6 +1478,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAssetsDuplicatesRoute: typeof AuthenticatedAssetsDuplicatesRoute
   AuthenticatedAssetsUnlinkedRoute: typeof AuthenticatedAssetsUnlinkedRoute
   AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
+  AuthenticatedProductsDashboardRoute: typeof AuthenticatedProductsDashboardRoute
   AuthenticatedProductsNewRoute: typeof AuthenticatedProductsNewRoute
   AuthenticatedRequestsIdRoute: typeof AuthenticatedRequestsIdRoute
   AuthenticatedSuppliersIdRoute: typeof AuthenticatedSuppliersIdRoute
@@ -1467,6 +1509,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIntegrationsRoute: AuthenticatedIntegrationsRoute,
   AuthenticatedManufacturingOrdersRoute: AuthenticatedManufacturingOrdersRoute,
+  AuthenticatedProductAgentRoute: AuthenticatedProductAgentRoute,
   AuthenticatedQuoteRequestsRoute: AuthenticatedQuoteRequestsRoute,
   AuthenticatedSupplierInventoryRoute: AuthenticatedSupplierInventoryRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
@@ -1479,6 +1522,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAssetsDuplicatesRoute: AuthenticatedAssetsDuplicatesRoute,
   AuthenticatedAssetsUnlinkedRoute: AuthenticatedAssetsUnlinkedRoute,
   AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
+  AuthenticatedProductsDashboardRoute: AuthenticatedProductsDashboardRoute,
   AuthenticatedProductsNewRoute: AuthenticatedProductsNewRoute,
   AuthenticatedRequestsIdRoute: AuthenticatedRequestsIdRoute,
   AuthenticatedSuppliersIdRoute: AuthenticatedSuppliersIdRoute,

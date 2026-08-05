@@ -97,8 +97,11 @@ export const Route = createFileRoute('/api/private/v1/ai/generate-datasheet')({
               });
 
             if (!uploadError && uploadData) {
-              const { data: publicUrl } = supabaseAdmin.storage.from('product-assets').getPublicUrl(filename);
-              pdfUrl = publicUrl.publicUrl;
+              // Bucket is private: issue a signed URL instead of a public one.
+              const { data: signed } = await supabaseAdmin.storage
+                .from('product-assets')
+                .createSignedUrl(filename, 60 * 60 * 24 * 365);
+              pdfUrl = signed?.signedUrl ?? null;
               await supabaseAdmin
                 .from('product_datasheets')
                 .update({ file_url: pdfUrl })

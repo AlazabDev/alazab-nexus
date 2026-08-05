@@ -119,12 +119,14 @@ function normalizeRow(raw: Record<string, unknown>): Record<string, unknown> {
 }
 
 function parseSheet(file: File): Promise<Record<string, unknown>[]> {
+  const isCsv = /\.csv$/i.test(file.name) || file.type === "text/csv";
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const wb = XLSX.read(data, { type: "array" });
+        const wb = isCsv
+          ? XLSX.read(String(e.target?.result ?? ""), { type: "string", raw: false })
+          : XLSX.read(new Uint8Array(e.target?.result as ArrayBuffer), { type: "array" });
         // pick "Catalog" sheet if exists, else first
         const sheetName =
           wb.SheetNames.find((n) => /catalog|كتالوج|بنود/i.test(n)) ?? wb.SheetNames[0];
@@ -142,7 +144,8 @@ function parseSheet(file: File): Promise<Record<string, unknown>[]> {
       }
     };
     reader.onerror = reject;
-    reader.readAsArrayBuffer(file);
+    if (isCsv) reader.readAsText(file, "utf-8");
+    else reader.readAsArrayBuffer(file);
   });
 }
 

@@ -38,6 +38,7 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/quote-requests")({
   component: QuoteRequestsPage,
@@ -59,7 +60,7 @@ async function fetchQuoteRequests(filters: { status?: string; search?: string })
   }
   if (filters.search) {
     query = query.or(
-      `request_id.ilike.%${filters.search}%,customer_name.ilike.%${filters.search}%`,
+      `request_id.ilike.%${sanitizeSearchTerm(filters.search)}%,customer_name.ilike.%${sanitizeSearchTerm(filters.search)}%`,
     );
   }
 

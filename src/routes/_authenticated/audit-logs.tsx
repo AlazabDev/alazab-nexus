@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/audit-logs")({
   head: () => ({ meta: [{ title: "سجل التدقيق — Alazab PAOP" }] }),
@@ -81,7 +82,8 @@ function AuditLogsPage() {
         .range(page * PAGE, page * PAGE + PAGE - 1);
 
       if (q) {
-        query = query.or(`entity_id.ilike.%${q}%,created_by.ilike.%${q}%`);
+        const s = sanitizeSearchTerm(q);
+        query = query.or(`entity_id.ilike.%${s}%,created_by.ilike.%${s}%`);
       }
       if (entityType !== "all") {
         query = query.eq("entity_type", entityType);

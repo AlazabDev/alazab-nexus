@@ -7,6 +7,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
 
+// Only internal/back-office consumers may look up or mutate orders without a
+// customer scope. Everyone else must supply the customer_id they own.
+const INTERNAL_CHANNELS = ["internal", "erp", "admin", "backoffice"];
+function isInternal(consumer: { channel?: string | null } | null | undefined) {
+  return INTERNAL_CHANNELS.includes((consumer?.channel ?? "").toLowerCase());
+}
+
 export const Route = createFileRoute("/api/agent/v1/order-status")({
   server: {
     handlers: {
@@ -22,11 +29,14 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
         const orderNumber = url.searchParams.get("order_number");
         const customerId = url.searchParams.get("customer_id");
 
-        if (!orderId && !orderNumber && !customerId) {
+        // IDOR protection: every lookup must be scoped to a customer_id.
+        // Internal consumers may look up by order id/number alone.
+        if (!customerId && !(isInternal(auth.consumer) && (orderId || orderNumber))) {
           return json(
             {
               success: false,
-              error: "Missing order_id, order_number, or customer_id",
+              error: "Missing customer_id",
+              code: "customer_scope_required",
             },
             400,
           );
@@ -38,12 +48,14 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
             material_requisitions(id, requisition_number, status)
           `);
 
+        // Always constrain to the requested customer when provided.
+        if (customerId) query = query.eq("customer_id", customerId);
         if (orderId) {
           query = query.eq("id", orderId);
         } else if (orderNumber) {
           query = query.eq("order_number", orderNumber);
-        } else if (customerId) {
-          query = query.eq("customer_id", customerId).order("created_at", { ascending: false });
+        } else {
+          query = query.order("created_at", { ascending: false }).limit(50);
         }
 
         const { data, error } = orderId || orderNumber ? await query.maybeSingle() : await query;
@@ -113,6 +125,14 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
         const started = Date.now();
         const auth = await requireApiKey(request, "/api/agent/v1/order-status");
         if ("error" in auth) return auth.error;
+
+        // Order mutation is an internal-only operation.
+        if (!isInternal(auth.consumer)) {
+          return json(
+            { success: false, error: "Forbidden", code: "internal_consumer_required" },
+            403,
+          );
+        }
 
         const VALID_STATUSES = [
           "pending",

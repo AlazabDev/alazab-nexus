@@ -20,6 +20,7 @@ import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { getAzureStatus } from "@/lib/azure.functions";
 import { useAiOps } from "@/hooks/use-ai-ops";
 import { AiOpsPanel } from "@/components/ai-ops-panel";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/ai-studio/bulk")({
   component: BulkAzurePage,
@@ -85,7 +86,7 @@ function BulkAzurePage() {
         .limit(200);
       if (filter === "missing_desc") q = q.or("description_ar.is.null,description_ar.eq.");
       if (filter === "missing_name_en") q = q.or("name_en.is.null,name_en.eq.");
-      if (search.trim()) q = q.or(`az_code.ilike.%${search}%,name_ar.ilike.%${search}%,name_en.ilike.%${search}%`);
+      if (search.trim()) q = q.or(`az_code.ilike.%${sanitizeSearchTerm(search)}%,name_ar.ilike.%${sanitizeSearchTerm(search)}%,name_en.ilike.%${sanitizeSearchTerm(search)}%`);
       const { data, error } = await q;
       if (error) throw error;
       if (filter === "missing_images" && data?.length) {

@@ -78,7 +78,12 @@ async function processProduct(p: ProductRow, userId: string) {
         .upload(path, bytes, { contentType: mime, upsert: false, cacheControl: "31536000" });
       if (upErr) throw new Error(`Storage: ${upErr.message}`);
 
-      const { data: pub } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(path);
+      // Bucket is private: issue a signed URL instead of a public one.
+      const { data: signed, error: signErr } = await supabaseAdmin.storage
+        .from(BUCKET)
+        .createSignedUrl(path, 60 * 60 * 24 * 365);
+      if (signErr || !signed) throw new Error(`Storage: ${signErr?.message ?? "sign failed"}`);
+      const pub = { publicUrl: signed.signedUrl };
 
       const { data: asset, error: aErr } = await supabaseAdmin
         .from("assets")

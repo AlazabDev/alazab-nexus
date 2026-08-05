@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +21,7 @@ import { ProductSuppliersTab } from "@/components/product-suppliers-tab";
 import { ProductAIReviewTab } from "@/components/product-ai-review-tab";
 import { ProductTranslationTab } from "@/components/product-translation-tab";
 import { submitForApproval } from "@/lib/approvals.functions";
+import { DeleteProductsButton } from "@/components/delete-products-dialog";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/products/$id")({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/products/$id")({
 
 function ProductDetails() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: p, isLoading } = useQuery({
     queryKey: ["product", id],
@@ -125,6 +127,11 @@ function ProductDetails() {
                   إرسال للاعتماد
                 </Button>
               )}
+              <DeleteProductsButton
+                productIds={[id]}
+                label="حذف البند"
+                onDeleted={() => navigate({ to: "/products", replace: true })}
+              />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6 pt-4 border-t text-sm">

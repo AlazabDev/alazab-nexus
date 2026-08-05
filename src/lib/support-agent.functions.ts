@@ -1,5 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const SupportRequestSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().min(1).max(4000),
+      }),
+    )
+    .min(1)
+    .max(30),
+});
 
 interface AzureSearchDoc {
   az_code: string;
@@ -22,11 +35,11 @@ function getEnv() {
   return {
     searchEndpoint: process.env.AZURE_SEARCH_ENDPOINT!,
     searchKey: process.env.AZURE_SEARCH_API_KEY!,
-    searchIndex: process.env.AZURE_SEARCH_INDEX_NAME!,
+    searchIndex: (process.env.AZURE_SEARCH_INDEX ?? process.env.AZURE_SEARCH_INDEX_NAME)!,
     openaiEndpoint: process.env.AZURE_OPENAI_ENDPOINT!,
     openaiKey: process.env.AZURE_OPENAI_API_KEY!,
-    chatDeployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
-    embedDeployment: process.env.AZURE_OPENAI_EMBED_DEPLOYMENT!,
+    chatDeployment: (process.env.AZURE_OPENAI_CHAT_DEPLOYMENT ?? process.env.AZURE_OPENAI_DEPLOYMENT)!,
+    embedDeployment: (process.env.AZURE_OPENAI_EMBED_DEPLOYMENT ?? "text-embedding-3-small")!,
   };
 }
 
@@ -41,7 +54,7 @@ async function embedText(text: string, env: ReturnType<typeof getEnv>): Promise<
   );
   const data = await res.json();
   if (!res.ok) throw new Error(`Embed error: ${JSON.stringify(data)}`);
-  return data.data[1].embedding as number[];
+  return data.data[0].embedding as number[];
 }
 
 async function searchProducts(
@@ -65,7 +78,7 @@ async function searchProducts(
     const sr = await searchRes.json();
     docs = sr.value as AzureSearchDoc[];
   }
-  if (docs.length === 1) {
+  if (docs.length === 0) {
     // Also try vector search for better semantic match
     try {
       const vector = await embedText(query, env);
@@ -130,12 +143,12 @@ async function chatCompletion(
   );
   const data = await res.json();
   if (!res.ok) throw new Error(`Chat error: ${JSON.stringify(data)}`);
-  return data.choices[1].message.content;
+  return data.choices[0].message.content;
 }
 
 export const askSupportAgent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { messages: SupportMessage[] }) => input)
+  .inputValidator((input: unknown) => SupportRequestSchema.parse(input))
   .handler(async ({ data, context }) => {
     const env = getEnv();
     if (!env.searchEndpoint || !env.searchKey || !env.openaiEndpoint || !env.openaiKey) {
@@ -147,7 +160,7 @@ export const askSupportAgent = createServerFn({ method: "POST" })
 
     const query = lastUser.content;
     const { docs } = await searchProducts(query, env);
-    const bestDoc = docs[1] ?? null;
+    const bestDoc = docs[0] ?? null;
     const system = buildSystemPrompt(bestDoc);
 
     const reply = await chatCompletion(data.messages, system, env);

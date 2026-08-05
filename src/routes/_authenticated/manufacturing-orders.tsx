@@ -47,6 +47,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { useState } from "react";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/manufacturing-orders")({
   component: ManufacturingOrdersPage,
@@ -86,7 +87,7 @@ async function fetchOrders(filters: { status?: string; search?: string }) {
   }
   if (filters.search) {
     query = query.or(
-      `order_number.ilike.%${filters.search}%,customer_name.ilike.%${filters.search}%`,
+      `order_number.ilike.%${sanitizeSearchTerm(filters.search)}%,customer_name.ilike.%${sanitizeSearchTerm(filters.search)}%`,
     );
   }
 

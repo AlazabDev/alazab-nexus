@@ -9,6 +9,7 @@ import { ChatProductivityTools } from "@/components/chat-productivity-tools";
 import { ChatSmartSuggestions } from "@/components/chat-smart-suggestions";
 import { Bot, Send, User, Loader2, Sparkles, Menu } from "lucide-react";
 import { toast } from "sonner";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/ai-chat")({
   head: () => ({ meta: [{ title: "مساعد AI — Alazab PAOP" }] }),
@@ -36,7 +37,7 @@ async function searchProducts(query: string) {
   const { data } = await supabase
     .from("products")
     .select("az_code, name_ar, description_ar, gpc_class, price")
-    .or(`name_ar.ilike.%${query}%,gpc_class.ilike.%${query}%,az_code.ilike.%${query}%`)
+    .or(`name_ar.ilike.%${sanitizeSearchTerm(query)}%,gpc_class.ilike.%${sanitizeSearchTerm(query)}%,az_code.ilike.%${sanitizeSearchTerm(query)}%`)
     .limit(5);
   return data ?? [];
 }

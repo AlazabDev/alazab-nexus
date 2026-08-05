@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertPublicHttpUrl } from "./ssrf-guard";
 
 export type IntegrationType = "erpnext" | "daftra" | "supabase" | "rasa" | "ai_agents";
 
@@ -15,7 +16,9 @@ async function timedFetch(url: string, init: RequestInit, timeoutMs = 8000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(url, { ...init, signal: ctrl.signal });
+    // SSRF guard: block private/link-local/metadata hosts and non-https schemes.
+    const safeUrl = assertPublicHttpUrl(url).toString();
+    const res = await fetch(safeUrl, { ...init, signal: ctrl.signal, redirect: "error" });
     return { ok: res.ok, status: res.status, latency: Date.now() - start };
   } catch (e: any) {
     return { ok: false, status: 0, latency: Date.now() - start, error: e?.message || "network_error" };

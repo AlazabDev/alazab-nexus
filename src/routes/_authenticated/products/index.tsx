@@ -38,6 +38,8 @@ import {
 import { generateProductImages } from "@/lib/product-image-gen.functions";
 import { PageHeader } from "@/components/page-header";
 import { ProductCard } from "@/components/product-card";
+import { sanitizeSearchTerm } from "@/lib/utils";
+import { DeleteProductsButton } from "@/components/delete-products-dialog";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
 
@@ -150,7 +152,7 @@ function ProductsList() {
     },
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["products", filters, page, pageSize, sortKey, sortDir],
     queryFn: async () => {
       let query = supabase
@@ -164,7 +166,7 @@ function ProductsList() {
 
       if (filters.q)
         query = query.or(
-          `name_ar.ilike.%${filters.q}%,name_en.ilike.%${filters.q}%,az_code.ilike.%${filters.q}%`,
+          `name_ar.ilike.%${sanitizeSearchTerm(filters.q)}%,name_en.ilike.%${sanitizeSearchTerm(filters.q)}%,az_code.ilike.%${sanitizeSearchTerm(filters.q)}%`,
         );
       if (filters.status !== "all") query = query.eq("status", filters.status as any);
       if (filters.itemType !== "all") query = query.eq("item_type", filters.itemType as any);
@@ -624,6 +626,13 @@ function ProductsList() {
               )}
               توليد 3 صور لكل بند
             </Button>
+            <DeleteProductsButton
+              productIds={Array.from(selectedIds)}
+              onDeleted={() => {
+                setSelectedIds(new Set());
+                refetch();
+              }}
+            />
           </div>
         </Card>
       )}

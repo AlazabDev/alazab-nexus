@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { LogOut, Search, Command } from "lucide-react";
 
@@ -29,6 +30,7 @@ export function AppSidebar() {
   const currentPath = useRouterState({ select: (r) => r.location.pathname });
   const { setOpen } = useCommandPalette();
   const [filter, setFilter] = useState("");
+  const queryClient = useQueryClient();
 
   const sections = useMemo(() => {
     const f = filter.trim().toLowerCase();
@@ -44,8 +46,10 @@ export function AppSidebar() {
   }, [filter]);
 
   const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/login" });
+    navigate({ to: "/login", replace: true });
   };
 
   return (

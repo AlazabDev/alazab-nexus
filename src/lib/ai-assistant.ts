@@ -190,7 +190,7 @@ async function executeToolCall(toolName: string, args: Record<string, unknown>):
       let queryBuilder = supabase
         .from("products")
         .select("id, az_code, name_ar, item_type, status, gpc_family, confidence_level")
-        .or(`name_ar.ilike.%${query}%,az_code.ilike.%${query}%,description_ar.ilike.%${query}%`)
+        .or(`name_ar.ilike.%${sanitizeSearchTerm(query)}%,az_code.ilike.%${sanitizeSearchTerm(query)}%,description_ar.ilike.%${sanitizeSearchTerm(query)}%`)
         .limit(limit);
 
       if (item_type) queryBuilder = queryBuilder.eq("item_type", item_type as any);
@@ -408,6 +408,7 @@ ${stats.prices ? `**سجلات التسعير:**\n- الاجمالي: ${(stats.p
 // Main chat function — calls the server proxy so the Azure OpenAI API key
 // never ships in the browser bundle.
 import { azureChatCompletion } from "./ai-assistant.functions";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
 export async function sendChatMessage(
   messages: ChatMessage[],

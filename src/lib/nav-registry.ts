@@ -8,6 +8,7 @@ import {
   Image,
   Copy,
   MessageCircle,
+  Bot,
   FileText,
   DollarSign,
   Truck,
@@ -50,7 +51,9 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "المنتجات والخدمات", to: "/products", icon: Package, group: "البيانات", keywords: ["products", "items", "كتالوج"], shortcut: "G P" },
   { title: "إضافة منتج جديد", to: "/products/new", icon: Package, group: "البيانات", keywords: ["new", "create", "إنشاء"] },
   { title: "إدارة الأصول", to: "/assets", icon: Image, group: "البيانات", keywords: ["assets", "media", "صور"] },
+  { title: "لوحة تحكم المنتجات", to: "/products/dashboard", icon: BarChart3, group: "البيانات", keywords: ["products dashboard", "إحصائيات"] },
   { title: "أصول غير مرتبطة", to: "/assets/unlinked", icon: Copy, group: "البيانات" },
+  { title: "أصول مكررة", to: "/assets/duplicates", icon: Copy, group: "البيانات" },
   { title: "رفع جماعي للأصول", to: "/assets/bulk-upload", icon: Upload, group: "البيانات" },
   { title: "وكيل الدعم", to: "/support", icon: MessageCircle, group: "البيانات" },
   { title: "إدارة المحتوى", to: "/content", icon: FileText, group: "البيانات" },
@@ -74,7 +77,15 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "التكاملات والتوصيلات", to: "/integrations", icon: Network, group: "العمليات" },
   { title: "مراجعة المحتوى AI", to: "/content-review", icon: Sparkles, group: "العمليات" },
   { title: "مساعد AI", to: "/ai-review", icon: Sparkles, group: "العمليات" },
+  { title: "استوديو AI", to: "/ai-studio", icon: Sparkles, group: "العمليات", keywords: ["ai studio", "استوديو"] },
   { title: "Azure AI · ضبط جماعي", to: "/ai-studio/bulk", icon: Sparkles, group: "العمليات", keywords: ["azure", "bulk", "optimize", "تحسين"] },
+  { title: "تحسين المحتوى AI", to: "/ai-studio/optimize", icon: Sparkles, group: "العمليات" },
+  { title: "توليد الصور AI", to: "/ai-studio/images", icon: Image, group: "العمليات" },
+  { title: "أوراق البيانات AI", to: "/ai-studio/datasheets", icon: FileText, group: "العمليات" },
+  { title: "عروض الأسعار AI", to: "/ai-studio/quotes", icon: DollarSign, group: "العمليات" },
+  { title: "وكيل المنتجات", to: "/product-agent", icon: Bot, group: "العمليات", keywords: ["agent", "وكيل", "foundry", "az-agent-prod"] },
+  { title: "محادثة AI", to: "/ai-chat", icon: MessageCircle, group: "العمليات", keywords: ["chat", "محادثة"] },
+  { title: "سجل المحادثات", to: "/ai-chat/history", icon: History, group: "العمليات" },
   { title: "الموافقات", to: "/approvals", icon: CheckCircle2, group: "العمليات" },
 
   // النظام
@@ -99,6 +110,9 @@ Object.assign(ROUTE_LABELS, {
   "/products/new": "إضافة منتج",
   "/assets/unlinked": "غير مرتبطة",
   "/assets/bulk-upload": "رفع جماعي",
+  "/assets/duplicates": "مكررة",
+  "/products/dashboard": "لوحة المنتجات",
+  "/ai-chat/history": "السجل",
 });
 
 export function getBreadcrumbs(pathname: string): { label: string; to: string }[] {

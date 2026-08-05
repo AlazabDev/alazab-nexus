@@ -138,7 +138,12 @@ export async function uploadAndLinkAsset(opts: {
       throw new Error(`خطأ التخزين: ${upErr.message}`);
     }
 
-    const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    // Bucket is private: issue a signed URL instead of a public one.
+    const { data: signed, error: signErr } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (signErr || !signed) throw new Error(`خطأ التخزين: ${signErr?.message ?? "sign failed"}`);
+    const pub = { publicUrl: signed.signedUrl };
 
     // إنشاء سجل الأصل
     const { data: asset, error: aErr } = await supabase

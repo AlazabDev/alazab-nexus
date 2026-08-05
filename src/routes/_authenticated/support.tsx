@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, Send, Bot, User, Sparkles } from "lucide-react";
+import { Send, Bot, User } from "lucide-react";
+import { AgentHealthIndicator } from "@/components/agent-health-indicator";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/support")({
@@ -60,8 +61,8 @@ function SupportPage() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto h-[calc(100vh-3.5rem)] flex flex-col" dir="rtl">
-      <Card className="flex-1 surface-elevated border-1 flex flex-col overflow-hidden">
-        <div className="h-14 flex items-center gap-3 px-4 border-b bg-card shrink-1">
+      <Card className="flex-1 surface-elevated flex flex-col overflow-hidden">
+        <div className="h-14 flex items-center gap-3 px-4 border-b bg-card shrink-0">
           <div className="size-9 rounded-full bg-accent text-accent-foreground grid place-items-center">
             <Bot className="size-5" />
           </div>
@@ -71,15 +72,15 @@ function SupportPage() {
               مدعوم بـ Azure AI Search + Azure OpenAI
             </div>
           </div>
-          <div className="mr-auto text-[10px] text-muted-foreground flex items-center gap-1">
-            <Sparkles className="size-3" /> gpt-4o-mini
+          <div className="mr-auto">
+            <AgentHealthIndicator compact />
           </div>
         </div>
 
         <div className="flex-1 overflow-auto p-4 space-y-3">
           {messages.map((m, i) => (
             <div key={i} className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
-              <Avatar className="size-8 shrink-1">
+              <Avatar className="size-8 shrink-0">
                 <AvatarFallback
                   className={
                     m.role === "user"
@@ -109,7 +110,7 @@ function SupportPage() {
           ))}
           {send.isPending && (
             <div className="flex gap-3">
-              <Avatar className="size-8 shrink-1">
+              <Avatar className="size-8 shrink-0">
                 <AvatarFallback className="bg-accent text-accent-foreground">
                   <Bot className="size-4" />
                 </AvatarFallback>
@@ -121,7 +122,7 @@ function SupportPage() {
           )}
         </div>
 
-        <form onSubmit={onSubmit} className="border-t p-3 flex gap-2 bg-card shrink-1">
+        <form onSubmit={onSubmit} className="border-t p-3 flex gap-2 bg-card shrink-0">
           <Input
             placeholder="اكتب سؤالك… مثال: AZ-ABR-01-25-1939 لا يعمل"
             value={input}

@@ -1,12 +1,43 @@
-const AZURE_FOUNDRY_AGENT_ENDPOINT =
-  "https://az-ai-resource.services.ai.azure.com/api/projects/az-ai-gateway/agents/az-agent-prod/endpoint/protocols/openai/responses";
+/**
+ * Azure AI Foundry — az-agent-prod connector.
+ *
+ * Non-secret identifiers are hardcoded as defaults (overridable by env),
+ * the API key must come from secrets: AZURE_FOUNDRY_API_KEY or AZURE_AI_API_KEY.
+ */
 
-const DEFAULT_AGENT_NAME = "az-agent-prod";
+const DEFAULTS = {
+  resourceEndpoint: "https://az-ai-resource.services.ai.azure.com",
+  projectName: "az-ai-gateway",
+  projectEndpoint: "https://az-ai-resource.services.ai.azure.com/api/projects/az-ai-gateway",
+  agentName: "az-agent-prod",
+  agentVersion: "5",
+  modelDeployment: "az-model-core",
+  responsesEndpoint:
+    "https://az-ai-resource.services.ai.azure.com/api/projects/az-ai-gateway/agents/az-agent-prod/endpoint/protocols/openai/responses",
+  agentCardEndpoint:
+    "https://az-ai-resource.services.ai.azure.com/api/projects/az-ai-gateway/agents/az-agent-prod/endpoint/protocols/a2a/agentCard/v1.0",
+} as const;
 
-function requiredEnv(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} not configured`);
-  return value;
+export function agentConfig() {
+  return {
+    resourceEndpoint: process.env.FOUNDRY_RESOURCE_ENDPOINT || DEFAULTS.resourceEndpoint,
+    projectName: process.env.FOUNDRY_PROJECT_NAME || DEFAULTS.projectName,
+    projectEndpoint: process.env.FOUNDRY_PROJECT_ENDPOINT || DEFAULTS.projectEndpoint,
+    agentName: process.env.FOUNDRY_AGENT_NAME || DEFAULTS.agentName,
+    agentVersion: process.env.FOUNDRY_AGENT_VERSION || DEFAULTS.agentVersion,
+    modelDeployment: process.env.MODEL_DEPLOYMENT_NAME || DEFAULTS.modelDeployment,
+    responsesEndpoint:
+      process.env.FOUNDRY_RESPONSES_ENDPOINT ||
+      process.env.AZURE_FOUNDRY_AGENT_ENDPOINT ||
+      DEFAULTS.responsesEndpoint,
+    agentCardEndpoint: process.env.FOUNDRY_AGENT_CARD_ENDPOINT || DEFAULTS.agentCardEndpoint,
+  };
+}
+
+function apiKey() {
+  const key = process.env.AZURE_FOUNDRY_API_KEY || process.env.AZURE_AI_API_KEY;
+  if (!key) throw new Error("AZURE_AI_API_KEY (or AZURE_FOUNDRY_API_KEY) not configured");
+  return key;
 }
 
 export type ProductAgentMessage = {
@@ -22,6 +53,7 @@ export type ProductAgentRequest = {
 
 export type ProductAgentResponse = {
   outputText: string;
+  sessionId?: string;
   raw: unknown;
 };
 
@@ -38,9 +70,14 @@ function normalizeOutputText(payload: any): string {
     if (Array.isArray(item?.content)) {
       for (const part of item.content) {
         if (typeof part?.text === "string") textParts.push(part.text);
-        if (typeof part?.content === "string") textParts.push(part.content);
+        else if (typeof part?.content === "string") textParts.push(part.content);
       }
     }
+  }
+
+  // Fallback: chat-completions style
+  if (!textParts.length && typeof payload?.choices?.[0]?.message?.content === "string") {
+    textParts.push(payload.choices[0].message.content);
   }
 
   return textParts.filter(Boolean).join("\n").trim();
@@ -51,35 +88,28 @@ export async function callAzureProductAgent({
   sessionId,
   metadata,
 }: ProductAgentRequest): Promise<ProductAgentResponse> {
-  const apiKey = requiredEnv("AZURE_FOUNDRY_API_KEY");
-  const endpoint = process.env.AZURE_FOUNDRY_AGENT_ENDPOINT || AZURE_FOUNDRY_AGENT_ENDPOINT;
+  const cfg = agentConfig();
+  const key = apiKey();
 
   const body: Record<string, unknown> = {
     input,
     metadata: {
-      agent: DEFAULT_AGENT_NAME,
+      agent: cfg.agentName,
       source: "alazab-nexus",
       ...(metadata ?? {}),
     },
   };
 
-  if (sessionId) {
-    body.extra_body = {
-      agent_session_id: sessionId,
-    };
-  }
+  if (sessionId) body.extra_body = { agent_session_id: sessionId };
 
-  const response = await fetch(endpoint, {
+  const response = await fetch(cfg.responsesEndpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "api-key": apiKey,
-    },
+    headers: { "Content-Type": "application/json", "api-key": key },
     body: JSON.stringify(body),
   });
 
   const text = await response.text();
-  let payload: unknown;
+  let payload: any;
   try {
     payload = text ? JSON.parse(text) : null;
   } catch {
@@ -92,14 +122,35 @@ export async function callAzureProductAgent({
 
   return {
     outputText: normalizeOutputText(payload),
+    sessionId:
+      payload?.extra_body?.agent_session_id ??
+      payload?.agent_session_id ??
+      payload?.id ??
+      sessionId,
     raw: payload,
   };
 }
 
+export async function fetchAgentCard(): Promise<{ ok: boolean; status: number; card?: unknown; error?: string }> {
+  const cfg = agentConfig();
+  try {
+    const res = await fetch(cfg.agentCardEndpoint, { headers: { "api-key": apiKey() } });
+    const text = await res.text();
+    if (!res.ok) return { ok: false, status: res.status, error: text.slice(0, 300) };
+    try {
+      return { ok: true, status: res.status, card: JSON.parse(text) };
+    } catch {
+      return { ok: true, status: res.status, card: { text } };
+    }
+  } catch (e) {
+    return { ok: false, status: 0, error: e instanceof Error ? e.message : "unknown error" };
+  }
+}
+
 export function azureProductAgentStatus() {
+  const cfg = agentConfig();
   return {
-    endpoint: !!(process.env.AZURE_FOUNDRY_AGENT_ENDPOINT || AZURE_FOUNDRY_AGENT_ENDPOINT),
-    apiKey: !!process.env.AZURE_FOUNDRY_API_KEY,
-    agent: DEFAULT_AGENT_NAME,
+    ...cfg,
+    apiKey: !!(process.env.AZURE_FOUNDRY_API_KEY || process.env.AZURE_AI_API_KEY),
   };
 }

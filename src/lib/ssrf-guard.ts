@@ -88,3 +88,30 @@ export async function fetchImageAsDataUrl(
   for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
   return `data:${mime};base64,${btoa(bin)}`;
 }
+
+/**
+ * Validate a user-supplied outbound URL when no host allowlist can apply
+ * (e.g. self-hosted integration endpoints). Enforces https and blocks
+ * localhost, private/link-local ranges and cloud metadata addresses.
+ */
+export function assertPublicHttpUrl(url: string): URL {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error("Invalid URL");
+  }
+  if (parsed.protocol !== "https:") throw new Error("Only https URLs are allowed");
+  const host = parsed.hostname.toLowerCase();
+  if (
+    isPrivateOrLiteralIp(host) ||
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".internal") ||
+    host.endsWith(".local") ||
+    !host.includes(".")
+  ) {
+    throw new Error("URL host is not allowed");
+  }
+  return parsed;
+}

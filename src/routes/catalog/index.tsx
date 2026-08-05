@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { sanitizeSearchTerm } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
 import {
   Search, Grid3X3, List,
@@ -217,7 +218,7 @@ function CatalogPage() {
       .range((pg - 1) * PAGE, pg * PAGE - 1);
 
 
-    if (f.q)     q = q.or(`name_ar.ilike.%${f.q}%,az_code.ilike.%${f.q}%,name_en.ilike.%${f.q}%`);
+    if (f.q)     q = q.or(`name_ar.ilike.%${sanitizeSearchTerm(f.q)}%,az_code.ilike.%${sanitizeSearchTerm(f.q)}%,name_en.ilike.%${sanitizeSearchTerm(f.q)}%`);
     if (f.brand) q = q.eq("brand", f.brand);
     if (f.type)  q = q.eq("item_type", f.type as ItemType);
 
