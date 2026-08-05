@@ -4,221 +4,176 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, Download, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2, Sparkles, Download, Check } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useServerFn } from '@tanstack/react-start';
+import { useMutation } from '@tanstack/react-query';
+import { generateImageCandidates } from '@/lib/image-candidates.functions';
 
-interface FetchedImage {
-  url: string;
-  source: string;
-  confidence: number;
-  type: string;
-}
+type ImageType = 'product_photo' | 'lifestyle' | 'technical' | 'render_3d';
 
-interface ImageFetcherState {
-  loading: boolean;
-  images: FetchedImage[];
-  error?: string;
-  selectedImages: string[];
-}
+const TYPE_LABELS: Record<ImageType, string> = {
+  product_photo: 'صورة منتج',
+  lifestyle: 'سياق استخدام',
+  technical: 'تفاصيل فنية',
+  render_3d: 'رندر ثلاثي الأبعاد',
+};
 
 export function ImageFetcher() {
   const [productName, setProductName] = useState('');
-  const [imageCount, setImageCount] = useState(5);
-  const [state, setState] = useState<ImageFetcherState>({
-    loading: false,
-    images: [],
-    selectedImages: [],
+  const [context, setContext] = useState('');
+  const [types, setTypes] = useState<ImageType[]>(['product_photo', 'lifestyle']);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const generateFn = useServerFn(generateImageCandidates);
+
+  const generate = useMutation({
+    mutationFn: async () =>
+      generateFn({ data: { productName: productName.trim(), context: context.trim() || undefined, types } }),
+    onSuccess: () => setSelected([]),
   });
 
-  const handleFetch = async () => {
-    if (!productName.trim()) {
-      setState({ ...state, error: 'Product name is required' });
-      return;
-    }
+  const toggleType = (t: ImageType) =>
+    setTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
 
-    setState({ ...state, loading: true, error: undefined, images: [], selectedImages: [] });
+  const toggleImage = (url: string) =>
+    setSelected((prev) => (prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url]));
 
-    try {
-      // Mock data for demo - in production this would call the API
-      const mockImages: FetchedImage[] = [
-        {
-          url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
-          source: 'unsplash',
-          confidence: 95,
-          type: 'product_photo',
-        },
-        {
-          url: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500',
-          source: 'unsplash',
-          confidence: 88,
-          type: 'lifestyle',
-        },
-        {
-          url: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?w=500',
-          source: 'pexels',
-          confidence: 82,
-          type: 'product_photo',
-        },
-      ];
-
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setState({
-        ...state,
-        loading: false,
-        images: mockImages.slice(0, imageCount),
-        error: undefined,
-      });
-    } catch (error) {
-      setState({
-        ...state,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch images',
-      });
-    }
-  };
-
-  const toggleImage = (url: string) => {
-    setState({
-      ...state,
-      selectedImages: state.selectedImages.includes(url)
-        ? state.selectedImages.filter((u) => u !== url)
-        : [...state.selectedImages, url],
+  const downloadSelected = () => {
+    selected.forEach((url, i) => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${productName.replace(/\s+/g, '-') || 'product'}-${i + 1}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     });
   };
 
+  const images = generate.data?.images ?? [];
+  const canRun = productName.trim().length > 1 && types.length > 0 && !generate.isPending;
+
   return (
-    <div className="space-y-6">
-      {/* Search Card */}
+    <div className="space-y-6" dir="rtl">
       <Card>
         <CardHeader>
-          <CardTitle>Fetch Professional Images</CardTitle>
-          <CardDescription>Find and match professional images for your products</CardDescription>
+          <CardTitle>توليد صور احترافية للمنتج</CardTitle>
+          <CardDescription>
+            أنشئ صوراً واقعية للمنتج بزوايا وأنماط مختلفة، ثم حمّل ما يناسبك.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Search Input */}
+        <CardContent className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Product Name</label>
-            <input
-              placeholder="e.g., Wireless Headphones, LED Monitor..."
+            <label className="text-sm font-medium">اسم المنتج</label>
+            <Input
+              placeholder="مثال: ماكينة لحام ميج 250 أمبير"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
-              className="w-full px-3 py-2 border border-input rounded-md bg-background"
             />
           </div>
 
-          {/* Image Count */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Number of Images</label>
-            <input
-              type="number"
-              min="1"
-              max="20"
-              value={imageCount}
-              onChange={(e) => setImageCount(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-              className="w-full px-3 py-2 border border-input rounded-md bg-background"
+            <label className="text-sm font-medium">سياق إضافي (اختياري)</label>
+            <Textarea
+              placeholder="الخامات، الاستخدام، البيئة الصناعية..."
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              rows={3}
             />
           </div>
 
-          {/* Image Types */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium">Preferred Image Types</label>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">أنماط الصور</label>
             <div className="grid grid-cols-2 gap-2">
-              {['Product Photo', 'Lifestyle', 'Technical', '3D Render'].map((type) => (
-                <Button key={type} variant="outline" size="sm" className="justify-start">
-                  <input type="checkbox" className="mr-2" defaultChecked={type === 'Product Photo'} />
-                  {type}
+              {(Object.keys(TYPE_LABELS) as ImageType[]).map((t) => (
+                <Button
+                  key={t}
+                  type="button"
+                  variant={types.includes(t) ? 'default' : 'outline'}
+                  size="sm"
+                  className="justify-start"
+                  onClick={() => toggleType(t)}
+                >
+                  {types.includes(t) && <Check className="ml-2 h-4 w-4" />}
+                  {TYPE_LABELS[t]}
                 </Button>
               ))}
             </div>
           </div>
 
-          {/* Error Alert */}
-          {state.error && (
+          {generate.isError && (
             <Alert variant="destructive">
-              <AlertDescription>{state.error}</AlertDescription>
+              <AlertDescription>
+                {(generate.error as Error)?.message ?? 'تعذر توليد الصور'}
+              </AlertDescription>
             </Alert>
           )}
 
-          {/* Search Button */}
-          <Button onClick={handleFetch} disabled={state.loading} size="lg" className="w-full">
-            {state.loading ? (
+          {!!generate.data?.errors?.length && (
+            <Alert>
+              <AlertDescription className="text-xs">
+                {generate.data.errors.join(' · ')}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <Button onClick={() => generate.mutate()} disabled={!canRun} size="lg" className="w-full gap-2">
+            {generate.isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Searching...
+                <Loader2 className="h-4 w-4 animate-spin" /> جارٍ التوليد…
               </>
             ) : (
               <>
-                <Search className="mr-2 h-4 w-4" />
-                Search Images
+                <Sparkles className="h-4 w-4" /> توليد الصور
               </>
             )}
           </Button>
         </CardContent>
       </Card>
 
-      {/* Results Grid */}
-      {state.images.length > 0 && (
+      {images.length > 0 && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Found {state.images.length} Images</CardTitle>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download Selected ({state.selectedImages.length})
+              <CardTitle>{images.length} صورة</CardTitle>
+              <Button variant="outline" size="sm" disabled={!selected.length} onClick={downloadSelected}>
+                <Download className="ml-2 h-4 w-4" /> تحميل المحدد ({selected.length})
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {state.images.map((image, idx) => (
+              {images.map((image, idx) => (
                 <div
                   key={idx}
                   className={`relative group rounded-lg overflow-hidden border-2 transition-all ${
-                    state.selectedImages.includes(image.url)
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
-                      : 'border-transparent hover:border-gray-300'
+                    selected.includes(image.url) ? 'border-accent' : 'border-transparent hover:border-border'
                   }`}
                 >
-                  {/* Image Container */}
                   <div
-                    className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 relative overflow-hidden cursor-pointer"
+                    className="aspect-square bg-muted relative overflow-hidden cursor-pointer"
                     onClick={() => toggleImage(image.url)}
                   >
                     <img
                       src={image.url}
-                      alt="Product"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                      alt={`${productName} — ${TYPE_LABELS[image.type as ImageType] ?? image.type}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      loading="lazy"
                     />
-
-                    {/* Selected Overlay */}
-                    {state.selectedImages.includes(image.url) && (
-                      <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                        <div className="bg-blue-500 text-white p-2 rounded-full">
+                    {selected.includes(image.url) && (
+                      <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                        <div className="bg-accent text-accent-foreground p-2 rounded-full">
                           <Check className="h-5 w-5" />
                         </div>
                       </div>
                     )}
-
-                    {/* Confidence Badge */}
-                    <div className="absolute top-2 right-2">
-                      <Badge
-                        variant={image.confidence >= 85 ? 'default' : 'secondary'}
-                        className="bg-black/50 text-white border-0"
-                      >
-                        {image.confidence}%
-                      </Badge>
-                    </div>
                   </div>
-
-                  {/* Info */}
-                  <div className="p-3 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
-                        {image.type}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{image.source}</span>
-                    </div>
+                  <div className="p-3">
+                    <Badge variant="outline" className="text-xs">
+                      {TYPE_LABELS[image.type as ImageType] ?? image.type}
+                    </Badge>
                   </div>
                 </div>
               ))}
