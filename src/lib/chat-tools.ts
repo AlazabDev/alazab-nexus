@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import { translateChatText, summarizeConversation } from "@/lib/chat-ai.functions";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -316,47 +317,37 @@ function downloadFile(blob: Blob, filename: string): void {
 }
 
 /**
- * Translate text using Azure OpenAI (requires server-side implementation)
- * For now, returns a placeholder
+ * Translate text through the server (Azure OpenAI, Lovable AI fallback).
  */
 export async function translateContent(
   text: string,
-  targetLanguage: "en" | "fr" = "en",
+  targetLanguage: "en" | "fr" | "ar" = "en",
 ): Promise<string> {
+  if (!text.trim()) return text;
   try {
-    // In production, this would call your server to translate
-    // using Azure OpenAI's translation capabilities
-    console.log(
-      `[v0] Translation requested: ${text.substring(0, 30)}... to ${targetLanguage}`,
-    );
-
-    // Placeholder: return original text
-    // Real implementation would use Azure OpenAI
-    return text;
+    const res = await translateChatText({ data: { text, target: targetLanguage } });
+    return res.text;
   } catch (error) {
-    console.error("[v0] Translation failed:", error);
-    return text;
+    console.error("Translation failed:", error);
+    throw error instanceof Error ? error : new Error("فشلت الترجمة");
   }
 }
 
 /**
- * Get conversation summary (requires server-side implementation)
+ * Generate a real conversation summary through the server.
  */
 export async function getConversationSummary(
   messages: ChatMessage[],
 ): Promise<string> {
+  if (!messages.length) return "لا توجد رسائل للتلخيص.";
   try {
-    // In production, this would call your server to generate
-    // a summary using Azure OpenAI
-    const messageCount = messages.length;
-    const userCount = messages.filter(
-      (m) => m.role === "user",
-    ).length;
-
-    return `ملخص المحادثة: ${messageCount} رسائل من قبل مستخدم واحد مع ${messageCount - userCount} ردود من المساعد.`;
+    const res = await summarizeConversation({
+      data: { messages: messages.map((m) => ({ role: m.role, content: m.content })) },
+    });
+    return res.summary;
   } catch (error) {
-    console.error("[v0] Summary generation failed:", error);
-    return "فشل إنشاء الملخص";
+    console.error("Summary generation failed:", error);
+    throw error instanceof Error ? error : new Error("فشل إنشاء الملخص");
   }
 }
 
