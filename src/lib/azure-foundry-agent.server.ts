@@ -31,6 +31,9 @@ export function agentConfig() {
     projectEndpoint,
     agentName: process.env.FOUNDRY_AGENT_NAME || DEFAULTS.agentName,
     agentVersion: process.env.FOUNDRY_AGENT_VERSION || DEFAULTS.agentVersion,
+    /** Version used when the primary one requires a per-user AAD token */
+    fallbackVersion: process.env.FOUNDRY_AGENT_FALLBACK_VERSION || "5",
+
     modelDeployment: process.env.MODEL_DEPLOYMENT_NAME || DEFAULTS.modelDeployment,
     /** OpenAI-compatible base for conversations/responses */
     openaiBase: process.env.FOUNDRY_OPENAI_BASE || `${projectEndpoint}/openai/v1`,
@@ -155,24 +158,37 @@ export async function callAzureProductAgent({
     if (!conversationId) throw new Error("تعذر إنشاء محادثة مع الوكيل");
   }
 
-  const body: Record<string, unknown> = {
-    conversation: conversationId,
-    agent: { name: cfg.agentName, version: cfg.agentVersion, type: "agent_reference" },
-    metadata: {
-      source: "alazab-nexus",
-      ...(metadata ?? {}),
-    },
+  const buildBody = (version: string) => {
+    const body: Record<string, unknown> = {
+      conversation: conversationId,
+      agent_reference: { type: "agent_reference", name: cfg.agentName, version },
+      metadata: {
+        source: "alazab-nexus",
+        ...(metadata ?? {}),
+      },
+    };
+    // On a reused conversation, only send the newest turn.
+    if (sessionId) body.input = items.slice(-1);
+    if (instructions) body.instructions = instructions;
+    return body;
   };
 
-  // On a reused conversation, only send the newest turn.
-  if (sessionId) body.input = items.slice(-1);
-  if (instructions) body.instructions = instructions;
-
-  const payload = await postJson(`${cfg.openaiBase}/responses`, body);
+  let payload: any;
+  try {
+    payload = await postJson(`${cfg.openaiBase}/responses`, buildBody(cfg.agentVersion));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    // Some agent versions bind tools to a per-user (AAD) scope which a server
+    // API key cannot satisfy. Fall back to the last key-compatible version.
+    const needsUserToken = msg.includes("aml-user-token");
+    if (!needsUserToken || cfg.fallbackVersion === cfg.agentVersion) throw e;
+    payload = await postJson(`${cfg.openaiBase}/responses`, buildBody(cfg.fallbackVersion));
+  }
 
   return {
     outputText: normalizeOutputText(payload),
     sessionId: conversationId,
+
     raw: payload,
   };
 }
