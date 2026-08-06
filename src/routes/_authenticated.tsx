@@ -21,9 +21,9 @@ function AuthLayout() {
   return (
     <CommandPaletteProvider>
       <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-background" dir="rtl">
+        <div className="h-screen overflow-hidden flex w-full bg-background" dir="rtl">
           <AppSidebar />
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 h-screen">
             <TopBar />
             <Main />
           </div>
@@ -39,7 +39,7 @@ function TopBar() {
   const { setOpen } = useCommandPalette();
 
   return (
-    <header className="h-14 flex items-center justify-between border-b bg-card/80 backdrop-blur px-3 md:px-4 sticky top-0 z-20">
+    <header className="h-14 flex items-center justify-between border-b bg-card/80 backdrop-blur px-3 md:px-4 shrink-0 z-20">
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <SidebarTrigger />
         <nav className="hidden md:flex items-center gap-1 text-xs text-muted-foreground min-w-0 overflow-hidden">
@@ -84,7 +84,7 @@ function Main() {
     ref.current?.scrollTo({ top: 0, behavior: "instant" });
   }, [path]);
   return (
-    <main ref={ref} className="flex-1 overflow-auto">
+    <main ref={ref} className="flex-1 min-h-0 overflow-y-auto">
       <div key={path} className="animate-in fade-in duration-200">
         <Outlet />
       </div>

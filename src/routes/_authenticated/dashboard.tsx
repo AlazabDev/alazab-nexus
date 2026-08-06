@@ -12,7 +12,6 @@ import {
   Truck,
   Network,
   Copy,
-  ArrowLeft,
   History,
   TrendingUp,
   LayoutDashboard,
@@ -196,47 +195,40 @@ function Dashboard() {
         title="لوحة التحكم"
         description="نظرة شاملة على حالة المنصة والبيانات المعتمدة"
         actions={
-          <Link
-            to="/products"
-            className="text-sm text-accent font-semibold flex items-center gap-1 hover:underline"
-          >
-            استعراض كل البنود <ArrowLeft className="size-4 rotate-180" />
-          </Link>
+          <>
+            <Link
+              to="/products"
+              className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition"
+            >
+              إدارة المنتجات
+            </Link>
+            <Link
+              to="/import"
+              className="px-3 py-1.5 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition"
+            >
+              استيراد
+            </Link>
+          </>
         }
       />
       <div className="p-4 md:p-6 space-y-6 max-w-[1600px] mx-auto">
         {/* Hero summary */}
         <Card className="relative overflow-hidden p-5 md:p-6 border-0 surface-elevated bg-gradient-to-l from-primary/10 via-accent/5 to-transparent">
-          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] items-center">
-            <div className="min-w-0">
-              <div className="text-xs text-muted-foreground mb-1">نسبة الاعتماد الحالية</div>
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <span className="text-4xl font-bold num">{approvalPct}%</span>
-                <span className="text-sm text-muted-foreground num">
-                  {stats?.approved ?? 0} / {stats?.products ?? 0} بند معتمد
-                </span>
-              </div>
-              <div className="h-2 mt-3 bg-secondary rounded-full overflow-hidden max-w-md">
-                <div
-                  className="h-full bg-gradient-to-l from-success to-accent transition-all"
-                  style={{ width: `${approvalPct}%` }}
-                />
-              </div>
+          <div className="min-w-0">
+            <div className="text-xs text-muted-foreground mb-1">نسبة الاعتماد الحالية</div>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-4xl font-bold num">{approvalPct}%</span>
+              <span className="text-sm text-muted-foreground num">
+                {stats?.approved ?? 0} / {stats?.products ?? 0} بند معتمد
+              </span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Link
-                to="/products"
-                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition"
-              >
-                إدارة المنتجات
-              </Link>
-              <Link
-                to="/import"
-                className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition"
-              >
-                استيراد
-              </Link>
+            <div className="h-2 mt-3 bg-secondary rounded-full overflow-hidden max-w-md">
+              <div
+                className="h-full bg-gradient-to-l from-success to-accent transition-all"
+                style={{ width: `${approvalPct}%` }}
+              />
             </div>
+
           </div>
         </Card>
 
