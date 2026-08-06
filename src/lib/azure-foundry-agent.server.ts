@@ -31,6 +31,9 @@ export function agentConfig() {
     projectEndpoint,
     agentName: process.env.FOUNDRY_AGENT_NAME || DEFAULTS.agentName,
     agentVersion: process.env.FOUNDRY_AGENT_VERSION || DEFAULTS.agentVersion,
+    /** Version used when the primary one requires a per-user AAD token */
+    fallbackVersion: process.env.FOUNDRY_AGENT_FALLBACK_VERSION || "5",
+
     modelDeployment: process.env.MODEL_DEPLOYMENT_NAME || DEFAULTS.modelDeployment,
     /** OpenAI-compatible base for conversations/responses */
     openaiBase: process.env.FOUNDRY_OPENAI_BASE || `${projectEndpoint}/openai/v1`,
