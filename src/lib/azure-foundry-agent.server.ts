@@ -155,24 +155,37 @@ export async function callAzureProductAgent({
     if (!conversationId) throw new Error("تعذر إنشاء محادثة مع الوكيل");
   }
 
-  const body: Record<string, unknown> = {
-    conversation: conversationId,
-    agent: { name: cfg.agentName, version: cfg.agentVersion, type: "agent_reference" },
-    metadata: {
-      source: "alazab-nexus",
-      ...(metadata ?? {}),
-    },
+  const buildBody = (version: string) => {
+    const body: Record<string, unknown> = {
+      conversation: conversationId,
+      agent_reference: { type: "agent_reference", name: cfg.agentName, version },
+      metadata: {
+        source: "alazab-nexus",
+        ...(metadata ?? {}),
+      },
+    };
+    // On a reused conversation, only send the newest turn.
+    if (sessionId) body.input = items.slice(-1);
+    if (instructions) body.instructions = instructions;
+    return body;
   };
 
-  // On a reused conversation, only send the newest turn.
-  if (sessionId) body.input = items.slice(-1);
-  if (instructions) body.instructions = instructions;
-
-  const payload = await postJson(`${cfg.openaiBase}/responses`, body);
+  let payload: any;
+  try {
+    payload = await postJson(`${cfg.openaiBase}/responses`, buildBody(cfg.agentVersion));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    // Some agent versions bind tools to a per-user (AAD) scope which a server
+    // API key cannot satisfy. Fall back to the last key-compatible version.
+    const needsUserToken = msg.includes("aml-user-token");
+    if (!needsUserToken || cfg.fallbackVersion === cfg.agentVersion) throw e;
+    payload = await postJson(`${cfg.openaiBase}/responses`, buildBody(cfg.fallbackVersion));
+  }
 
   return {
     outputText: normalizeOutputText(payload),
     sessionId: conversationId,
+
     raw: payload,
   };
 }
