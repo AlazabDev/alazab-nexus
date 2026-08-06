@@ -5,7 +5,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
+import { CORS, json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 
 // Only internal/back-office consumers may look up or mutate orders without a
 // customer scope. Everyone else must supply the customer_id they own.
@@ -17,7 +17,8 @@ function isInternal(consumer: { channel?: string | null } | null | undefined) {
 export const Route = createFileRoute("/api/agent/v1/order-status")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       GET: async ({ request }) => {
         const started = Date.now();
@@ -64,7 +65,6 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
           console.error("[agent/order-status] read failed", error);
           return json({ success: false, error: "Internal server error" }, 500);
         }
-
 
         if (!data || (Array.isArray(data) && data.length === 0)) {
           return json({ success: false, error: "Order not found" }, 404);
@@ -155,10 +155,7 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
           const updates: any = {};
           if (body.status) {
             if (!VALID_STATUSES.includes(body.status)) {
-              return json(
-                { success: false, error: "Invalid status", code: "invalid_status" },
-                400,
-              );
+              return json({ success: false, error: "Invalid status", code: "invalid_status" }, 400);
             }
             updates.status = body.status;
           }
@@ -202,7 +199,6 @@ export const Route = createFileRoute("/api/agent/v1/order-status")({
             console.error("[agent/order-status] update failed", error);
             return json({ success: false, error: "Internal server error" }, 500);
           }
-
 
           // ارسال اشعار للشات بوت اذا تغيرت الحالة
           if (body.status && body.notify_customer) {

@@ -1,37 +1,39 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Sparkles, Download, Check } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useServerFn } from '@tanstack/react-start';
-import { useMutation } from '@tanstack/react-query';
-import { generateImageCandidates } from '@/lib/image-candidates.functions';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Sparkles, Download, Check } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation } from "@tanstack/react-query";
+import { generateImageCandidates } from "@/lib/image-candidates.functions";
 
-type ImageType = 'product_photo' | 'lifestyle' | 'technical' | 'render_3d';
+type ImageType = "product_photo" | "lifestyle" | "technical" | "render_3d";
 
 const TYPE_LABELS: Record<ImageType, string> = {
-  product_photo: 'صورة منتج',
-  lifestyle: 'سياق استخدام',
-  technical: 'تفاصيل فنية',
-  render_3d: 'رندر ثلاثي الأبعاد',
+  product_photo: "صورة منتج",
+  lifestyle: "سياق استخدام",
+  technical: "تفاصيل فنية",
+  render_3d: "رندر ثلاثي الأبعاد",
 };
 
 export function ImageFetcher() {
-  const [productName, setProductName] = useState('');
-  const [context, setContext] = useState('');
-  const [types, setTypes] = useState<ImageType[]>(['product_photo', 'lifestyle']);
+  const [productName, setProductName] = useState("");
+  const [context, setContext] = useState("");
+  const [types, setTypes] = useState<ImageType[]>(["product_photo", "lifestyle"]);
   const [selected, setSelected] = useState<string[]>([]);
 
   const generateFn = useServerFn(generateImageCandidates);
 
   const generate = useMutation({
     mutationFn: async () =>
-      generateFn({ data: { productName: productName.trim(), context: context.trim() || undefined, types } }),
+      generateFn({
+        data: { productName: productName.trim(), context: context.trim() || undefined, types },
+      }),
     onSuccess: () => setSelected([]),
   });
 
@@ -43,9 +45,9 @@ export function ImageFetcher() {
 
   const downloadSelected = () => {
     selected.forEach((url, i) => {
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `${productName.replace(/\s+/g, '-') || 'product'}-${i + 1}.png`;
+      a.download = `${productName.replace(/\s+/g, "-") || "product"}-${i + 1}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -91,7 +93,7 @@ export function ImageFetcher() {
                 <Button
                   key={t}
                   type="button"
-                  variant={types.includes(t) ? 'default' : 'outline'}
+                  variant={types.includes(t) ? "default" : "outline"}
                   size="sm"
                   className="justify-start"
                   onClick={() => toggleType(t)}
@@ -106,7 +108,7 @@ export function ImageFetcher() {
           {generate.isError && (
             <Alert variant="destructive">
               <AlertDescription>
-                {(generate.error as Error)?.message ?? 'تعذر توليد الصور'}
+                {(generate.error as Error)?.message ?? "تعذر توليد الصور"}
               </AlertDescription>
             </Alert>
           )}
@@ -114,12 +116,17 @@ export function ImageFetcher() {
           {!!generate.data?.errors?.length && (
             <Alert>
               <AlertDescription className="text-xs">
-                {generate.data.errors.join(' · ')}
+                {generate.data.errors.join(" · ")}
               </AlertDescription>
             </Alert>
           )}
 
-          <Button onClick={() => generate.mutate()} disabled={!canRun} size="lg" className="w-full gap-2">
+          <Button
+            onClick={() => generate.mutate()}
+            disabled={!canRun}
+            size="lg"
+            className="w-full gap-2"
+          >
             {generate.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" /> جارٍ التوليد…
@@ -138,7 +145,12 @@ export function ImageFetcher() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>{images.length} صورة</CardTitle>
-              <Button variant="outline" size="sm" disabled={!selected.length} onClick={downloadSelected}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!selected.length}
+                onClick={downloadSelected}
+              >
                 <Download className="ml-2 h-4 w-4" /> تحميل المحدد ({selected.length})
               </Button>
             </div>
@@ -149,7 +161,9 @@ export function ImageFetcher() {
                 <div
                   key={idx}
                   className={`relative group rounded-lg overflow-hidden border-2 transition-all ${
-                    selected.includes(image.url) ? 'border-accent' : 'border-transparent hover:border-border'
+                    selected.includes(image.url)
+                      ? "border-accent"
+                      : "border-transparent hover:border-border"
                   }`}
                 >
                   <div

@@ -3,7 +3,16 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Cloud, X, CheckCircle2, AlertCircle, Image as ImageIcon, FileText, Film, RefreshCw } from "lucide-react";
+import {
+  Cloud,
+  X,
+  CheckCircle2,
+  AlertCircle,
+  Image as ImageIcon,
+  FileText,
+  Film,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface UploadFile {
@@ -149,7 +158,11 @@ export function AssetUploadZone({
             setUploads((prev) =>
               prev.map((u, idx) =>
                 idx === prev.length - newUploads.length + i
-                  ? { ...u, retryCount: attempts, error: `إعادة محاولة ${attempts}/${maxRetries}...` }
+                  ? {
+                      ...u,
+                      retryCount: attempts,
+                      error: `إعادة محاولة ${attempts}/${maxRetries}...`,
+                    }
                   : u,
               ),
             );
@@ -167,9 +180,7 @@ export function AssetUploadZone({
                   : u,
               ),
             );
-            toast.error(
-              `فشل رفع ${uploadFile.file.name}: ${error.message || "حدث خطأ"}`,
-            );
+            toast.error(`فشل رفع ${uploadFile.file.name}: ${error.message || "حدث خطأ"}`);
           }
         }
       }
@@ -254,7 +265,10 @@ export function AssetUploadZone({
 
           <div className="space-y-3">
             {uploads.map((upload, idx) => (
-              <div key={idx} className="space-y-1.5 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+              <div
+                key={idx}
+                className="space-y-1.5 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+              >
                 {/* Header with status */}
                 <div className="flex items-start gap-3">
                   {/* Thumbnail or Icon */}
@@ -328,9 +342,8 @@ export function AssetUploadZone({
           {/* Summary */}
           <div className="pt-2 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
             <div>
-              إجمالي: {uploads.length} ملف ({formatFileSize(
-                uploads.reduce((acc, u) => acc + u.file.size, 0),
-              )})
+              إجمالي: {uploads.length} ملف (
+              {formatFileSize(uploads.reduce((acc, u) => acc + u.file.size, 0))})
             </div>
             <div className="flex gap-2">
               {uploads.filter((u) => u.status === "done").length > 0 && (

@@ -253,7 +253,8 @@ export const applyAISuggestions = createServerFn({ method: "POST" })
     const { supabase } = context;
     const update: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(data.fields)) {
-      if (!APPLY_AI_ALLOWED_FIELDS.includes(k as (typeof APPLY_AI_ALLOWED_FIELDS)[number])) continue;
+      if (!APPLY_AI_ALLOWED_FIELDS.includes(k as (typeof APPLY_AI_ALLOWED_FIELDS)[number]))
+        continue;
       if (v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0)) {
         update[k] = v;
       }

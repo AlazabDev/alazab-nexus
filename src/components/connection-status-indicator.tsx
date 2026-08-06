@@ -5,29 +5,12 @@ import {
   stopConnectionMonitoring,
   checkAzureConnection,
 } from "@/lib/connection-checker";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Activity,
-  Wifi,
-  WifiOff,
-  AlertCircle,
-  RotateCcw,
-  Clock,
-  TrendingUp,
-} from "lucide-react";
+import { Activity, Wifi, WifiOff, AlertCircle, RotateCcw, Clock, TrendingUp } from "lucide-react";
 
 interface ConnectionStatusIndicatorProps {
   showDetails?: boolean;
@@ -40,9 +23,7 @@ export function ConnectionStatusIndicator({
   autoMonitor = true,
   monitorInterval = 30000,
 }: ConnectionStatusIndicatorProps) {
-  const [statusData, setStatusData] = useState(
-    getConnectionStatusData(),
-  );
+  const [statusData, setStatusData] = useState(getConnectionStatusData());
   const [isChecking, setIsChecking] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
 
@@ -117,15 +98,9 @@ export function ConnectionStatusIndicator({
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
-              <button
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border hover:bg-secondary/50 transition-colors cursor-pointer"
-              >
-                <div
-                  className={`size-2.5 rounded-full ${getStatusColor()} animate-pulse`}
-                />
-                <span className="text-xs font-medium">
-                  {getStatusLabel()}
-                </span>
+              <button className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border hover:bg-secondary/50 transition-colors cursor-pointer">
+                <div className={`size-2.5 rounded-full ${getStatusColor()} animate-pulse`} />
+                <span className="text-xs font-medium">{getStatusLabel()}</span>
               </button>
             </PopoverTrigger>
           </TooltipTrigger>
@@ -145,9 +120,7 @@ export function ConnectionStatusIndicator({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {getStatusIcon()}
-                  <h3 className="font-semibold text-sm">
-                    حالة الاتصال
-                  </h3>
+                  <h3 className="font-semibold text-sm">حالة الاتصال</h3>
                 </div>
                 <Badge
                   className={
@@ -171,14 +144,10 @@ export function ConnectionStatusIndicator({
                       <Clock className="size-3" />
                       المؤخرة
                     </span>
-                    <span className="font-medium">
-                      {statusData.latency}ms
-                    </span>
+                    <span className="font-medium">{statusData.latency}ms</span>
                   </div>
                   {statusData.latency > 1000 && (
-                    <p className="text-xs text-yellow-600">
-                      المؤخرة مرتفعة نسبياً
-                    </p>
+                    <p className="text-xs text-yellow-600">المؤخرة مرتفعة نسبياً</p>
                   )}
                 </div>
 
@@ -189,26 +158,15 @@ export function ConnectionStatusIndicator({
                       <TrendingUp className="size-3" />
                       التوفر
                     </span>
-                    <span className="font-medium">
-                      {statusData.uptime}%
-                    </span>
+                    <span className="font-medium">{statusData.uptime}%</span>
                   </div>
-                  <Progress
-                    value={statusData.uptime}
-                    className="h-1.5"
-                  />
+                  <Progress value={statusData.uptime} className="h-1.5" />
                 </div>
 
                 {/* Last Check */}
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">
-                    آخر فحص
-                  </span>
-                  <span className="text-xs">
-                    {formatTime(
-                      statusData.lastSuccessfulCheck,
-                    )}
-                  </span>
+                  <span className="text-muted-foreground">آخر فحص</span>
+                  <span className="text-xs">{formatTime(statusData.lastSuccessfulCheck)}</span>
                 </div>
 
                 {/* Error Message */}
@@ -224,20 +182,14 @@ export function ConnectionStatusIndicator({
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-2 pt-2 border-t">
                   <div className="bg-secondary/50 rounded p-2 text-center">
-                    <div className="text-xs text-muted-foreground">
-                      نجاحات
-                    </div>
+                    <div className="text-xs text-muted-foreground">نجاحات</div>
                     <div className="text-sm font-bold text-green-600">
                       {statusData.successCount}
                     </div>
                   </div>
                   <div className="bg-secondary/50 rounded p-2 text-center">
-                    <div className="text-xs text-muted-foreground">
-                      فشل
-                    </div>
-                    <div className="text-sm font-bold text-red-600">
-                      {statusData.failureCount}
-                    </div>
+                    <div className="text-xs text-muted-foreground">فشل</div>
+                    <div className="text-sm font-bold text-red-600">{statusData.failureCount}</div>
                   </div>
                 </div>
 
@@ -256,9 +208,7 @@ export function ConnectionStatusIndicator({
 
               {/* Recent Events */}
               <div className="pt-2 border-t">
-                <p className="text-xs font-semibold mb-2">
-                  آخر 5 أحداث
-                </p>
+                <p className="text-xs font-semibold mb-2">آخر 5 أحداث</p>
                 <div className="space-y-1 text-xs max-h-32 overflow-y-auto">
                   {statusData.recentEvents.length > 0 ? (
                     statusData.recentEvents
@@ -272,26 +222,16 @@ export function ConnectionStatusIndicator({
                           <div className="flex items-center gap-1">
                             <div
                               className={`size-1.5 rounded-full ${
-                                event.status === "connected"
-                                  ? "bg-green-500"
-                                  : "bg-red-500"
+                                event.status === "connected" ? "bg-green-500" : "bg-red-500"
                               }`}
                             />
-                            <span>
-                              {event.status === "connected"
-                                ? "متصل"
-                                : "قطع"}
-                            </span>
+                            <span>{event.status === "connected" ? "متصل" : "قطع"}</span>
                           </div>
-                          <span className="text-muted-foreground">
-                            {event.latency}ms
-                          </span>
+                          <span className="text-muted-foreground">{event.latency}ms</span>
                         </div>
                       ))
                   ) : (
-                    <div className="text-muted-foreground text-center py-2">
-                      لا توجد أحداث بعد
-                    </div>
+                    <div className="text-muted-foreground text-center py-2">لا توجد أحداث بعد</div>
                   )}
                 </div>
               </div>

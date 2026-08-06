@@ -15,7 +15,19 @@ import {
   ArrowRight,
   Plus,
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
 interface ProductStats {
   total: number;
@@ -25,25 +37,26 @@ interface ProductStats {
 }
 
 function ProductsDashboard() {
-  const { data: stats = { total: 0, recent: 0, byStatus: {}, byType: {} } as ProductStats } = useQuery({
-    queryKey: ["product-stats"],
-    queryFn: async (): Promise<ProductStats> => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("id, status, item_type, created_at", { count: "exact" });
-      if (error) throw error;
+  const { data: stats = { total: 0, recent: 0, byStatus: {}, byType: {} } as ProductStats } =
+    useQuery({
+      queryKey: ["product-stats"],
+      queryFn: async (): Promise<ProductStats> => {
+        const { data, error } = await supabase
+          .from("products")
+          .select("id, status, item_type, created_at", { count: "exact" });
+        if (error) throw error;
 
-      const now = new Date();
-      const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const now = new Date();
+        const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-      return {
-        total: data?.length || 0,
-        recent: data?.filter((p: any) => new Date(p.created_at) > lastMonth).length || 0,
-        byStatus: groupBy(data || [], "status"),
-        byType: groupBy(data || [], "item_type"),
-      };
-    },
-  });
+        return {
+          total: data?.length || 0,
+          recent: data?.filter((p: any) => new Date(p.created_at) > lastMonth).length || 0,
+          byStatus: groupBy(data || [], "status"),
+          byType: groupBy(data || [], "item_type"),
+        };
+      },
+    });
 
   const { data: recentProducts = [] } = useQuery({
     queryKey: ["recent-products"],
@@ -84,18 +97,10 @@ function ProductsDashboard() {
   }));
 
   const completionRate =
-    stats.total > 0
-      ? Math.round(
-          ((stats.byStatus?.approved || 0) / stats.total) * 100,
-        )
-      : 0;
+    stats.total > 0 ? Math.round(((stats.byStatus?.approved || 0) / stats.total) * 100) : 0;
 
   const reviewRate =
-    stats.total > 0
-      ? Math.round(
-          ((stats.byStatus?.needs_review || 0) / stats.total) * 100,
-        )
-      : 0;
+    stats.total > 0 ? Math.round(((stats.byStatus?.needs_review || 0) / stats.total) * 100) : 0;
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -106,9 +111,7 @@ function ProductsDashboard() {
             <Package className="size-8 text-accent" />
             لوحة معلومات المنتجات
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            عرض شامل لحالة وإحصائيات منتجاتك
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">عرض شامل لحالة وإحصائيات منتجاتك</p>
         </div>
         <Link to="/products/new">
           <Button className="gap-2">
@@ -272,7 +275,9 @@ function ProductsDashboard() {
                     <Activity className="size-4 text-yellow-600 mt-0.5 shrink-0" />
                     <div className="flex-1">
                       <p className="font-medium text-sm">{product.name_ar || product.name_en}</p>
-                      <p className="text-xs text-muted-foreground">{getReviewReason(product.status)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {getReviewReason(product.status)}
+                      </p>
                     </div>
                   </div>
                   <Button variant="ghost" size="sm" className="gap-1">
@@ -405,9 +410,15 @@ export const Route = createFileRoute("/_authenticated/products/dashboard")({
   head: () => ({
     meta: [
       { title: "لوحة تحكم المنتجات — Alazab PAOP" },
-      { name: "description", content: "نظرة عامة على حالة المنتجات والخدمات ومؤشرات الجودة والمراجعة." },
+      {
+        name: "description",
+        content: "نظرة عامة على حالة المنتجات والخدمات ومؤشرات الجودة والمراجعة.",
+      },
       { property: "og:title", content: "لوحة تحكم المنتجات — Alazab PAOP" },
-      { property: "og:description", content: "نظرة عامة على حالة المنتجات والخدمات ومؤشرات الجودة والمراجعة." },
+      {
+        property: "og:description",
+        content: "نظرة عامة على حالة المنتجات والخدمات ومؤشرات الجودة والمراجعة.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

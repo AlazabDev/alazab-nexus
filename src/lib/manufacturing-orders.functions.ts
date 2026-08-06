@@ -67,9 +67,7 @@ export const updateManufacturingOrderStatus = createServerFn({ method: "POST" })
     }
     const allowed = STATUS_TRANSITIONS[currentStatus] ?? [];
     if (data.status !== currentStatus && !allowed.includes(data.status)) {
-      throw new Error(
-        `Invalid transition: ${currentStatus} → ${data.status}`,
-      );
+      throw new Error(`Invalid transition: ${currentStatus} → ${data.status}`);
     }
 
     const updates: {

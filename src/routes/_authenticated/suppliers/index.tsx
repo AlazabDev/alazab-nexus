@@ -95,102 +95,101 @@ function SuppliersList() {
         }
       />
       <div className="p-4 md:p-6 space-y-4 max-w-[1400px] mx-auto">
-
-
-      <Card className="p-3 surface-elevated border-0">
-        <div className="relative">
-          <Search className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="ابحث بالاسم، الرمز..."
-            className="pr-9"
-          />
-        </div>
-      </Card>
-
-      <Card className="surface-elevated border-0 overflow-hidden">
-        {isLoading ? (
-          <div className="p-12 text-center text-muted-foreground">جاري التحميل...</div>
-        ) : rows.length === 0 ? (
-          <div className="p-12 text-center text-muted-foreground">لا يوجد موردون</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-secondary/60">
-                <tr>
-                  <th className="text-right p-3 font-semibold">الاسم</th>
-                  <th className="text-right p-3 font-semibold">الرمز</th>
-                  <th className="text-right p-3 font-semibold">الفئة</th>
-                  <th className="text-right p-3 font-semibold">المستوى</th>
-                  <th className="text-center p-3 font-semibold">التواصل</th>
-                  <th className="text-right p-3 font-semibold">الحالة</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((s: any) => (
-                  <tr key={s.id} className="border-t hover:bg-secondary/30">
-                    <td className="p-3">
-                      <Link
-                        to={`/suppliers/${s.id}` as any}
-                        className="text-accent hover:underline font-medium"
-                      >
-                        {s.name}
-                      </Link>
-                      <div className="text-xs text-muted-foreground mt-0.5">{s.supplier_type}</div>
-                    </td>
-                    <td className="p-3 text-xs num" dir="ltr">
-                      {s.supplier_code || "—"}
-                    </td>
-                    <td className="p-3 text-xs">{s.category || "—"}</td>
-                    <td className="p-3">
-                      <Badge className={`text-[10px] ${tierMap[s.tier]?.color || ""}`}>
-                        {tierMap[s.tier]?.label || s.tier}
-                      </Badge>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center justify-center gap-2">
-                        {s.email && (
-                          <a
-                            href={`mailto:${s.email}`}
-                            className="p-1 rounded hover:bg-secondary"
-                            title="بريد إلكتروني"
-                          >
-                            <Mail className="size-4 text-muted-foreground hover:text-foreground" />
-                          </a>
-                        )}
-                        {s.phone && (
-                          <a
-                            href={`tel:${s.phone}`}
-                            className="p-1 rounded hover:bg-secondary"
-                            title="هاتف"
-                          >
-                            <Phone className="size-4 text-muted-foreground hover:text-foreground" />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <Badge
-                        variant="outline"
-                        className={
-                          s.status === "active"
-                            ? "bg-success/15 text-success border-success/30"
-                            : "bg-muted text-muted-foreground"
-                        }
-                      >
-                        {s.status === "active" ? "نشط" : "غير نشط"}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <Card className="p-3 surface-elevated border-0">
+          <div className="relative">
+            <Search className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="ابحث بالاسم، الرمز..."
+              className="pr-9"
+            />
           </div>
-        )}
-      </Card>
+        </Card>
+
+        <Card className="surface-elevated border-0 overflow-hidden">
+          {isLoading ? (
+            <div className="p-12 text-center text-muted-foreground">جاري التحميل...</div>
+          ) : rows.length === 0 ? (
+            <div className="p-12 text-center text-muted-foreground">لا يوجد موردون</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-secondary/60">
+                  <tr>
+                    <th className="text-right p-3 font-semibold">الاسم</th>
+                    <th className="text-right p-3 font-semibold">الرمز</th>
+                    <th className="text-right p-3 font-semibold">الفئة</th>
+                    <th className="text-right p-3 font-semibold">المستوى</th>
+                    <th className="text-center p-3 font-semibold">التواصل</th>
+                    <th className="text-right p-3 font-semibold">الحالة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((s: any) => (
+                    <tr key={s.id} className="border-t hover:bg-secondary/30">
+                      <td className="p-3">
+                        <Link
+                          to={`/suppliers/${s.id}` as any}
+                          className="text-accent hover:underline font-medium"
+                        >
+                          {s.name}
+                        </Link>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {s.supplier_type}
+                        </div>
+                      </td>
+                      <td className="p-3 text-xs num" dir="ltr">
+                        {s.supplier_code || "—"}
+                      </td>
+                      <td className="p-3 text-xs">{s.category || "—"}</td>
+                      <td className="p-3">
+                        <Badge className={`text-[10px] ${tierMap[s.tier]?.color || ""}`}>
+                          {tierMap[s.tier]?.label || s.tier}
+                        </Badge>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center justify-center gap-2">
+                          {s.email && (
+                            <a
+                              href={`mailto:${s.email}`}
+                              className="p-1 rounded hover:bg-secondary"
+                              title="بريد إلكتروني"
+                            >
+                              <Mail className="size-4 text-muted-foreground hover:text-foreground" />
+                            </a>
+                          )}
+                          {s.phone && (
+                            <a
+                              href={`tel:${s.phone}`}
+                              className="p-1 rounded hover:bg-secondary"
+                              title="هاتف"
+                            >
+                              <Phone className="size-4 text-muted-foreground hover:text-foreground" />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <Badge
+                          variant="outline"
+                          className={
+                            s.status === "active"
+                              ? "bg-success/15 text-success border-success/30"
+                              : "bg-muted text-muted-foreground"
+                          }
+                        >
+                          {s.status === "active" ? "نشط" : "غير نشط"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
       </div>
     </>
   );
 }
-

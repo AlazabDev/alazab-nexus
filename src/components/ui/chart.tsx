@@ -9,7 +9,10 @@ export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode;
     icon?: React.ComponentType;
-  } & ({ color?: string; theme?: never } | { color?: never; theme: Record<keyof typeof THEMES, string> });
+  } & (
+    | { color?: string; theme?: never }
+    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+  );
 };
 
 type ChartContextProps = {
@@ -166,7 +169,11 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContent
           : itemConfig?.label;
 
       if (labelFormatter) {
-        return <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, safePayload)}</div>;
+        return (
+          <div className={cn("font-medium", labelClassName)}>
+            {labelFormatter(value, safePayload)}
+          </div>
+        );
       }
 
       if (!value) return null;
@@ -193,7 +200,8 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContent
             .map((item: ChartPayloadItem, index: number) => {
               const key = `${nameKey || item.name || item.dataKey || "value"}`;
               const itemConfig = getPayloadConfigFromPayload(config, item, key);
-              const payloadFill = typeof item.payload?.fill === "string" ? item.payload.fill : undefined;
+              const payloadFill =
+                typeof item.payload?.fill === "string" ? item.payload.fill : undefined;
               const indicatorColor = color || payloadFill || item.fill || item.color;
 
               return (
@@ -213,12 +221,16 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContent
                       ) : (
                         !hideIndicator && (
                           <div
-                            className={cn("shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)", {
-                              "h-2.5 w-2.5": indicator === "dot",
-                              "w-1": indicator === "line",
-                              "w-0 border-[1.5px] border-dashed bg-transparent": indicator === "dashed",
-                              "my-0.5": nestLabel && indicator === "dashed",
-                            })}
+                            className={cn(
+                              "shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)",
+                              {
+                                "h-2.5 w-2.5": indicator === "dot",
+                                "w-1": indicator === "line",
+                                "w-0 border-[1.5px] border-dashed bg-transparent":
+                                  indicator === "dashed",
+                                "my-0.5": nestLabel && indicator === "dashed",
+                              },
+                            )}
                             style={
                               {
                                 "--color-bg": indicatorColor,
@@ -236,11 +248,15 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContent
                       >
                         <div className="grid gap-1.5">
                           {nestLabel ? tooltipLabel : null}
-                          <span className="text-muted-foreground">{itemConfig?.label || item.name}</span>
+                          <span className="text-muted-foreground">
+                            {itemConfig?.label || item.name}
+                          </span>
                         </div>
                         {item.value !== undefined && item.value !== null && (
                           <span className="font-mono font-medium tabular-nums text-foreground">
-                            {typeof item.value === "number" ? item.value.toLocaleString() : String(item.value)}
+                            {typeof item.value === "number"
+                              ? item.value.toLocaleString()
+                              : String(item.value)}
                           </span>
                         )}
                       </div>
@@ -283,12 +299,17 @@ const ChartLegendContent = React.forwardRef<HTMLDivElement, ChartLegendContentPr
             return (
               <div
                 key={`${item.value ?? item.dataKey ?? key}`}
-                className={cn("flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground")}
+                className={cn(
+                  "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
+                )}
               >
                 {itemConfig?.icon && !hideIcon ? (
                   <itemConfig.icon />
                 ) : (
-                  <div className="h-2 w-2 shrink-0 rounded-[2px]" style={{ backgroundColor: item.color }} />
+                  <div
+                    className="h-2 w-2 shrink-0 rounded-[2px]"
+                    style={{ backgroundColor: item.color }}
+                  />
                 )}
                 {itemConfig?.label ?? String(item.value ?? "")}
               </div>

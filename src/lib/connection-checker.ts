@@ -61,8 +61,7 @@ export async function checkAzureConnection(): Promise<{
         messages: [
           {
             role: "system",
-            content:
-              "أنت مساعد اختبار. رد بـ 'OK' فقط للتأكد من الاتصال.",
+            content: "أنت مساعد اختبار. رد بـ 'OK' فقط للتأكد من الاتصال.",
           },
           {
             role: "user",
@@ -84,8 +83,7 @@ export async function checkAzureConnection(): Promise<{
     return { success: true, latency };
   } catch (error) {
     const latency = Math.round(performance.now() - startTime);
-    const errorMsg =
-      error instanceof Error ? error.message : "خطأ غير معروف";
+    const errorMsg = error instanceof Error ? error.message : "خطأ غير معروف";
     logConnectionEvent("disconnected", latency, errorMsg);
     return {
       success: false,
@@ -98,11 +96,7 @@ export async function checkAzureConnection(): Promise<{
 /**
  * Log connection event and update metrics
  */
-function logConnectionEvent(
-  status: ConnectionStatus,
-  latency: number,
-  error?: string,
-) {
+function logConnectionEvent(status: ConnectionStatus, latency: number, error?: string) {
   const event: ConnectionEvent = {
     timestamp: new Date(),
     status,
@@ -135,15 +129,9 @@ function logConnectionEvent(
   }
 
   // Calculate uptime percentage
-  const total =
-    connectionState.metrics.successCount +
-    connectionState.metrics.failureCount;
+  const total = connectionState.metrics.successCount + connectionState.metrics.failureCount;
   connectionState.metrics.uptime =
-    total > 0
-      ? Math.round(
-          (connectionState.metrics.successCount / total) * 100,
-        )
-      : 0;
+    total > 0 ? Math.round((connectionState.metrics.successCount / total) * 100) : 0;
 
   console.log("[v0] Connection event:", event);
 }
@@ -219,8 +207,7 @@ export function getConnectionStatusData() {
   const recentEvents = getConnectionHistory(5);
   const isHealthy = metrics.status === "connected" && metrics.uptime >= 95;
   const isWarning =
-    metrics.status === "reconnecting" ||
-    (metrics.uptime >= 80 && metrics.uptime < 95);
+    metrics.status === "reconnecting" || (metrics.uptime >= 80 && metrics.uptime < 95);
 
   return {
     status: metrics.status,

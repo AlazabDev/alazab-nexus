@@ -7,24 +7,29 @@ The AI Studio is a comprehensive product management environment that enables int
 ## Features
 
 ### 1. Content Optimization
+
 Enhance product names, descriptions, and metadata with AI-powered suggestions.
 
 **Optimization Levels:**
+
 - **Basic**: Optimizes product names and descriptions
-- **Standard**: Includes metadata and SEO keywords  
+- **Standard**: Includes metadata and SEO keywords
 - **Premium**: Full optimization with marketing-focused copy
 
 **Supported Languages:**
+
 - English
 - Arabic
 - Multilingual support
 
 **API Endpoint:**
+
 ```
 POST /api/private/v1/ai/optimize-product
 ```
 
 **Request:**
+
 ```json
 {
   "productId": "uuid",
@@ -35,6 +40,7 @@ POST /api/private/v1/ai/optimize-product
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -51,14 +57,17 @@ POST /api/private/v1/ai/optimize-product
 ```
 
 ### 2. Datasheet Generation
+
 Automatically create comprehensive technical datasheets for products.
 
 **Supported Formats:**
+
 - PDF - Professional printable format
 - HTML - Web-ready interactive version
 - JSON - Structured data format
 
 **Sections Included:**
+
 - Technical Specifications
 - Dimensions & Weight
 - Materials & Composition
@@ -69,11 +78,13 @@ Automatically create comprehensive technical datasheets for products.
 - Warranty Terms
 
 **API Endpoint:**
+
 ```
 POST /api/private/v1/ai/generate-datasheet
 ```
 
 **Request:**
+
 ```json
 {
   "productId": "uuid",
@@ -83,6 +94,7 @@ POST /api/private/v1/ai/generate-datasheet
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -99,9 +111,11 @@ POST /api/private/v1/ai/generate-datasheet
 ```
 
 ### 3. Professional Image Management
+
 Fetch professional images and match them with products based on AI analysis.
 
 **Features:**
+
 - Multi-source image fetching (Unsplash, Pexels, custom APIs)
 - Confidence-based matching (0-100%)
 - Image quality analysis
@@ -109,20 +123,24 @@ Fetch professional images and match them with products based on AI analysis.
 - Multiple image type support
 
 **Image Types:**
+
 - Product Photo - Direct product shots
 - Lifestyle - Product in use context
 - Technical - Close-ups and specifications
 - 3D Render - Rendered visualizations
 
 **API Endpoint:**
+
 ```
 POST /api/private/v1/ai/image-fetch-and-match
 ```
 
 ### 4. Quote Generation
+
 Create professional quotes with AI-powered intelligent pricing.
 
 **Features:**
+
 - Automatic discount calculation
 - Volume-based pricing
 - Customer tier adjustments
@@ -131,16 +149,19 @@ Create professional quotes with AI-powered intelligent pricing.
 - Secure quote tokens
 
 **Customer Types:**
+
 - **Retail**: Standard pricing
 - **Wholesale**: 10-15% discount
 - **Enterprise**: 20-30% discount
 
 **Public API Endpoint:**
+
 ```
 POST /api/public/v1/ai/quotes
 ```
 
 **Request:**
+
 ```json
 {
   "products": [
@@ -160,6 +181,7 @@ POST /api/public/v1/ai/quotes
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -183,11 +205,13 @@ POST /api/public/v1/ai/quotes
 ### Start Batch Optimization
 
 **Endpoint:**
+
 ```
 POST /api/private/v1/ai/batch-optimize
 ```
 
 **Request:**
+
 ```json
 {
   "productIds": ["uuid1", "uuid2", "..."],
@@ -198,6 +222,7 @@ POST /api/private/v1/ai/batch-optimize
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -213,11 +238,13 @@ POST /api/private/v1/ai/batch-optimize
 ### Check Job Status
 
 **Endpoint:**
+
 ```
 GET /api/private/v1/ai/job-status?jobId=job_...
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -238,6 +265,7 @@ GET /api/private/v1/ai/job-status?jobId=job_...
 ## Database Schema
 
 ### ai_settings
+
 Stores optimization preferences for each product.
 
 ```sql
@@ -251,6 +279,7 @@ Stores optimization preferences for each product.
 ```
 
 ### product_datasheets
+
 Stores generated datasheets.
 
 ```sql
@@ -265,6 +294,7 @@ Stores generated datasheets.
 ```
 
 ### product_images_ai
+
 Enhanced image management with AI metadata.
 
 ```sql
@@ -279,6 +309,7 @@ Enhanced image management with AI metadata.
 ```
 
 ### api_quotes
+
 Auto-generated quotes from API requests.
 
 ```sql
@@ -292,6 +323,7 @@ Auto-generated quotes from API requests.
 ```
 
 ### ai_optimization_jobs
+
 Batch optimization task tracking.
 
 ```sql
@@ -305,6 +337,7 @@ Batch optimization task tracking.
 ```
 
 ### ai_audit_logs
+
 Audit trail for all AI operations.
 
 ```sql
@@ -319,13 +352,13 @@ Audit trail for all AI operations.
 
 ## Frontend Routes
 
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/ai-studio` | AIStudioDashboard | Hub/home page |
-| `/ai-studio/optimize` | ProductContentOptimizer | Content optimization |
-| `/ai-studio/datasheets` | DatasheetBuilder | Datasheet generation |
-| `/ai-studio/images` | ImageFetcher | Image fetching & matching |
-| `/ai-studio/quotes` | QuoteBuilder | Quote generation |
+| Route                   | Component               | Purpose                   |
+| ----------------------- | ----------------------- | ------------------------- |
+| `/ai-studio`            | AIStudioDashboard       | Hub/home page             |
+| `/ai-studio/optimize`   | ProductContentOptimizer | Content optimization      |
+| `/ai-studio/datasheets` | DatasheetBuilder        | Datasheet generation      |
+| `/ai-studio/images`     | ImageFetcher            | Image fetching & matching |
+| `/ai-studio/quotes`     | QuoteBuilder            | Quote generation          |
 
 ## Security & Rate Limiting
 
@@ -348,6 +381,7 @@ All API endpoints return standardized error responses:
 ```
 
 HTTP Status Codes:
+
 - 200: Success
 - 202: Accepted (async operation)
 - 400: Bad Request
@@ -380,6 +414,7 @@ HTTP Status Codes:
 ## Cost Estimation
 
 Cost per operation (estimated):
+
 - Content Optimization: $0.001 - $0.005
 - Datasheet Generation: $0.01 - $0.02
 - Image Analysis: $0.005 - $0.01

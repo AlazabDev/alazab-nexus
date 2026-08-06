@@ -32,10 +32,7 @@ import {
   Wand2,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  generateProductContent,
-  type GeneratedContent,
-} from "@/lib/product-content-gen.functions";
+import { generateProductContent, type GeneratedContent } from "@/lib/product-content-gen.functions";
 import { uploadAndLinkAsset, type AssetRole } from "@/lib/upload-assets";
 
 export const Route = createFileRoute("/_authenticated/products/new")({
@@ -467,9 +464,7 @@ function NewProductPage() {
 
             {queue.length > 0 && (
               <Card className="p-4 surface-elevated border-0 space-y-2">
-                <div className="font-semibold text-sm mb-2">
-                  قائمة الرفع ({queue.length})
-                </div>
+                <div className="font-semibold text-sm mb-2">قائمة الرفع ({queue.length})</div>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto">
                   {queue.map((q, i) => (
                     <div
@@ -509,11 +504,7 @@ function NewProductPage() {
                 سيُحفظ البند كمسودة ويمكن إرساله للاعتماد لاحقاً.
               </div>
               <Button type="submit" className="w-full gap-2" disabled={saving}>
-                {saving ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Save className="size-4" />
-                )}
+                {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
                 حفظ البند {queue.length > 0 ? `ورفع ${queue.length} ملف` : ""}
               </Button>
               <Button

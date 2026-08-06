@@ -39,9 +39,7 @@ function ChatHistory() {
   }, []);
 
   const filteredChats = chats.filter(
-    (chat) =>
-      chat.preview.includes(searchTerm) ||
-      chat.id.includes(searchTerm),
+    (chat) => chat.preview.includes(searchTerm) || chat.id.includes(searchTerm),
   );
 
   const handleDelete = (id: string) => {
@@ -109,9 +107,7 @@ function ChatHistory() {
           <div className="text-center py-12">
             <MessageSquare className="size-12 mx-auto text-muted-foreground/50 mb-3" />
             <p className="text-muted-foreground">
-              {chats.length === 0
-                ? "لا توجد محادثات محفوظة"
-                : "لم يتم العثور على نتائج"}
+              {chats.length === 0 ? "لا توجد محادثات محفوظة" : "لم يتم العثور على نتائج"}
             </p>
           </div>
         )}
@@ -181,12 +177,9 @@ function ChatHistory() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            حذف المحادثة
-                          </AlertDialogTitle>
+                          <AlertDialogTitle>حذف المحادثة</AlertDialogTitle>
                           <AlertDialogDescription>
-                            هل أنت متأكد من رغبتك في حذف هذه
-                            المحادثة؟ لا يمكن التراجع عن هذا
+                            هل أنت متأكد من رغبتك في حذف هذه المحادثة؟ لا يمكن التراجع عن هذا
                             الإجراء.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
@@ -196,9 +189,7 @@ function ChatHistory() {
                         >
                           حذف
                         </AlertDialogAction>
-                        <AlertDialogCancel>
-                          إلغاء
-                        </AlertDialogCancel>
+                        <AlertDialogCancel>إلغاء</AlertDialogCancel>
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>

@@ -42,7 +42,10 @@ function sanitize(name: string) {
 /**
  * التحقق من صحة الملف قبل الرفع
  */
-export function validateFile(file: File, maxSize: number = 50 * 1024 * 1024): {
+export function validateFile(
+  file: File,
+  maxSize: number = 50 * 1024 * 1024,
+): {
   valid: boolean;
   error?: string;
 } {
@@ -126,13 +129,11 @@ export async function uploadAndLinkAsset(opts: {
     } = await supabase.auth.getUser();
 
     // محاولة الرفع
-    const { error: upErr } = await supabase.storage
-      .from(BUCKET)
-      .upload(path, file, {
-        cacheControl: "31536000",
-        upsert: false,
-        contentType: file.type,
-      });
+    const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, {
+      cacheControl: "31536000",
+      upsert: false,
+      contentType: file.type,
+    });
 
     if (upErr) {
       throw new Error(`خطأ التخزين: ${upErr.message}`);

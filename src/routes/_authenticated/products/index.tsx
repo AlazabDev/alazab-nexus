@@ -43,14 +43,7 @@ import { DeleteProductsButton } from "@/components/delete-products-dialog";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 200] as const;
 
-const SORT_KEYS = [
-  "created_at",
-  "updated_at",
-  "az_code",
-  "name_ar",
-  "name_en",
-  "status",
-] as const;
+const SORT_KEYS = ["created_at", "updated_at", "az_code", "name_ar", "name_en", "status"] as const;
 type SortKey = (typeof SORT_KEYS)[number];
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
@@ -372,445 +365,460 @@ function ProductsList() {
         }
       />
       <div className="p-4 md:p-6 space-y-4 max-w-[1600px] mx-auto">
-
-
-      <Card className="p-4 surface-elevated border-0">
-        <div className="flex gap-3 flex-wrap items-center">
-          <div className="relative flex-1 min-w-[260px]">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input
-              placeholder="بحث بالاسم او AZ Code..."
-              value={filters.q}
-              onChange={(e) => {
-                setFilters({ ...filters, q: e.target.value });
+        <Card className="p-4 surface-elevated border-0">
+          <div className="flex gap-3 flex-wrap items-center">
+            <div className="relative flex-1 min-w-[260px]">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                placeholder="بحث بالاسم او AZ Code..."
+                value={filters.q}
+                onChange={(e) => {
+                  setFilters({ ...filters, q: e.target.value });
+                  setPage(0);
+                }}
+                className="pr-9"
+              />
+            </div>
+            <Select
+              value={filters.status}
+              onValueChange={(v) => {
+                setFilters({ ...filters, status: v });
                 setPage(0);
               }}
-              className="pr-9"
-            />
-          </div>
-          <Select
-            value={filters.status}
-            onValueChange={(v) => {
-              setFilters({ ...filters, status: v });
-              setPage(0);
-            }}
-          >
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="الحالة" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">كل الحالات</SelectItem>
-              <SelectItem value="approved">معتمد</SelectItem>
-              <SelectItem value="draft">مسودة</SelectItem>
-              <SelectItem value="needs_review">يحتاج مراجعة</SelectItem>
-              <SelectItem value="rejected">مرفوض</SelectItem>
-              <SelectItem value="archived">مؤرشف</SelectItem>
-            </SelectContent>
-          </Select>
+            >
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="الحالة" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">كل الحالات</SelectItem>
+                <SelectItem value="approved">معتمد</SelectItem>
+                <SelectItem value="draft">مسودة</SelectItem>
+                <SelectItem value="needs_review">يحتاج مراجعة</SelectItem>
+                <SelectItem value="rejected">مرفوض</SelectItem>
+                <SelectItem value="archived">مؤرشف</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Popover open={showFilters} onOpenChange={setShowFilters}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="relative">
-                <Filter className="size-4 ml-1" />
-                فلاتر متقدمة
-                {activeFiltersCount > 0 && (
-                  <span className="absolute -top-1 -left-1 size-5 bg-accent text-accent-foreground text-xs rounded-full grid place-items-center num">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">فلاتر متقدمة</h4>
+            <Popover open={showFilters} onOpenChange={setShowFilters}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="relative">
+                  <Filter className="size-4 ml-1" />
+                  فلاتر متقدمة
                   {activeFiltersCount > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters}>
-                      <X className="size-3 ml-1" />
-                      مسح الكل
-                    </Button>
+                    <span className="absolute -top-1 -left-1 size-5 bg-accent text-accent-foreground text-xs rounded-full grid place-items-center num">
+                      {activeFiltersCount}
+                    </span>
                   )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="end">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold">فلاتر متقدمة</h4>
+                    {activeFiltersCount > 0 && (
+                      <Button variant="ghost" size="sm" onClick={clearFilters}>
+                        <X className="size-3 ml-1" />
+                        مسح الكل
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs">نوع البند</Label>
+                      <Select
+                        value={filters.itemType}
+                        onValueChange={(v) => {
+                          setFilters({ ...filters, itemType: v });
+                          setPage(0);
+                        }}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">الكل</SelectItem>
+                          <SelectItem value="product">منتج</SelectItem>
+                          <SelectItem value="service">خدمة</SelectItem>
+                          <SelectItem value="bundle">حزمة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs">العائلة (GPC)</Label>
+                      <Select
+                        value={filters.gpcFamily}
+                        onValueChange={(v) => {
+                          setFilters({ ...filters, gpcFamily: v });
+                          setPage(0);
+                        }}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">كل العائلات</SelectItem>
+                          {(filterOptions?.families ?? []).map((f) => (
+                            <SelectItem key={f} value={f}>
+                              {f}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs">القطاع</Label>
+                      <Select
+                        value={filters.sector}
+                        onValueChange={(v) => {
+                          setFilters({ ...filters, sector: v });
+                          setPage(0);
+                        }}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">كل القطاعات</SelectItem>
+                          {(filterOptions?.sectors ?? []).map((s) => (
+                            <SelectItem key={s} value={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs">مستوى الثقة</Label>
+                      <Select
+                        value={filters.confidence}
+                        onValueChange={(v) => {
+                          setFilters({ ...filters, confidence: v });
+                          setPage(0);
+                        }}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">الكل</SelectItem>
+                          <SelectItem value="high">عالي</SelectItem>
+                          <SelectItem value="medium">متوسط</SelectItem>
+                          <SelectItem value="low">منخفض</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
+              </PopoverContent>
+            </Popover>
 
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-xs">نوع البند</Label>
-                    <Select
-                      value={filters.itemType}
-                      onValueChange={(v) => {
-                        setFilters({ ...filters, itemType: v });
-                        setPage(0);
-                      }}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">الكل</SelectItem>
-                        <SelectItem value="product">منتج</SelectItem>
-                        <SelectItem value="service">خدمة</SelectItem>
-                        <SelectItem value="bundle">حزمة</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+            {activeFiltersCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                <X className="size-4 ml-1" />
+                مسح الفلاتر
+              </Button>
+            )}
 
-                  <div>
-                    <Label className="text-xs">العائلة (GPC)</Label>
-                    <Select
-                      value={filters.gpcFamily}
-                      onValueChange={(v) => {
-                        setFilters({ ...filters, gpcFamily: v });
-                        setPage(0);
-                      }}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">كل العائلات</SelectItem>
-                        {(filterOptions?.families ?? []).map((f) => (
-                          <SelectItem key={f} value={f}>
-                            {f}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs">القطاع</Label>
-                    <Select
-                      value={filters.sector}
-                      onValueChange={(v) => {
-                        setFilters({ ...filters, sector: v });
-                        setPage(0);
-                      }}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">كل القطاعات</SelectItem>
-                        {(filterOptions?.sectors ?? []).map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs">مستوى الثقة</Label>
-                    <Select
-                      value={filters.confidence}
-                      onValueChange={(v) => {
-                        setFilters({ ...filters, confidence: v });
-                        setPage(0);
-                      }}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">الكل</SelectItem>
-                        <SelectItem value="high">عالي</SelectItem>
-                        <SelectItem value="medium">متوسط</SelectItem>
-                        <SelectItem value="low">منخفض</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+            <div className="mr-auto flex items-center gap-2 flex-wrap">
+              <Select
+                value={sortKey}
+                onValueChange={(v) => {
+                  setSortKey(v as SortKey);
+                  setPage(0);
+                }}
+              >
+                <SelectTrigger className="w-[160px] h-9">
+                  <ArrowUpDown className="size-3.5 ml-1" />
+                  <SelectValue placeholder="ترتيب حسب" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={sortDir}
+                onValueChange={(v) => {
+                  setSortDir(v as "asc" | "desc");
+                  setPage(0);
+                }}
+              >
+                <SelectTrigger className="w-[110px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="desc">تنازلي</SelectItem>
+                  <SelectItem value="asc">تصاعدي</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                value={String(pageSize)}
+                onValueChange={(v) => {
+                  setPageSize(Number(v));
+                  setPage(0);
+                }}
+              >
+                <SelectTrigger className="w-[110px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n} / صفحة
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="inline-flex rounded-md border bg-card p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setView("grid")}
+                  aria-label="عرض شبكي"
+                  className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <LayoutGrid className="size-3.5" /> بطاقات
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView("table")}
+                  aria-label="عرض جدول"
+                  className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <ListIcon className="size-3.5" /> جدول
+                </button>
               </div>
-            </PopoverContent>
-          </Popover>
-
-          {activeFiltersCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={clearFilters}>
-              <X className="size-4 ml-1" />
-              مسح الفلاتر
-            </Button>
-          )}
-
-          <div className="mr-auto flex items-center gap-2 flex-wrap">
-            <Select value={sortKey} onValueChange={(v) => { setSortKey(v as SortKey); setPage(0); }}>
-              <SelectTrigger className="w-[160px] h-9">
-                <ArrowUpDown className="size-3.5 ml-1" />
-                <SelectValue placeholder="ترتيب حسب" />
-              </SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={sortDir} onValueChange={(v) => { setSortDir(v as "asc" | "desc"); setPage(0); }}>
-              <SelectTrigger className="w-[110px] h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">تنازلي</SelectItem>
-                <SelectItem value="asc">تصاعدي</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(0); }}>
-              <SelectTrigger className="w-[110px] h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PAGE_SIZE_OPTIONS.map((n) => (
-                  <SelectItem key={n} value={String(n)}>{n} / صفحة</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="inline-flex rounded-md border bg-card p-0.5">
-              <button
-                type="button"
-                onClick={() => setView("grid")}
-                aria-label="عرض شبكي"
-                className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <LayoutGrid className="size-3.5" /> بطاقات
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("table")}
-                aria-label="عرض جدول"
-                className={`px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1 transition ${view === "table" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <ListIcon className="size-3.5" /> جدول
-              </button>
             </div>
-          </div>
-        </div>
-      </Card>
-
-      {selectedIds.size > 0 && (
-        <Card className="p-3 border-accent/40 bg-accent/5 flex items-center gap-3 flex-wrap">
-          <div className="text-sm font-medium">
-            <span className="num">{selectedIds.size}</span> بند محدد
-          </div>
-          <div className="mr-auto flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setSelectedIds(new Set())}
-              disabled={genLoading}
-            >
-              مسح التحديد
-            </Button>
-            <Button
-              size="sm"
-              disabled={genLoading || selectedIds.size > 20}
-              onClick={async () => {
-                if (selectedIds.size > 20) {
-                  toast.error("الحد الأقصى 20 بند في المرة");
-                  return;
-                }
-                setGenLoading(true);
-                try {
-                  const res = await genFn({ data: { productIds: Array.from(selectedIds) } });
-                  toast.success(`تم توليد ${res.totalGenerated} صورة (${res.totalFailed} فشل)`);
-                  setSelectedIds(new Set());
-                } catch (e: any) {
-                  toast.error(e?.message ?? "فشل التوليد");
-                } finally {
-                  setGenLoading(false);
-                }
-              }}
-            >
-              {genLoading ? (
-                <Loader2 className="size-4 ml-1 animate-spin" />
-              ) : (
-                <Sparkles className="size-4 ml-1" />
-              )}
-              توليد 3 صور لكل بند
-            </Button>
-            <DeleteProductsButton
-              productIds={Array.from(selectedIds)}
-              onDeleted={() => {
-                setSelectedIds(new Set());
-                refetch();
-              }}
-            />
           </div>
         </Card>
-      )}
 
-      {view === "grid" ? (
-        <div>
-          {isLoading && (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="product-card animate-pulse"
-                >
-                  <div className="thumb aspect-[4/3]" />
-                  <div className="p-4 space-y-2">
-                    <div className="h-3 w-16 bg-secondary rounded" />
-                    <div className="h-4 w-3/4 bg-secondary rounded" />
-                    <div className="h-3 w-1/2 bg-secondary rounded" />
+        {selectedIds.size > 0 && (
+          <Card className="p-3 border-accent/40 bg-accent/5 flex items-center gap-3 flex-wrap">
+            <div className="text-sm font-medium">
+              <span className="num">{selectedIds.size}</span> بند محدد
+            </div>
+            <div className="mr-auto flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setSelectedIds(new Set())}
+                disabled={genLoading}
+              >
+                مسح التحديد
+              </Button>
+              <Button
+                size="sm"
+                disabled={genLoading || selectedIds.size > 20}
+                onClick={async () => {
+                  if (selectedIds.size > 20) {
+                    toast.error("الحد الأقصى 20 بند في المرة");
+                    return;
+                  }
+                  setGenLoading(true);
+                  try {
+                    const res = await genFn({ data: { productIds: Array.from(selectedIds) } });
+                    toast.success(`تم توليد ${res.totalGenerated} صورة (${res.totalFailed} فشل)`);
+                    setSelectedIds(new Set());
+                  } catch (e: any) {
+                    toast.error(e?.message ?? "فشل التوليد");
+                  } finally {
+                    setGenLoading(false);
+                  }
+                }}
+              >
+                {genLoading ? (
+                  <Loader2 className="size-4 ml-1 animate-spin" />
+                ) : (
+                  <Sparkles className="size-4 ml-1" />
+                )}
+                توليد 3 صور لكل بند
+              </Button>
+              <DeleteProductsButton
+                productIds={Array.from(selectedIds)}
+                onDeleted={() => {
+                  setSelectedIds(new Set());
+                  refetch();
+                }}
+              />
+            </div>
+          </Card>
+        )}
+
+        {view === "grid" ? (
+          <div>
+            {isLoading && (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="product-card animate-pulse">
+                    <div className="thumb aspect-[4/3]" />
+                    <div className="p-4 space-y-2">
+                      <div className="h-3 w-16 bg-secondary rounded" />
+                      <div className="h-4 w-3/4 bg-secondary rounded" />
+                      <div className="h-3 w-1/2 bg-secondary rounded" />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {!isLoading && data?.rows.length === 0 && (
-            <Card className="p-12 text-center text-muted-foreground surface-elevated border-0">
-              لا توجد نتائج تطابق الفلاتر الحالية
-            </Card>
-          )}
-          {!isLoading && (data?.rows.length ?? 0) > 0 && (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {data!.rows.map((p: any) => (
-                <ProductCard
-                  key={p.id}
-                  p={{ ...p, cover_url: coverMap?.[p.id] ?? null }}
-                  selected={selectedIds.has(p.id)}
-                  onToggle={(checked) => {
-                    const next = new Set(selectedIds);
-                    if (checked) next.add(p.id);
-                    else next.delete(p.id);
-                    setSelectedIds(next);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          <PaginationBar
-            page={page}
-            pages={pages}
-            total={total}
-            pageSize={pageSize}
-            onChange={setPage}
-            className="mt-4"
-          />
-        </div>
-      ) : (
-      <Card className="surface-elevated border-0 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary/60 text-xs uppercase">
-              <tr>
-                <th className="p-3 w-10">
-                  <Checkbox
-                    checked={
-                      (data?.rows.length ?? 0) > 0 &&
-                      data!.rows.every((r: any) => selectedIds.has(r.id))
-                    }
-                    onCheckedChange={(checked) => {
+                ))}
+              </div>
+            )}
+            {!isLoading && data?.rows.length === 0 && (
+              <Card className="p-12 text-center text-muted-foreground surface-elevated border-0">
+                لا توجد نتائج تطابق الفلاتر الحالية
+              </Card>
+            )}
+            {!isLoading && (data?.rows.length ?? 0) > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {data!.rows.map((p: any) => (
+                  <ProductCard
+                    key={p.id}
+                    p={{ ...p, cover_url: coverMap?.[p.id] ?? null }}
+                    selected={selectedIds.has(p.id)}
+                    onToggle={(checked) => {
                       const next = new Set(selectedIds);
-                      if (checked) data?.rows.forEach((r: any) => next.add(r.id));
-                      else data?.rows.forEach((r: any) => next.delete(r.id));
+                      if (checked) next.add(p.id);
+                      else next.delete(p.id);
                       setSelectedIds(next);
                     }}
                   />
-                </th>
-                <th className="text-right p-3 font-semibold">AZ Code</th>
-                <th className="text-right p-3 font-semibold">الاسم بالعربي</th>
-                <th className="text-right p-3 font-semibold">Name EN</th>
-                <th className="text-right p-3 font-semibold">العائلة</th>
-                <th className="text-right p-3 font-semibold">القطاع</th>
-                <th className="text-right p-3 font-semibold">الثقة</th>
-                <th className="text-right p-3 font-semibold">الحالة</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading && (
-                <tr>
-                  <td colSpan={8} className="p-8 text-center text-muted-foreground">
-                    جاري التحميل...
-                  </td>
-                </tr>
-              )}
-              {!isLoading && data?.rows.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="p-8 text-center text-muted-foreground">
-                    لا توجد نتائج
-                  </td>
-                </tr>
-              )}
-              {data?.rows.map((p: any) => (
-                <tr
-                  key={p.id}
-                  className={`border-t hover:bg-secondary/30 ${selectedIds.has(p.id) ? "bg-accent/5" : ""}`}
-                >
-                  <td className="p-3">
-                    <Checkbox
-                      checked={selectedIds.has(p.id)}
-                      onCheckedChange={(checked) => {
-                        const next = new Set(selectedIds);
-                        if (checked) next.add(p.id);
-                        else next.delete(p.id);
-                        setSelectedIds(next);
-                      }}
-                    />
-                  </td>
-                  <td className="p-3 num text-xs" dir="ltr">
-                    <Link
-                      to="/products/$id"
-                      params={{ id: p.id }}
-                      className="text-accent hover:underline"
+                ))}
+              </div>
+            )}
+            <PaginationBar
+              page={page}
+              pages={pages}
+              total={total}
+              pageSize={pageSize}
+              onChange={setPage}
+              className="mt-4"
+            />
+          </div>
+        ) : (
+          <Card className="surface-elevated border-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-secondary/60 text-xs uppercase">
+                  <tr>
+                    <th className="p-3 w-10">
+                      <Checkbox
+                        checked={
+                          (data?.rows.length ?? 0) > 0 &&
+                          data!.rows.every((r: any) => selectedIds.has(r.id))
+                        }
+                        onCheckedChange={(checked) => {
+                          const next = new Set(selectedIds);
+                          if (checked) data?.rows.forEach((r: any) => next.add(r.id));
+                          else data?.rows.forEach((r: any) => next.delete(r.id));
+                          setSelectedIds(next);
+                        }}
+                      />
+                    </th>
+                    <th className="text-right p-3 font-semibold">AZ Code</th>
+                    <th className="text-right p-3 font-semibold">الاسم بالعربي</th>
+                    <th className="text-right p-3 font-semibold">Name EN</th>
+                    <th className="text-right p-3 font-semibold">العائلة</th>
+                    <th className="text-right p-3 font-semibold">القطاع</th>
+                    <th className="text-right p-3 font-semibold">الثقة</th>
+                    <th className="text-right p-3 font-semibold">الحالة</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoading && (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-muted-foreground">
+                        جاري التحميل...
+                      </td>
+                    </tr>
+                  )}
+                  {!isLoading && data?.rows.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-muted-foreground">
+                        لا توجد نتائج
+                      </td>
+                    </tr>
+                  )}
+                  {data?.rows.map((p: any) => (
+                    <tr
+                      key={p.id}
+                      className={`border-t hover:bg-secondary/30 ${selectedIds.has(p.id) ? "bg-accent/5" : ""}`}
                     >
-                      {p.az_code}
-                    </Link>
-                  </td>
-                  <td className="p-3">
-                    <Link to="/products/$id" params={{ id: p.id }} className="hover:underline">
-                      {p.name_ar}
-                    </Link>
-                  </td>
-                  <td className="p-3 text-muted-foreground" dir="ltr">
-                    {p.name_en}
-                  </td>
-                  <td className="p-3 text-xs">{p.gpc_family || "—"}</td>
-                  <td className="p-3 text-xs">{p.sector_ar || "—"}</td>
-                  <td className="p-3 text-xs">
-                    {p.confidence_level && (
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] ${
-                          p.confidence_level === "high"
-                            ? "bg-success/15 text-success"
-                            : p.confidence_level === "medium"
-                              ? "bg-warning/15 text-warning"
-                              : "bg-destructive/15 text-destructive"
-                        }`}
-                      >
-                        {p.confidence_level === "high"
-                          ? "عالي"
-                          : p.confidence_level === "medium"
-                            ? "متوسط"
-                            : "منخفض"}
-                      </span>
-                    )}
-                    {!p.confidence_level && "—"}
-                  </td>
-                  <td className="p-3">
-                    <StatusBadge status={p.status} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      <td className="p-3">
+                        <Checkbox
+                          checked={selectedIds.has(p.id)}
+                          onCheckedChange={(checked) => {
+                            const next = new Set(selectedIds);
+                            if (checked) next.add(p.id);
+                            else next.delete(p.id);
+                            setSelectedIds(next);
+                          }}
+                        />
+                      </td>
+                      <td className="p-3 num text-xs" dir="ltr">
+                        <Link
+                          to="/products/$id"
+                          params={{ id: p.id }}
+                          className="text-accent hover:underline"
+                        >
+                          {p.az_code}
+                        </Link>
+                      </td>
+                      <td className="p-3">
+                        <Link to="/products/$id" params={{ id: p.id }} className="hover:underline">
+                          {p.name_ar}
+                        </Link>
+                      </td>
+                      <td className="p-3 text-muted-foreground" dir="ltr">
+                        {p.name_en}
+                      </td>
+                      <td className="p-3 text-xs">{p.gpc_family || "—"}</td>
+                      <td className="p-3 text-xs">{p.sector_ar || "—"}</td>
+                      <td className="p-3 text-xs">
+                        {p.confidence_level && (
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] ${
+                              p.confidence_level === "high"
+                                ? "bg-success/15 text-success"
+                                : p.confidence_level === "medium"
+                                  ? "bg-warning/15 text-warning"
+                                  : "bg-destructive/15 text-destructive"
+                            }`}
+                          >
+                            {p.confidence_level === "high"
+                              ? "عالي"
+                              : p.confidence_level === "medium"
+                                ? "متوسط"
+                                : "منخفض"}
+                          </span>
+                        )}
+                        {!p.confidence_level && "—"}
+                      </td>
+                      <td className="p-3">
+                        <StatusBadge status={p.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-
-        <PaginationBar
-          page={page}
-          pages={pages}
-          total={total}
-          pageSize={pageSize}
-          onChange={setPage}
-          className="p-3 border-t bg-secondary/30"
-        />
-      </Card>
-      )}
+            <PaginationBar
+              page={page}
+              pages={pages}
+              total={total}
+              pageSize={pageSize}
+              onChange={setPage}
+              className="p-3 border-t bg-secondary/30"
+            />
+          </Card>
+        )}
       </div>
     </>
   );
 }
-
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string }> = {

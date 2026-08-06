@@ -23,7 +23,11 @@ function RequestDetails() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
 
-  const { data: request, isLoading, error } = useQuery({
+  const {
+    data: request,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["product-request", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -91,8 +95,7 @@ function RequestDetails() {
 
   if (isLoading) return <div className="p-6 text-muted-foreground">جاري التحميل...</div>;
   if (error) return <div className="p-6 text-destructive">حدث خطأ في التحميل</div>;
-  if (!request)
-    return <div className="p-6 text-muted-foreground">الطلب غير موجود</div>;
+  if (!request) return <div className="p-6 text-muted-foreground">الطلب غير موجود</div>;
 
   return (
     <div className="p-6 space-y-4 max-w-[1200px] mx-auto">
@@ -107,9 +110,7 @@ function RequestDetails() {
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{request.title}</h1>
-            <div className="text-sm text-muted-foreground mt-2">
-              {request.description}
-            </div>
+            <div className="text-sm text-muted-foreground mt-2">{request.description}</div>
           </div>
           <div className="flex items-center gap-2">
             {statusMap[request.status] ? (
@@ -131,9 +132,7 @@ function RequestDetails() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4 surface-elevated border-0">
-          <div className="text-xs text-muted-foreground font-semibold uppercase mb-2">
-            النوع
-          </div>
+          <div className="text-xs text-muted-foreground font-semibold uppercase mb-2">النوع</div>
           <div className="text-sm font-medium">
             {request.request_type === "new_product"
               ? "منتج جديد"
@@ -146,9 +145,7 @@ function RequestDetails() {
         </Card>
 
         <Card className="p-4 surface-elevated border-0">
-          <div className="text-xs text-muted-foreground font-semibold uppercase mb-2">
-            الكمية
-          </div>
+          <div className="text-xs text-muted-foreground font-semibold uppercase mb-2">الكمية</div>
           <div className="text-sm font-medium num">{request.quantity || "—"}</div>
         </Card>
 

@@ -47,8 +47,7 @@ export function exportChatToCSV(
     m.timestamp?.toLocaleString("ar-SA") || "",
   ]);
 
-  const csv =
-    [headers, ...rows].map((row) => row.join(",")).join("\n");
+  const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   downloadFile(blob, filename);
 }
@@ -56,9 +55,7 @@ export function exportChatToCSV(
 /**
  * Copy chat content to clipboard
  */
-export async function copyToClipboard(
-  messages: ChatMessage[],
-): Promise<boolean> {
+export async function copyToClipboard(messages: ChatMessage[]): Promise<boolean> {
   try {
     const text = messages
       .map((m) => `${m.role === "user" ? "أنت" : "المساعد"}: ${m.content}`)
@@ -74,10 +71,7 @@ export async function copyToClipboard(
 /**
  * Save chat to browser storage
  */
-export function saveChatHistory(
-  conversationId: string,
-  messages: ChatMessage[],
-): void {
+export function saveChatHistory(conversationId: string, messages: ChatMessage[]): void {
   try {
     const data = {
       id: conversationId,
@@ -85,12 +79,8 @@ export function saveChatHistory(
       messages,
     };
 
-    const existing = JSON.parse(
-      localStorage.getItem("chat_history") || "[]",
-    );
-    const updated = existing.filter(
-      (c: any) => c.id !== conversationId,
-    );
+    const existing = JSON.parse(localStorage.getItem("chat_history") || "[]");
+    const updated = existing.filter((c: any) => c.id !== conversationId);
     updated.push(data);
 
     // Keep only last 50 conversations
@@ -99,9 +89,7 @@ export function saveChatHistory(
     }
 
     localStorage.setItem("chat_history", JSON.stringify(updated));
-    console.log(
-      `[v0] Chat saved: ${conversationId}`,
-    );
+    console.log(`[v0] Chat saved: ${conversationId}`);
   } catch (error) {
     console.error("[v0] Failed to save chat:", error);
   }
@@ -117,9 +105,7 @@ export function getSavedChats(): Array<{
   preview: string;
 }> {
   try {
-    const data = JSON.parse(
-      localStorage.getItem("chat_history") || "[]",
-    );
+    const data = JSON.parse(localStorage.getItem("chat_history") || "[]");
     return data.map((chat: any) => ({
       id: chat.id,
       savedDate: chat.savedDate,
@@ -134,13 +120,9 @@ export function getSavedChats(): Array<{
 /**
  * Load a specific saved chat
  */
-export function loadSavedChat(
-  conversationId: string,
-): ChatMessage[] | null {
+export function loadSavedChat(conversationId: string): ChatMessage[] | null {
   try {
-    const data = JSON.parse(
-      localStorage.getItem("chat_history") || "[]",
-    );
+    const data = JSON.parse(localStorage.getItem("chat_history") || "[]");
     const chat = data.find((c: any) => c.id === conversationId);
     return chat?.messages || null;
   } catch {
@@ -153,12 +135,8 @@ export function loadSavedChat(
  */
 export function deleteSavedChat(conversationId: string): void {
   try {
-    const data = JSON.parse(
-      localStorage.getItem("chat_history") || "[]",
-    );
-    const updated = data.filter(
-      (c: any) => c.id !== conversationId,
-    );
+    const data = JSON.parse(localStorage.getItem("chat_history") || "[]");
+    const updated = data.filter((c: any) => c.id !== conversationId);
     localStorage.setItem("chat_history", JSON.stringify(updated));
   } catch {
     console.error("[v0] Failed to delete chat");
@@ -168,9 +146,7 @@ export function deleteSavedChat(conversationId: string): void {
 /**
  * Generate analytics for the conversation
  */
-export function generateAnalytics(
-  messages: ChatMessage[],
-): {
+export function generateAnalytics(messages: ChatMessage[]): {
   totalMessages: number;
   userMessages: number;
   assistantMessages: number;
@@ -180,40 +156,25 @@ export function generateAnalytics(
   conversationDuration: string;
 } {
   const userMessages = messages.filter((m) => m.role === "user");
-  const assistantMessages = messages.filter(
-    (m) => m.role === "assistant",
-  );
+  const assistantMessages = messages.filter((m) => m.role === "assistant");
 
   const userLength =
-    userMessages.reduce((sum, m) => sum + m.content.length, 0) /
-      (userMessages.length || 1) || 0;
+    userMessages.reduce((sum, m) => sum + m.content.length, 0) / (userMessages.length || 1) || 0;
   const assistantLength =
-    assistantMessages.reduce(
-      (sum, m) => sum + m.content.length,
-      0,
-    ) / (assistantMessages.length || 1) || 0;
+    assistantMessages.reduce((sum, m) => sum + m.content.length, 0) /
+      (assistantMessages.length || 1) || 0;
 
   // Extract keywords (simple approach)
   const allText = messages
     .map((m) => m.content)
     .join(" ")
     .toLowerCase();
-  const words = allText
-    .match(/\b\w+\b/g)
-    ?.filter(
-      (w) =>
-        w.length > 3 &&
-        ![
-          "من",
-          "إلى",
-          "في",
-          "هذا",
-          "أن",
-          "لا",
-          "نعم",
-          "يا",
-        ].includes(w),
-    ) || [];
+  const words =
+    allText
+      .match(/\b\w+\b/g)
+      ?.filter(
+        (w) => w.length > 3 && !["من", "إلى", "في", "هذا", "أن", "لا", "نعم", "يا"].includes(w),
+      ) || [];
 
   const wordFreq: Record<string, number> = {};
   words.forEach((w) => {
@@ -228,8 +189,7 @@ export function generateAnalytics(
   const duration =
     messages.length > 0 && messages[0].timestamp && messages[messages.length - 1].timestamp
       ? formatDuration(
-          messages[messages.length - 1].timestamp!.getTime() -
-            messages[0].timestamp!.getTime(),
+          messages[messages.length - 1].timestamp!.getTime() - messages[0].timestamp!.getTime(),
         )
       : "غير معروف";
 
@@ -247,35 +207,23 @@ export function generateAnalytics(
 /**
  * Generate smart suggestions based on conversation
  */
-export function generateSmartSuggestions(
-  messages: ChatMessage[],
-): string[] {
+export function generateSmartSuggestions(messages: ChatMessage[]): string[] {
   const suggestions: string[] = [];
 
   if (messages.length === 0) {
-    return [
-      "ابدأ بسؤال عن المنتجات",
-      "اطلب توصيات",
-      "اسأل عن الأسعار",
-    ];
+    return ["ابدأ بسؤال عن المنتجات", "اطلب توصيات", "اسأل عن الأسعار"];
   }
 
   const lastMessage = messages[messages.length - 1];
 
   // Check message content for context
-  if (
-    lastMessage.role === "assistant" &&
-    lastMessage.content.includes("منتج")
-  ) {
+  if (lastMessage.role === "assistant" && lastMessage.content.includes("منتج")) {
     suggestions.push("اطلب المزيد من التفاصيل");
     suggestions.push("اسأل عن السعر");
     suggestions.push("هل هناك منتجات بديلة؟");
   }
 
-  if (
-    lastMessage.content.includes("سعر") ||
-    lastMessage.content.includes("تسعير")
-  ) {
+  if (lastMessage.content.includes("سعر") || lastMessage.content.includes("تسعير")) {
     suggestions.push("اطلب مقارنة الأسعار");
     suggestions.push("هل هناك خصومات؟");
     suggestions.push("ما أفضل قيمة؟");
@@ -336,9 +284,7 @@ export async function translateContent(
 /**
  * Generate a real conversation summary through the server.
  */
-export async function getConversationSummary(
-  messages: ChatMessage[],
-): Promise<string> {
+export async function getConversationSummary(messages: ChatMessage[]): Promise<string> {
   if (!messages.length) return "لا توجد رسائل للتلخيص.";
   try {
     const res = await summarizeConversation({

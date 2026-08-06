@@ -28,10 +28,7 @@ export function isPrivateOrLiteralIp(host: string): boolean {
   return false;
 }
 
-export function assertSafeUrl(
-  url: string,
-  allowedHosts: string[] = DEFAULT_ALLOWED_HOSTS,
-): URL {
+export function assertSafeUrl(url: string, allowedHosts: string[] = DEFAULT_ALLOWED_HOSTS): URL {
   let parsed: URL;
   try {
     parsed = new URL(url);

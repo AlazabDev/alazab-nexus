@@ -17,7 +17,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, json, logCall, requireApiKey, corsHeaders} from "@/lib/api-auth";
+import { CORS, json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 import type { MaterialCost } from "@/lib/pricing-engine";
 
 interface PricingSnapshot {
@@ -29,7 +29,8 @@ interface PricingSnapshot {
 export const Route = createFileRoute("/api/agent/v1/internal-approval")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
 
       POST: async ({ request }) => {
         const started = Date.now();

@@ -49,7 +49,9 @@ export function useAiOps() {
   opsRef.current = ops;
 
   const patch = useCallback((id: string, p: Partial<AiOp> | ((o: AiOp) => Partial<AiOp>)) => {
-    setOps((cur) => cur.map((o) => (o.id === id ? { ...o, ...(typeof p === "function" ? p(o) : p) } : o)));
+    setOps((cur) =>
+      cur.map((o) => (o.id === id ? { ...o, ...(typeof p === "function" ? p(o) : p) } : o)),
+    );
   }, []);
 
   const appendLog = useCallback((id: string, entry: OpLogEntry) => {
@@ -75,7 +77,6 @@ export function useAiOps() {
       const ctx: OpContext = {
         correlationId,
         log: (message, level = "info") => {
-          // eslint-disable-next-line no-console
           console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
             `[${correlationId}] ${message}`,
           );
@@ -99,7 +100,11 @@ export function useAiOps() {
         const msg = e?.message ?? "فشل التنفيذ";
         ctx.log(`فشل: ${msg}`, "error");
         if (e?.stack) {
-          appendLog(id, { ts: Date.now(), level: "error", message: String(e.stack).split("\n").slice(0, 4).join("\n") });
+          appendLog(id, {
+            ts: Date.now(),
+            level: "error",
+            message: String(e.stack).split("\n").slice(0, 4).join("\n"),
+          });
         }
         patch(id, { status: "error", error: msg, errorStack: e?.stack, endedAt: Date.now() });
       }
@@ -108,7 +113,11 @@ export function useAiOps() {
   );
 
   const start = useCallback(
-    async (kind: OpKind, label: string, fn: (ctx: OpContext) => Promise<void> | Promise<unknown>) => {
+    async (
+      kind: OpKind,
+      label: string,
+      fn: (ctx: OpContext) => Promise<void> | Promise<unknown>,
+    ) => {
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       const correlationId = genCorrelationId();
       const wrapped: AiOp["run"] = async (ctx) => {
@@ -143,7 +152,10 @@ export function useAiOps() {
         errorStack: undefined,
         attempts: o.attempts + 1,
         endedAt: undefined,
-        logs: [...o.logs, { ts: Date.now(), level: "info", message: `— إعادة المحاولة #${o.attempts + 1} —` }],
+        logs: [
+          ...o.logs,
+          { ts: Date.now(), level: "info", message: `— إعادة المحاولة #${o.attempts + 1} —` },
+        ],
       }));
       await execute(id, op.run, op.correlationId);
     },

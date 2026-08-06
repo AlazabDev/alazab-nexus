@@ -102,8 +102,7 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => {
-                  const active =
-                    currentPath === item.to || currentPath.startsWith(item.to + "/");
+                  const active = currentPath === item.to || currentPath.startsWith(item.to + "/");
                   return (
                     <SidebarMenuItem key={item.to}>
                       <SidebarMenuButton asChild isActive={active} tooltip={item.title}>

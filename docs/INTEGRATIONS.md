@@ -25,13 +25,13 @@ AzProud is not an isolated system. It's the **central command center** that comm
 
 ### Supported Integrations
 
-| System | Priority | Status | Sync Direction | Data Type |
-|--------|----------|--------|----------------|-----------|
-| **Daftra** | High | Ready | Bidirectional | Products, Pricing, Invoices |
-| **Bot Gateway** | High | Ready | Unidirectional → | Product Catalog, Availability |
-| **ERPNext** | Medium | Planned | Bidirectional | Inventory, Manufacturing Orders |
-| **Supabase** | High | Active | Bidirectional | All Data (Database) |
-| **Azure OpenAI** | High | Active | Unidirectional → | Product Analysis |
+| System           | Priority | Status  | Sync Direction   | Data Type                       |
+| ---------------- | -------- | ------- | ---------------- | ------------------------------- |
+| **Daftra**       | High     | Ready   | Bidirectional    | Products, Pricing, Invoices     |
+| **Bot Gateway**  | High     | Ready   | Unidirectional → | Product Catalog, Availability   |
+| **ERPNext**      | Medium   | Planned | Bidirectional    | Inventory, Manufacturing Orders |
+| **Supabase**     | High     | Active  | Bidirectional    | All Data (Database)             |
+| **Azure OpenAI** | High     | Active  | Unidirectional → | Product Analysis                |
 
 ---
 
@@ -81,14 +81,14 @@ Create integration record in AzProud:
 
 **Synced Fields:**
 
-| AzProud | → | Daftra |
-|---------|---|--------|
-| name_ar | → | Item Name (AR) |
-| name_en | → | Item Name (EN) |
-| az_code | → | SKU |
-| gpc_family | → | Category |
-| description_ar | → | Description |
-| status | → | Status (if approved) |
+| AzProud        | →   | Daftra               |
+| -------------- | --- | -------------------- |
+| name_ar        | →   | Item Name (AR)       |
+| name_en        | →   | Item Name (EN)       |
+| az_code        | →   | SKU                  |
+| gpc_family     | →   | Category             |
+| description_ar | →   | Description          |
+| status         | →   | Status (if approved) |
 
 **Sync Logic:**
 
@@ -129,11 +129,11 @@ curl -X POST https://your-domain.daftra.com/api/items \
 
 **Synced Fields:**
 
-| AzProud | → | Daftra |
-|---------|---|--------|
-| pricing_rules | → | Item Price List |
-| supplier_id | → | Vendor |
-| price | → | Unit Price |
+| AzProud       | →   | Daftra          |
+| ------------- | --- | --------------- |
+| pricing_rules | →   | Item Price List |
+| supplier_id   | →   | Vendor          |
+| price         | →   | Unit Price      |
 
 **Sync Logic:**
 
@@ -170,23 +170,25 @@ POST /api/invoices {
 ### 6. Error Handling
 
 **Connection Error:**
+
 ```javascript
 if (daftra_error) {
   // Log error
   log_to_audit_logs("Daftra sync failed", error);
-  
+
   // Queue for retry
   queue_retry(product_id, "daftra_sync", Date.now() + 3600000);
-  
+
   // Notify admin
   send_notification("Daftra integration issue", error);
-  
+
   // Continue with local operation
   return { success: true, warning: "Daftra sync pending" };
 }
 ```
 
 **Data Mismatch:**
+
 ```javascript
 // If data conflicts between systems
 if (local_version > daftra_version) {
@@ -209,9 +211,9 @@ curl -X GET https://your-domain.daftra.com/api/settings \
 bun run test:daftra-sync
 
 # Monitor sync queue
-SELECT * FROM integration_logs 
-WHERE integration_type = 'daftra' 
-ORDER BY created_at DESC 
+SELECT * FROM integration_logs
+WHERE integration_type = 'daftra'
+ORDER BY created_at DESC
 LIMIT 10;
 ```
 
@@ -269,7 +271,7 @@ X-Request-ID: unique-request-id
       "name_en": "Test Product",
       "description": "Product description",
       "category": "Electronics",
-      "price": 100.00,
+      "price": 100.0,
       "currency": "SAR",
       "availability": "in_stock",
       "quantity_available": 50,
@@ -328,20 +330,18 @@ X-Request-ID: unique-request-id
     "name_ar": "منتج",
     "name_en": "Product",
     "category": "Electronics",
-    "price": 100.00,
+    "price": 100.0,
     "suppliers": [
       {
         "name": "Supplier A",
         "tier": "first_tier",
-        "price": 95.00,
+        "price": 95.0,
         "stock": 50
       }
     ],
     "specs": {},
     "image": "url",
-    "related_products": [
-      { "id": "...", "name": "..." }
-    ]
+    "related_products": [{ "id": "...", "name": "..." }]
   }
 }
 ```
@@ -428,16 +428,16 @@ Products cached for 5 minutes to reduce database load:
 ```python
 async def run(self, dispatcher, tracker, domain):
     product_name = tracker.get_slot("product_name")
-    
+
     # Query AzProud API
     response = requests.get(
         f"https://azproud.alazab.com/api/bot-gateway/search",
         params={"q": product_name},
         headers={"Authorization": f"Bearer {BOT_API_KEY}"}
     )
-    
+
     products = response.json()["results"]
-    
+
     if products:
         message = f"Found {len(products)} products matching '{product_name}'"
         dispatcher.utter_message(text=message)
@@ -454,11 +454,11 @@ const getProduct = async (productName) => {
     `https://azproud.alazab.com/api/bot-gateway/search?q=${productName}`,
     {
       headers: {
-        'Authorization': `Bearer ${process.env.AZPROUD_BOT_KEY}`
-      }
-    }
+        Authorization: `Bearer ${process.env.AZPROUD_BOT_KEY}`,
+      },
+    },
   );
-  
+
   return response.json();
 };
 ```
@@ -524,7 +524,7 @@ bun run test:integration:bot-gateway
 
 ```sql
 -- Check integration health
-SELECT 
+SELECT
   integration_type,
   status,
   last_sync,
@@ -534,7 +534,7 @@ FROM integrations
 ORDER BY last_sync DESC;
 
 -- View integration logs
-SELECT * FROM integration_logs 
+SELECT * FROM integration_logs
 WHERE created_at > NOW() - INTERVAL '1 hour'
 ORDER BY created_at DESC;
 ```
@@ -548,6 +548,7 @@ ORDER BY created_at DESC;
 **Problem:** "Connection Refused"
 
 **Solution:**
+
 1. Verify API credentials are correct
 2. Check Daftra server is online: `https://your-domain.daftra.com/api/settings`
 3. Check firewall allows outbound HTTPS
@@ -555,6 +556,7 @@ ORDER BY created_at DESC;
 **Problem:** "Items not syncing"
 
 **Solution:**
+
 1. Check sync status: `SELECT * FROM integrations WHERE type='daftra'`
 2. Review error logs: `SELECT * FROM integration_logs WHERE integration_type='daftra' AND status='error'`
 3. Manually trigger sync: `POST /api/integrations/daftra/sync`
@@ -564,6 +566,7 @@ ORDER BY created_at DESC;
 **Problem:** "API Key Invalid"
 
 **Solution:**
+
 1. Verify API key in `api_consumers` table
 2. Check key hasn't expired
 3. Generate new key if needed
@@ -571,6 +574,7 @@ ORDER BY created_at DESC;
 **Problem:** "Slow Search Response"
 
 **Solution:**
+
 1. Check database indexes on products table
 2. Review search query performance: `EXPLAIN ANALYZE SELECT ...`
 3. Increase cache TTL if acceptable
@@ -582,6 +586,7 @@ ORDER BY created_at DESC;
 **Available at:** `/admin/integrations`
 
 Shows:
+
 - Integration health status
 - Sync success/failure rates
 - Data reconciliation status

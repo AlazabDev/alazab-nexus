@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Loader2, Check, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+} from "@/components/ui/select";
+import { Loader2, Check, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface OptimizationState {
   loading: boolean;
@@ -29,23 +29,25 @@ interface OptimizationState {
 }
 
 export function ProductContentOptimizer() {
-  const [productName, setProductName] = useState('');
-  const [productDesc, setProductDesc] = useState('');
-  const [optimizationLevel, setOptimizationLevel] = useState<'basic' | 'standard' | 'premium'>('standard');
+  const [productName, setProductName] = useState("");
+  const [productDesc, setProductDesc] = useState("");
+  const [optimizationLevel, setOptimizationLevel] = useState<"basic" | "standard" | "premium">(
+    "standard",
+  );
   const [state, setState] = useState<OptimizationState>({ loading: false, optimized: false });
 
   const handleOptimize = async () => {
     if (!productName.trim()) {
-      setState({ ...state, error: 'Product name is required' });
+      setState({ ...state, error: "Product name is required" });
       return;
     }
 
     setState({ loading: true, optimized: false, error: undefined });
 
     try {
-      const response = await fetch('/api/private/v1/ai/optimize-product', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/private/v1/ai/optimize-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           productName,
           productDesc,
@@ -53,7 +55,7 @@ export function ProductContentOptimizer() {
         }),
       });
 
-      if (!response.ok) throw new Error('Optimization failed');
+      if (!response.ok) throw new Error("Optimization failed");
 
       const data = await response.json();
       setState({
@@ -65,7 +67,7 @@ export function ProductContentOptimizer() {
       setState({
         loading: false,
         optimized: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
   };
@@ -105,7 +107,10 @@ export function ProductContentOptimizer() {
 
             <div className="space-y-2">
               <Label htmlFor="optimization-level">Optimization Level</Label>
-              <Select value={optimizationLevel} onValueChange={(v) => setOptimizationLevel(v as any)}>
+              <Select
+                value={optimizationLevel}
+                onValueChange={(v) => setOptimizationLevel(v as any)}
+              >
                 <SelectTrigger id="optimization-level">
                   <SelectValue />
                 </SelectTrigger>
@@ -127,19 +132,14 @@ export function ProductContentOptimizer() {
           )}
 
           {/* Action Button */}
-          <Button
-            onClick={handleOptimize}
-            disabled={state.loading}
-            size="lg"
-            className="w-full"
-          >
+          <Button onClick={handleOptimize} disabled={state.loading} size="lg" className="w-full">
             {state.loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Optimizing...
               </>
             ) : (
-              'Optimize Content'
+              "Optimize Content"
             )}
           </Button>
         </CardContent>
@@ -153,7 +153,9 @@ export function ProductContentOptimizer() {
               <Check className="h-5 w-5 text-green-600" />
               Optimization Complete
             </CardTitle>
-            <div className="text-2xl font-bold">{Math.round(state.result.contentQualityScore)}/100</div>
+            <div className="text-2xl font-bold">
+              {Math.round(state.result.contentQualityScore)}/100
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* English Content */}

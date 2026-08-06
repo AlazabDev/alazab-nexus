@@ -1,24 +1,25 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { json, requireApiKey, corsHeaders } from '@/lib/api-auth';
-import { optimizeProductContent } from '@/lib/ai/product-content-optimizer';
-import { z } from 'zod';
+import { createFileRoute } from "@tanstack/react-router";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { json, requireApiKey, corsHeaders } from "@/lib/api-auth";
+import { optimizeProductContent } from "@/lib/ai/product-content-optimizer";
+import { z } from "zod";
 
 const OptimizeRequestSchema = z.object({
   productId: z.string().uuid(),
-  optimizationLevel: z.enum(['basic', 'standard', 'premium']).default('standard'),
+  optimizationLevel: z.enum(["basic", "standard", "premium"]).default("standard"),
   focusAreas: z.array(z.string()).optional(),
 });
 
-export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
+export const Route = createFileRoute("/api/private/v1/ai/optimize-product")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       POST: async ({ request }) => {
         const started = Date.now();
 
-        const authResult = await requireApiKey(request, '/api/private/v1/ai/optimize-product');
-        if ('error' in authResult) return authResult.error;
+        const authResult = await requireApiKey(request, "/api/private/v1/ai/optimize-product");
+        if ("error" in authResult) return authResult.error;
         const auth = { success: true, userId: authResult.consumer?.id ?? null };
 
         try {
@@ -26,37 +27,39 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
           const validated = OptimizeRequestSchema.parse(body);
 
           const { data: product, error: productError } = await supabaseAdmin
-            .from('products')
-            .select('id, name_en, name_ar, short_description_en, short_description_ar, category, specifications')
-            .eq('id', validated.productId)
+            .from("products")
+            .select(
+              "id, name_en, name_ar, short_description_en, short_description_ar, category, specifications",
+            )
+            .eq("id", validated.productId)
             .single();
 
           if (productError || !product) {
-            return json({ error: 'Product not found' }, 404, { request });
+            return json({ error: "Product not found" }, 404, { request });
           }
 
           const optimizationResult = await optimizeProductContent(
             {
               id: product.id,
-              name: product.name_en || product.name_ar || '',
-              description: product.short_description_en || product.short_description_ar || '',
+              name: product.name_en || product.name_ar || "",
+              description: product.short_description_en || product.short_description_ar || "",
               category: product.category ?? undefined,
               specifications: (product.specifications as Record<string, any> | null) ?? undefined,
             },
             validated.optimizationLevel,
           );
 
-          await supabaseAdmin.from('ai_optimization_logs').insert({
+          await supabaseAdmin.from("ai_optimization_logs").insert({
             user_id: auth.userId,
-            action: 'optimize_content',
-            entity_type: 'product',
+            action: "optimize_content",
+            entity_type: "product",
             entity_id: validated.productId,
             details: {
               optimized_name_en: optimizationResult.optimized_name_en,
               optimized_name_ar: optimizationResult.optimized_name_ar,
               score: optimizationResult.contentQualityScore,
             },
-            status: 'success',
+            status: "success",
             duration_ms: Date.now() - started,
           });
 
@@ -70,25 +73,23 @@ export const Route = createFileRoute('/api/private/v1/ai/optimize-product')({
             { request },
           );
         } catch (error) {
-          console.error('[v0] API error:', error);
+          console.error("[v0] API error:", error);
 
-          await supabaseAdmin.from('ai_audit_logs').insert({
-            action: 'optimize_content',
-            entity_type: 'product',
-            status: 'error',
+          await supabaseAdmin.from("ai_audit_logs").insert({
+            action: "optimize_content",
+            entity_type: "product",
+            status: "error",
             metadata: { error: error instanceof Error ? error.message : String(error) } as never,
             duration_ms: Date.now() - started,
           } as never);
 
-
           return json(
             {
-              error: 'Optimization failed',
+              error: "Optimization failed",
             },
             500,
             { request },
           );
-
         }
       },
     },

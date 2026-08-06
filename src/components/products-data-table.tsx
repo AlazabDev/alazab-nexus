@@ -78,8 +78,8 @@ export function ProductsDataTable({
     if (!sortColumn || !sortDirection) return filteredProducts;
 
     return [...filteredProducts].sort((a, b) => {
-      let aValue = a[sortColumn as keyof Product] || "";
-      let bValue = b[sortColumn as keyof Product] || "";
+      const aValue = a[sortColumn as keyof Product] || "";
+      const bValue = b[sortColumn as keyof Product] || "";
 
       if (sortDirection === "asc") {
         return String(aValue).localeCompare(String(bValue), "ar");
@@ -196,10 +196,13 @@ export function ProductsDataTable({
           </div>
 
           {/* Status Filter */}
-          <Select value={statusFilter || ""} onValueChange={(val) => {
-            setStatusFilter(val || null);
-            setCurrentPage(1);
-          }}>
+          <Select
+            value={statusFilter || ""}
+            onValueChange={(val) => {
+              setStatusFilter(val || null);
+              setCurrentPage(1);
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="تصفية بالحالة" />
             </SelectTrigger>
@@ -214,10 +217,13 @@ export function ProductsDataTable({
           </Select>
 
           {/* Type Filter */}
-          <Select value={typeFilter || ""} onValueChange={(val) => {
-            setTypeFilter(val || null);
-            setCurrentPage(1);
-          }}>
+          <Select
+            value={typeFilter || ""}
+            onValueChange={(val) => {
+              setTypeFilter(val || null);
+              setCurrentPage(1);
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="تصفية بالنوع" />
             </SelectTrigger>
@@ -249,9 +255,7 @@ export function ProductsDataTable({
         {isLoading ? (
           <div className="p-8 text-center">جاري التحميل...</div>
         ) : paginatedProducts.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">
-            لم يتم العثور على منتجات
-          </div>
+          <div className="p-8 text-center text-muted-foreground">لم يتم العثور على منتجات</div>
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -276,9 +280,7 @@ export function ProductsDataTable({
                         {getSortIcon("az_code")}
                       </button>
                     </th>
-                    <th className="px-4 py-3 text-right font-semibold">
-                      النوع
-                    </th>
+                    <th className="px-4 py-3 text-right font-semibold">النوع</th>
                     <th className="px-4 py-3 text-right font-semibold">
                       <button
                         onClick={() => handleSort("status")}
@@ -302,28 +304,23 @@ export function ProductsDataTable({
                 </thead>
                 <tbody className="divide-y divide-border">
                   {paginatedProducts.map((product) => (
-                    <tr
-                      key={product.id}
-                      className="hover:bg-muted/50 transition-colors"
-                    >
+                    <tr key={product.id} className="hover:bg-muted/50 transition-colors">
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium">{product.name_ar}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {product.name_en}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{product.name_en}</p>
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs">
-                        {product.az_code}
-                      </td>
+                      <td className="px-4 py-3 font-mono text-xs">{product.az_code}</td>
                       <td className="px-4 py-3">
                         <Badge variant="secondary" className="text-xs">
                           {translateType(product.item_type)}
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge className={`text-xs border-0 ${getStatusBadgeClass(product.status)}`}>
+                        <Badge
+                          className={`text-xs border-0 ${getStatusBadgeClass(product.status)}`}
+                        >
                           {translateStatus(product.status)}
                         </Badge>
                       </td>

@@ -70,6 +70,7 @@ Settings → Functions Secrets
 ```
 
 أضف:
+
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
@@ -144,12 +145,9 @@ curl -X POST http://localhost:3000/functions/v1/sync-integration \
 // في مكون React
 const syncMutation = useMutation({
   mutationFn: async (integrationId: string) => {
-    const { data, error } = await supabase.functions.invoke(
-      "sync-integration",
-      {
-        body: { integrationId },
-      }
-    );
+    const { data, error } = await supabase.functions.invoke("sync-integration", {
+      body: { integrationId },
+    });
     if (error) throw error;
     return data;
   },
@@ -184,6 +182,7 @@ Project → Functions → [function name]
 ```
 
 ستجد:
+
 - عدد الاستدعاءات
 - معدل النجاح/الفشل
 - متوسط وقت التنفيذ
@@ -196,6 +195,7 @@ Project → Functions → [function name]
 **السبب:** متغيرات البيئة لم تُضبط
 
 **الحل:**
+
 ```bash
 # تحقق من إعدادات Secrets
 supabase secrets list
@@ -210,6 +210,7 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=...
 **السبب:** نوع التكامل غير موجود في قاعدة البيانات
 
 **الحل:**
+
 ```sql
 -- في Supabase Studio SQL Editor
 SELECT * FROM integration_configs;
@@ -224,6 +225,7 @@ VALUES ('daftra', 'active', '{"api_key": "..."}');
 **السبب:** عدد الطلبات يتجاوز الحد المسموح
 
 **الحل:**
+
 ```typescript
 // أضف backoff exponential في الكود
 async function retryWithBackoff(fn, maxRetries = 3) {
@@ -232,7 +234,7 @@ async function retryWithBackoff(fn, maxRetries = 3) {
       return await fn();
     } catch (error) {
       const delay = Math.pow(2, i) * 1000;
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 }
@@ -241,6 +243,7 @@ async function retryWithBackoff(fn, maxRetries = 3) {
 ### الخطأ: "Webhook signature validation failed"
 
 **الحل:**
+
 ```typescript
 // تحقق من التوقيع في webhook handler
 import { verifySignature } from "./verify";
@@ -248,7 +251,7 @@ import { verifySignature } from "./verify";
 const isValid = verifySignature(
   req.body,
   req.headers["x-daftra-signature"],
-  process.env.DAFTRA_WEBHOOK_SECRET
+  process.env.DAFTRA_WEBHOOK_SECRET,
 );
 ```
 
@@ -272,6 +275,7 @@ export default async function handler(req: CronRequest) {
 ```
 
 في `vercel.json`:
+
 ```json
 {
   "crons": [
@@ -318,6 +322,7 @@ const result = await supabase.rpc("sync_with_rollback", {
 ## نصائح مهمة
 
 ✅ **افعل:**
+
 - اختبر الـ functions محليًا قبل النشر
 - استخدم secrets للبيانات الحساسة
 - سجّل جميع الأنشطة
@@ -325,6 +330,7 @@ const result = await supabase.rpc("sync_with_rollback", {
 - استخدم exponential backoff للـ retries
 
 ❌ **لا تفعل:**
+
 - لا تخزّن المفاتيح في الكود
 - لا تعتمد على single function للعمليات الضخمة
 - لا تتجاهل معالجة الأخطاء
@@ -339,6 +345,7 @@ const result = await supabase.rpc("sync_with_rollback", {
 ## الدعم والمساعدة
 
 للمزيد من المساعدة:
+
 - استراجع `supabase/functions/README.md`
 - راجع `docs/INTEGRATIONS.md`
 - تحقق من سجلات الدوال في Supabase Dashboard

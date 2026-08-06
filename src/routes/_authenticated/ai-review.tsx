@@ -244,7 +244,17 @@ function AIReview() {
                         )}
                         dangerouslySetInnerHTML={{
                           __html: DOMPurify.sanitize(formatMessage(message.content), {
-                            ALLOWED_TAGS: ["strong", "em", "h3", "h4", "li", "ul", "br", "span", "div"],
+                            ALLOWED_TAGS: [
+                              "strong",
+                              "em",
+                              "h3",
+                              "h4",
+                              "li",
+                              "ul",
+                              "br",
+                              "span",
+                              "div",
+                            ],
                             ALLOWED_ATTR: ["class"],
                           }),
                         }}
@@ -343,10 +353,7 @@ function AIReview() {
 // IMPORTANT: the resulting HTML is sanitized with DOMPurify before being injected.
 function formatMessage(content: string): string {
   // Escape raw HTML first so any tags in the AI/database content cannot leak through.
-  const escaped = content
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  const escaped = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   return (
     escaped
       // Bold

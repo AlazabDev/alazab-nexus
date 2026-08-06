@@ -36,15 +36,23 @@ type PublicProduct = {
 
 const BRAND_META: Record<string, { label: string; color: string; bg: string }> = {
   luxury_finishing: { label: "Luxury Finishing", color: "#534AB7", bg: "#EEEDFE" },
-  brand_identity:   { label: "Brand Identity",   color: "#0F6E56", bg: "#E1F5EE" },
-  uberfix:          { label: "UberFix",           color: "#185FA5", bg: "#E6F1FB" },
-  laban_alasfour:   { label: "Laban Alasfour",    color: "#BA7517", bg: "#FEF3E2" },
+  brand_identity: { label: "Brand Identity", color: "#0F6E56", bg: "#E1F5EE" },
+  uberfix: { label: "UberFix", color: "#185FA5", bg: "#E6F1FB" },
+  laban_alasfour: { label: "Laban Alasfour", color: "#BA7517", bg: "#FEF3E2" },
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  product: "منتج", service: "خدمة", material: "مادة", spare_part: "قطعة غيار",
-  tool: "أداة", bundle: "حزمة", package: "باكدج", work_item: "بند عمل",
-  finish_item: "بند تشطيب", supplier_item: "بند مورد", custom_unit: "وحدة خاصة",
+  product: "منتج",
+  service: "خدمة",
+  material: "مادة",
+  spare_part: "قطعة غيار",
+  tool: "أداة",
+  bundle: "حزمة",
+  package: "باكدج",
+  work_item: "بند عمل",
+  finish_item: "بند تشطيب",
+  supplier_item: "بند مورد",
+  custom_unit: "وحدة خاصة",
 };
 
 export const Route = createFileRoute("/catalog/$azCode")({
@@ -64,7 +72,10 @@ export const Route = createFileRoute("/catalog/$azCode")({
     meta: loaderData
       ? [
           { title: `${loaderData.product.name_ar} — كتالوج العزب` },
-          { name: "description", content: loaderData.product.description_ar ?? loaderData.product.name_ar },
+          {
+            name: "description",
+            content: loaderData.product.description_ar ?? loaderData.product.name_ar,
+          },
         ]
       : [{ title: "منتج غير موجود" }],
   }),
@@ -74,11 +85,18 @@ export const Route = createFileRoute("/catalog/$azCode")({
 
 function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8]" dir="rtl" style={{ fontFamily: MONO_STACK }}>
+    <div
+      className="min-h-screen flex items-center justify-center bg-[#FAFAF8]"
+      dir="rtl"
+      style={{ fontFamily: MONO_STACK }}
+    >
       <div className="text-center space-y-4">
         <Package className="size-14 mx-auto text-[#C5BEE8]" />
         <h1 className="text-lg font-bold">المنتج غير متوفر</h1>
-        <Link to="/catalog" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1B2A] text-white text-sm">
+        <Link
+          to="/catalog"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1B2A] text-white text-sm"
+        >
           <ArrowRight className="size-4" /> رجوع للكتالوج
         </Link>
       </div>
@@ -129,14 +147,25 @@ function ProductDetail() {
       {/* Top bar */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#E8E4DC]">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-3">
-          <Link to="/catalog" className="inline-flex items-center gap-2 text-xs md:text-sm text-[#4A4540] hover:text-[#0D1B2A] transition">
+          <Link
+            to="/catalog"
+            className="inline-flex items-center gap-2 text-xs md:text-sm text-[#4A4540] hover:text-[#0D1B2A] transition"
+          >
             <ArrowRight className="size-4" /> الكتالوج
           </Link>
           <div className="flex items-center gap-1.5">
-            <button onClick={handleShare} className="size-9 rounded-lg border border-[#E8E4DC] flex items-center justify-center hover:border-[#C9A84C] transition" title="مشاركة">
+            <button
+              onClick={handleShare}
+              className="size-9 rounded-lg border border-[#E8E4DC] flex items-center justify-center hover:border-[#C9A84C] transition"
+              title="مشاركة"
+            >
               <Share2 className="size-4" />
             </button>
-            <button onClick={handlePrint} className="size-9 rounded-lg border border-[#E8E4DC] flex items-center justify-center hover:border-[#C9A84C] transition" title="طباعة">
+            <button
+              onClick={handlePrint}
+              className="size-9 rounded-lg border border-[#E8E4DC] flex items-center justify-center hover:border-[#C9A84C] transition"
+              title="طباعة"
+            >
               <Printer className="size-4" />
             </button>
           </div>
@@ -180,7 +209,9 @@ function ProductDetail() {
                 {bm.label}
               </span>
             )}
-            <h1 className="text-xl md:text-2xl font-bold leading-snug text-[#0D1B2A]">{p.name_ar}</h1>
+            <h1 className="text-xl md:text-2xl font-bold leading-snug text-[#0D1B2A]">
+              {p.name_ar}
+            </h1>
             {p.name_en && <p className="text-sm text-[#8C8680]">{p.name_en}</p>}
           </div>
 
@@ -192,7 +223,9 @@ function ProductDetail() {
                 </span>
                 {p.unit_label && <span className="text-xs text-[#8C8680]">/ {p.unit_label}</span>}
                 {!p.unit_price && p.estimated_price != null && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FEF3E2] text-[#BA7517] font-semibold">تقديري</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FEF3E2] text-[#BA7517] font-semibold">
+                    تقديري
+                  </span>
                 )}
               </>
             ) : (
@@ -201,7 +234,9 @@ function ProductDetail() {
           </div>
 
           {p.description_ar && (
-            <p className="text-sm leading-loose text-[#4A4540] whitespace-pre-line">{p.description_ar}</p>
+            <p className="text-sm leading-loose text-[#4A4540] whitespace-pre-line">
+              {p.description_ar}
+            </p>
           )}
 
           {/* QR + AZ code card */}
@@ -220,8 +255,11 @@ function ProductDetail() {
                   const clone = svg.cloneNode(true) as SVGSVGElement;
                   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
                   const blob = new Blob(
-                    ['<?xml version="1.0" encoding="UTF-8"?>', new XMLSerializer().serializeToString(clone)],
-                    { type: "image/svg+xml" }
+                    [
+                      '<?xml version="1.0" encoding="UTF-8"?>',
+                      new XMLSerializer().serializeToString(clone),
+                    ],
+                    { type: "image/svg+xml" },
                   );
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
@@ -236,7 +274,6 @@ function ProductDetail() {
               </button>
             </div>
           </div>
-
 
           {/* Specs table */}
           <div className="rounded-2xl bg-white border border-[#E8E4DC] overflow-hidden">

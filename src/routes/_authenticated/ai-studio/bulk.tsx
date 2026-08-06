@@ -10,7 +10,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles, ImageIcon, FileText, RotateCw, Search, AlertCircle } from "lucide-react";
@@ -64,7 +70,15 @@ function BulkAzurePage() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [fields, setFields] = useState<Set<FieldKey>>(
-    new Set(["name_ar", "name_en", "short_description_ar", "description_ar", "description_en", "tags", "search_keywords"]),
+    new Set([
+      "name_ar",
+      "name_en",
+      "short_description_ar",
+      "description_ar",
+      "description_en",
+      "tags",
+      "search_keywords",
+    ]),
   );
   const [overwrite, setOverwrite] = useState(false);
   const [runContent, setRunContent] = useState(true);
@@ -86,7 +100,10 @@ function BulkAzurePage() {
         .limit(200);
       if (filter === "missing_desc") q = q.or("description_ar.is.null,description_ar.eq.");
       if (filter === "missing_name_en") q = q.or("name_en.is.null,name_en.eq.");
-      if (search.trim()) q = q.or(`az_code.ilike.%${sanitizeSearchTerm(search)}%,name_ar.ilike.%${sanitizeSearchTerm(search)}%,name_en.ilike.%${sanitizeSearchTerm(search)}%`);
+      if (search.trim())
+        q = q.or(
+          `az_code.ilike.%${sanitizeSearchTerm(search)}%,name_ar.ilike.%${sanitizeSearchTerm(search)}%,name_en.ilike.%${sanitizeSearchTerm(search)}%`,
+        );
       const { data, error } = await q;
       if (error) throw error;
       if (filter === "missing_images" && data?.length) {
@@ -154,8 +171,14 @@ function BulkAzurePage() {
               data: { productIds: batch, fields: Array.from(fields), overwrite },
             });
             ctx.setProgress(85);
-            ctx.log(`تم تحديث ${res.totalUpdated} · فشل ${res.totalFailed}`, res.totalFailed ? "warn" : "success");
-            res.summary.filter((s) => s.error).slice(0, 5).forEach((s) => ctx.log(`✗ ${s.azCode}: ${s.error}`, "error"));
+            ctx.log(
+              `تم تحديث ${res.totalUpdated} · فشل ${res.totalFailed}`,
+              res.totalFailed ? "warn" : "success",
+            );
+            res.summary
+              .filter((s) => s.error)
+              .slice(0, 5)
+              .forEach((s) => ctx.log(`✗ ${s.azCode}: ${s.error}`, "error"));
             qc.invalidateQueries({ queryKey: ["bulk-azure-products"] });
           },
         );
@@ -170,7 +193,10 @@ function BulkAzurePage() {
             ctx.setProgress(20);
             const res = await genImages({ data: { productIds: batch } });
             ctx.setProgress(90);
-            ctx.log(`تم إنشاء ${res.totalGenerated} صورة · فشل ${res.totalFailed}`, res.totalFailed ? "warn" : "success");
+            ctx.log(
+              `تم إنشاء ${res.totalGenerated} صورة · فشل ${res.totalFailed}`,
+              res.totalFailed ? "warn" : "success",
+            );
             qc.invalidateQueries({ queryKey: ["bulk-azure-products"] });
           },
         );
@@ -193,7 +219,8 @@ function BulkAzurePage() {
             <div className="text-sm">
               <p className="font-medium">Azure OpenAI غير مكتمل التهيئة</p>
               <p className="text-muted-foreground">
-                تأكد من ضبط AZURE_OPENAI_ENDPOINT و AZURE_OPENAI_API_KEY و AZURE_OPENAI_DEPLOYMENT. تحسين المحتوى لن يعمل، لكن إنشاء الصور عبر AI Gateway متاح.
+                تأكد من ضبط AZURE_OPENAI_ENDPOINT و AZURE_OPENAI_API_KEY و AZURE_OPENAI_DEPLOYMENT.
+                تحسين المحتوى لن يعمل، لكن إنشاء الصور عبر AI Gateway متاح.
               </p>
             </div>
           </CardContent>
@@ -249,11 +276,21 @@ function BulkAzurePage() {
                       <li key={p.id} className="flex items-center gap-3 p-3 hover:bg-muted/50">
                         <Checkbox checked={checked} onCheckedChange={() => toggle(p.id)} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{p.name_ar || p.name_en || p.az_code}</div>
+                          <div className="text-sm font-medium truncate">
+                            {p.name_ar || p.name_en || p.az_code}
+                          </div>
                           <div className="text-xs text-muted-foreground flex gap-2">
                             <span>{p.az_code}</span>
-                            {!p.description_ar && <Badge variant="outline" className="h-4 text-[10px]">بدون وصف</Badge>}
-                            {!p.name_en && <Badge variant="outline" className="h-4 text-[10px]">بدون EN</Badge>}
+                            {!p.description_ar && (
+                              <Badge variant="outline" className="h-4 text-[10px]">
+                                بدون وصف
+                              </Badge>
+                            )}
+                            {!p.name_en && (
+                              <Badge variant="outline" className="h-4 text-[10px]">
+                                بدون EN
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </li>
@@ -300,7 +337,10 @@ function BulkAzurePage() {
               <CardContent className="grid grid-cols-2 gap-2">
                 {ALL_FIELDS.map((f) => (
                   <label key={f.key} className="flex items-center gap-2 text-sm cursor-pointer">
-                    <Checkbox checked={fields.has(f.key)} onCheckedChange={() => toggleField(f.key)} />
+                    <Checkbox
+                      checked={fields.has(f.key)}
+                      onCheckedChange={() => toggleField(f.key)}
+                    />
                     <span>{f.label}</span>
                   </label>
                 ))}
@@ -318,8 +358,12 @@ function BulkAzurePage() {
         </div>
       </div>
 
-      <AiOpsPanel ops={aiOps.ops} onRetry={aiOps.retry} onDismiss={aiOps.remove} onClearDone={aiOps.clearDone} />
+      <AiOpsPanel
+        ops={aiOps.ops}
+        onRetry={aiOps.retry}
+        onDismiss={aiOps.remove}
+        onClearDone={aiOps.clearDone}
+      />
     </div>
   );
 }
-

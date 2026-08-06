@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { DatasheetBuilder } from '@/components/ai/datasheet-builder';
-import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { createFileRoute } from "@tanstack/react-router";
+import { DatasheetBuilder } from "@/components/ai/datasheet-builder";
+import { PageHeader } from "@/components/page-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const Route = createFileRoute('/_authenticated/ai-studio/datasheets')({
+export const Route = createFileRoute("/_authenticated/ai-studio/datasheets")({
   component: DatasheetPage,
 });
 

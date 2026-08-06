@@ -19,7 +19,7 @@ function isDev() {
 
 function defaultCorsHeaders(): Record<string, string> {
   const allowed = parseAllowedOrigins();
-  const originHeader = isDev() ? "*" : allowed[0] ?? "null";
+  const originHeader = isDev() ? "*" : (allowed[0] ?? "null");
 
   return {
     "Access-Control-Allow-Origin": originHeader,
@@ -60,9 +60,7 @@ export function preflight(request: Request) {
   return new Response(null, { status: 204, headers: corsHeaders(request) });
 }
 
-type JsonOpts =
-  | { request?: Request; headers?: Record<string, string> }
-  | Record<string, string>;
+type JsonOpts = { request?: Request; headers?: Record<string, string> } | Record<string, string>;
 
 export function json(body: unknown, status = 200, opts: JsonOpts = {}) {
   let cors: Record<string, string>;
@@ -115,19 +113,15 @@ export async function requireApiKey(request: Request, endpoint?: string) {
     .maybeSingle();
   if (error || !data)
     return {
-      error: json(
-        { success: false, error: "Invalid API key", code: "invalid_api_key" },
-        401,
-        { request },
-      ),
+      error: json({ success: false, error: "Invalid API key", code: "invalid_api_key" }, 401, {
+        request,
+      }),
     };
   if (!data.is_active)
     return {
-      error: json(
-        { success: false, error: "API key disabled", code: "api_key_disabled" },
-        403,
-        { request },
-      ),
+      error: json({ success: false, error: "API key disabled", code: "api_key_disabled" }, 403, {
+        request,
+      }),
     };
 
   // Endpoint whitelist (empty list = allow all)
@@ -163,11 +157,9 @@ export async function requireApiKey(request: Request, endpoint?: string) {
       .gte("created_at", since);
     if ((count ?? 0) >= RATE_LIMIT_PER_MINUTE) {
       return {
-        error: json(
-          { success: false, error: "Rate limit exceeded", code: "rate_limited" },
-          429,
-          { request },
-        ),
+        error: json({ success: false, error: "Rate limit exceeded", code: "rate_limited" }, 429, {
+          request,
+        }),
       };
     }
   } catch (e) {

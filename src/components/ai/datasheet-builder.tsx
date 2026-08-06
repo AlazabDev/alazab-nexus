@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Download, Eye, Plus, Trash2 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Download, Eye, Plus, Trash2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export interface DatasheetField {
   id: string;
@@ -20,40 +20,40 @@ interface DatasheetBuilderState {
   generated: boolean;
   error?: string;
   datasheetId?: string;
-  format: 'json' | 'pdf' | 'html';
-  language: 'en' | 'ar' | 'multilingual';
+  format: "json" | "pdf" | "html";
+  language: "en" | "ar" | "multilingual";
 }
 
 export function DatasheetBuilder() {
-  const [productId, setProductId] = useState('');
+  const [productId, setProductId] = useState("");
   const [state, setState] = useState<DatasheetBuilderState>({
     loading: false,
     generated: false,
-    format: 'pdf',
-    language: 'en',
+    format: "pdf",
+    language: "en",
   });
 
   const sections = [
-    { label: 'Technical Specifications', icon: '⚙️' },
-    { label: 'Dimensions & Weight', icon: '📏' },
-    { label: 'Materials', icon: '🔨' },
-    { label: 'Certifications', icon: '✓' },
-    { label: 'Usage Guidelines', icon: '📖' },
-    { label: 'Safety Information', icon: '⚠️' },
+    { label: "Technical Specifications", icon: "⚙️" },
+    { label: "Dimensions & Weight", icon: "📏" },
+    { label: "Materials", icon: "🔨" },
+    { label: "Certifications", icon: "✓" },
+    { label: "Usage Guidelines", icon: "📖" },
+    { label: "Safety Information", icon: "⚠️" },
   ];
 
   const handleGenerate = async () => {
     if (!productId.trim()) {
-      setState({ ...state, error: 'Product ID is required' });
+      setState({ ...state, error: "Product ID is required" });
       return;
     }
 
     setState({ ...state, loading: true, error: undefined });
 
     try {
-      const response = await fetch('/api/private/v1/ai/generate-datasheet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/private/v1/ai/generate-datasheet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           productId,
           format: state.format,
@@ -61,7 +61,7 @@ export function DatasheetBuilder() {
         }),
       });
 
-      if (!response.ok) throw new Error('Datasheet generation failed');
+      if (!response.ok) throw new Error("Datasheet generation failed");
 
       const data = await response.json();
       setState({
@@ -74,7 +74,7 @@ export function DatasheetBuilder() {
       setState({
         ...state,
         loading: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
   };
@@ -103,10 +103,10 @@ export function DatasheetBuilder() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Output Format</label>
               <div className="flex gap-2">
-                {(['json', 'pdf', 'html'] as const).map((fmt) => (
+                {(["json", "pdf", "html"] as const).map((fmt) => (
                   <Button
                     key={fmt}
-                    variant={state.format === fmt ? 'default' : 'outline'}
+                    variant={state.format === fmt ? "default" : "outline"}
                     size="sm"
                     onClick={() => setState({ ...state, format: fmt })}
                     className="flex-1"
@@ -120,15 +120,15 @@ export function DatasheetBuilder() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Language</label>
               <div className="flex gap-2">
-                {(['en', 'ar'] as const).map((lang) => (
+                {(["en", "ar"] as const).map((lang) => (
                   <Button
                     key={lang}
-                    variant={state.language === lang ? 'default' : 'outline'}
+                    variant={state.language === lang ? "default" : "outline"}
                     size="sm"
                     onClick={() => setState({ ...state, language: lang })}
                     className="flex-1"
                   >
-                    {lang === 'en' ? 'English' : 'العربية'}
+                    {lang === "en" ? "English" : "العربية"}
                   </Button>
                 ))}
               </div>
@@ -163,7 +163,7 @@ export function DatasheetBuilder() {
                 Generating...
               </>
             ) : (
-              'Generate Datasheet'
+              "Generate Datasheet"
             )}
           </Button>
         </CardContent>

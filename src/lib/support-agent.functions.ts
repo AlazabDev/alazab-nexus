@@ -38,7 +38,8 @@ function getEnv() {
     searchIndex: (process.env.AZURE_SEARCH_INDEX ?? process.env.AZURE_SEARCH_INDEX_NAME)!,
     openaiEndpoint: process.env.AZURE_OPENAI_ENDPOINT!,
     openaiKey: process.env.AZURE_OPENAI_API_KEY!,
-    chatDeployment: (process.env.AZURE_OPENAI_CHAT_DEPLOYMENT ?? process.env.AZURE_OPENAI_DEPLOYMENT)!,
+    chatDeployment: (process.env.AZURE_OPENAI_CHAT_DEPLOYMENT ??
+      process.env.AZURE_OPENAI_DEPLOYMENT)!,
     embedDeployment: (process.env.AZURE_OPENAI_EMBED_DEPLOYMENT ?? "text-embedding-3-small")!,
   };
 }

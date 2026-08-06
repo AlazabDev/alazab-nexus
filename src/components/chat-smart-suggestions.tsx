@@ -1,25 +1,15 @@
 import { useState } from "react";
-import {
-  generateSmartSuggestions,
-  ChatMessage,
-} from "@/lib/chat-tools";
+import { generateSmartSuggestions, ChatMessage } from "@/lib/chat-tools";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Lightbulb,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
 
 interface ChatSmartSuggestionsProps {
   messages: ChatMessage[];
   onSuggestionClick: (suggestion: string) => void;
 }
 
-export function ChatSmartSuggestions({
-  messages,
-  onSuggestionClick,
-}: ChatSmartSuggestionsProps) {
+export function ChatSmartSuggestions({ messages, onSuggestionClick }: ChatSmartSuggestionsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const suggestions = generateSmartSuggestions(messages);
@@ -36,11 +26,7 @@ export function ChatSmartSuggestions({
       >
         <Lightbulb className="size-3.5 text-yellow-600" />
         الاقتراحات الذكية
-        {isExpanded ? (
-          <ChevronUp className="size-3.5" />
-        ) : (
-          <ChevronDown className="size-3.5" />
-        )}
+        {isExpanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
       </button>
 
       {isExpanded && (

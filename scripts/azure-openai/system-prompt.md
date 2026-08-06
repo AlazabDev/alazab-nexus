@@ -5,26 +5,31 @@
 ## نطاق المعرفة
 
 ### 1. المنتجات والبنود (Products)
+
 - انواع البنود: product, service, work_item, material, tool, spare_part, finish_item, custom_unit, supplier_item, package, bundle
 - حالات البنود: draft, needs_review, duplicate_suspected, content_incomplete, pricing_incomplete, supplier_pending, approved, rejected, exported, archived
 - تصنيف GPC/GS1: القطاع (Segment) > العائلة (Family) > الفئة (Class) > الطوب (Brick)
 - كود AZ الداخلي: نظام ترميز فريد لكل بند
 
 ### 2. التسعير (Pricing)
+
 - انواع الاسعار: purchase_price, selling_price, retail_price, wholesale_price, project_price, client_price, reference_price
 - التكاليف: transport_cost, installation_cost, maintenance_cost, operation_cost
 - هامش الربح ونسبته
 - تاريخ الاسعار وتتبع التغييرات
 
 ### 3. الموردون (Suppliers)
+
 - مستويات الموردين: first_tier, second_tier, backup, local, imported, internal_workshop, factory, marketplace
 - بيانات التواصل والتقييم
 - مناطق التغطية وشروط الدفع
 
 ### 4. الاصول الرقمية (Assets)
+
 - انواع الادوار: main_image, gallery, before, after, technical_drawing, supplier_image, site_photo, datasheet, model_3d, cad_file
 
 ### 5. العمليات
+
 - سجل التدقيق (Audit Logs)
 - مراجعة التكرار (Duplicate Detection)
 - الاستيراد والتصدير
@@ -65,6 +70,7 @@
 
 **سؤال**: "كيف اضيف منتج جديد؟"
 **اجابة**: لاضافة منتج جديد، اتبع الخطوات التالية:
+
 1. انتقل الى صفحة المنتجات
 2. اضغط على "اضافة بند جديد"
 3. املا البيانات الاساسية...

@@ -72,31 +72,31 @@ curl -X POST https://app.example.com/api/public/v1/ai/quotes \
 
 ```typescript
 // Import the client
-import { AIStudioClient } from '@/lib/ai-studio-client';
+import { AIStudioClient } from "@/lib/ai-studio-client";
 
 // Initialize
 const client = new AIStudioClient({
-  baseUrl: 'https://app.example.com',
-  token: 'your_jwt_token'
+  baseUrl: "https://app.example.com",
+  token: "your_jwt_token",
 });
 
 // Optimize content
 const result = await client.optimizeProduct({
-  productId: 'uuid',
-  optimizationLevel: 'standard',
+  productId: "uuid",
+  optimizationLevel: "standard",
 });
 
 // Generate datasheet
 const datasheet = await client.generateDatasheet({
-  productId: 'uuid',
-  format: 'pdf',
-  language: 'en',
+  productId: "uuid",
+  format: "pdf",
+  language: "en",
 });
 
 // Create batch job
 const job = await client.batchOptimize({
-  productIds: ['uuid1', 'uuid2', 'uuid3'],
-  optimizationType: 'all',
+  productIds: ["uuid1", "uuid2", "uuid3"],
+  optimizationType: "all",
 });
 
 // Check job status
@@ -136,6 +136,7 @@ print(result['optimization']['optimized_name_en'])
 **Scenario:** You have 500 products with poor descriptions and want to enhance them all.
 
 **Approach:**
+
 1. Create a batch optimization job
 2. Monitor progress via job status endpoint
 3. Review results and apply automatically or manually
@@ -158,6 +159,7 @@ curl -X GET /api/private/v1/ai/job-status?jobId=job_...
 **Scenario:** Your e-commerce platform needs to auto-generate professional quotes when customers request them.
 
 **Approach:**
+
 1. Integrate public quote API
 2. Customer submits request with products and quantity
 3. System generates professional quote automatically
@@ -165,24 +167,24 @@ curl -X GET /api/private/v1/ai/job-status?jobId=job_...
 
 ```javascript
 async function generateQuoteForCustomer(cartItems, customerInfo) {
-  const response = await fetch('/api/public/v1/ai/quotes', {
-    method: 'POST',
+  const response = await fetch("/api/public/v1/ai/quotes", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SELLER_API_KEY}`
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SELLER_API_KEY}`,
     },
     body: JSON.stringify({
-      products: cartItems.map(item => ({
+      products: cartItems.map((item) => ({
         product_id: item.id,
         quantity: item.qty,
-        unit: item.unit
+        unit: item.unit,
       })),
       customer: {
-        type: customerInfo.isWholesale ? 'wholesale' : 'retail',
+        type: customerInfo.isWholesale ? "wholesale" : "retail",
         name: customerInfo.name,
-        email: customerInfo.email
-      }
-    })
+        email: customerInfo.email,
+      },
+    }),
   });
 
   const quote = await response.json();
@@ -195,6 +197,7 @@ async function generateQuoteForCustomer(cartItems, customerInfo) {
 **Scenario:** You need to create product content in both English and Arabic.
 
 **Approach:**
+
 1. Use standard or premium optimization level
 2. Retrieve both optimized_name_en and optimized_name_ar
 3. Store in your database with language flags
@@ -213,6 +216,7 @@ curl -X POST /api/private/v1/ai/optimize-product \
 **Scenario:** Generate datasheets for all products in your catalog.
 
 **Approach:**
+
 1. Get all products
 2. For each, generate datasheet in PDF format
 3. Store file URLs in product database
@@ -221,22 +225,22 @@ curl -X POST /api/private/v1/ai/optimize-product \
 ```javascript
 async function generateAllDatasheets() {
   const products = await fetchAllProducts();
-  
+
   for (const product of products) {
     try {
-      const datasheet = await fetch('/api/private/v1/ai/generate-datasheet', {
-        method: 'POST',
+      const datasheet = await fetch("/api/private/v1/ai/generate-datasheet", {
+        method: "POST",
         body: JSON.stringify({
           productId: product.id,
-          format: 'pdf',
-          language: 'en'
-        })
+          format: "pdf",
+          language: "en",
+        }),
       });
-      
+
       const data = await datasheet.json();
       // Store file URL in product record
-      await updateProduct(product.id, { 
-        datasheetUrl: data.datasheet.file_url 
+      await updateProduct(product.id, {
+        datasheetUrl: data.datasheet.file_url,
       });
     } catch (error) {
       console.error(`Failed for ${product.id}:`, error);
@@ -250,27 +254,21 @@ async function generateAllDatasheets() {
 ### Retry Logic
 
 ```typescript
-async function retryWithBackoff(
-  fn: () => Promise<any>,
-  maxRetries = 3,
-  delayMs = 1000
-) {
+async function retryWithBackoff(fn: () => Promise<any>, maxRetries = 3, delayMs = 1000) {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await fn();
     } catch (error) {
       if (attempt === maxRetries - 1) throw error;
-      
+
       const delay = delayMs * Math.pow(2, attempt);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 }
 
 // Usage
-const result = await retryWithBackoff(() =>
-  client.optimizeProduct({ productId: 'uuid' })
-);
+const result = await retryWithBackoff(() => client.optimizeProduct({ productId: "uuid" }));
 ```
 
 ### Handling Timeouts
@@ -295,7 +293,7 @@ try {
 
 ```sql
 -- Get API calls per endpoint
-SELECT 
+SELECT
   entity_type,
   COUNT(*) as total_calls,
   AVG(duration_ms) as avg_duration,
@@ -337,21 +335,25 @@ ORDER BY error_count DESC;
 ### Common Issues
 
 **Issue: 401 Unauthorized**
+
 - Check token/API key validity
 - Verify token hasn't expired
 - Ensure correct Authorization header format
 
 **Issue: 404 Product Not Found**
+
 - Verify product ID is correct UUID format
 - Ensure product exists in database
 - Check user has access to product
 
 **Issue: Job Status Returns Empty**
+
 - Wait a few seconds for job to start processing
 - Verify job ID is correct
 - Check if job has completed (status: "completed")
 
 **Issue: API Rate Limit Exceeded**
+
 - Implement exponential backoff retry logic
 - Batch requests where possible
 - Contact support for higher limits
@@ -359,6 +361,7 @@ ORDER BY error_count DESC;
 ## Support
 
 For issues or questions:
+
 1. Check this documentation
 2. Review API response error messages
 3. Contact support@example.com

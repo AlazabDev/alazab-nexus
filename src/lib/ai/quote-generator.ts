@@ -3,8 +3,8 @@
  * Automatically generates quotes from API requests with AI-powered pricing
  */
 
-import { generateObject, generateText } from 'ai';
-import { z } from 'zod';
+import { generateObject, generateText } from "ai";
+import { z } from "zod";
 
 export interface QuoteLineItem {
   product_id: string;
@@ -42,7 +42,7 @@ const QuoteSchema = z.object({
       unit_price: z.number().positive(),
       total: z.number().positive(),
       discount_percentage: z.number().optional(),
-    })
+    }),
   ),
   subtotal: z.number(),
   tax_percentage: z.number(),
@@ -67,9 +67,9 @@ export async function generateQuoteFromRequest(
       category?: string;
     }>;
     customer?: {
-      type: 'retail' | 'wholesale' | 'enterprise';
+      type: "retail" | "wholesale" | "enterprise";
       volume?: number;
-      loyalty?: 'new' | 'existing';
+      loyalty?: "new" | "existing";
     };
     special_requirements?: string;
     deadline?: Date;
@@ -79,13 +79,13 @@ export async function generateQuoteFromRequest(
     enterprise_discount?: number;
     volume_thresholds?: Array<{ min: number; discount: number }>;
     tax_rate?: number;
-  }
+  },
 ): Promise<GeneratedQuote> {
   try {
     const prompt = buildQuotePrompt(requestData, pricingRules);
 
     const result = await generateObject({
-      model: 'google/gemini-2.5-flash',
+      model: "google/gemini-2.5-flash",
       schema: QuoteSchema,
       prompt,
       system: `You are an expert pricing and quote generator.
@@ -110,7 +110,8 @@ export async function generateQuoteFromRequest(
     return {
       quote_id: generateQuoteId(),
       items: result.object.line_items.map((item) => ({
-        product_id: requestData.products.find((p) => p.name === item.product_name)?.product_id || '',
+        product_id:
+          requestData.products.find((p) => p.name === item.product_name)?.product_id || "",
         product_name: item.product_name,
         quantity: item.quantity,
         unit: item.unit,
@@ -122,17 +123,19 @@ export async function generateQuoteFromRequest(
       tax: taxAmount,
       discount: discountAmount,
       total,
-      currency: 'SAR', // Default to SAR, can be parameterized
+      currency: "SAR", // Default to SAR, can be parameterized
       validity_days: result.object.suggested_validity_days,
       valid_until: validUntil,
       terms_conditions: result.object.payment_terms,
       notes: result.object.delivery_note,
       generated_at: new Date(),
-      generation_model: 'google/gemini-2.5-flash',
+      generation_model: "google/gemini-2.5-flash",
     };
   } catch (error) {
-    console.error('[v0] Quote generation error:', error);
-    throw new Error(`Quote generation failed: ${error instanceof Error ? error.message : String(error)}`);
+    console.error("[v0] Quote generation error:", error);
+    throw new Error(
+      `Quote generation failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
@@ -147,9 +150,9 @@ function buildQuotePrompt(
       category?: string;
     }>;
     customer?: {
-      type: 'retail' | 'wholesale' | 'enterprise';
+      type: "retail" | "wholesale" | "enterprise";
       volume?: number;
-      loyalty?: 'new' | 'existing';
+      loyalty?: "new" | "existing";
     };
     special_requirements?: string;
     deadline?: Date;
@@ -159,22 +162,22 @@ function buildQuotePrompt(
     enterprise_discount?: number;
     volume_thresholds?: Array<{ min: number; discount: number }>;
     tax_rate?: number;
-  }
+  },
 ): string {
   const products = requestData.products
     .map(
       (p) =>
-        `- ${p.name} (ID: ${p.product_id}): Quantity ${p.quantity} ${p.unit}, Base Price: ${p.base_price || 'TBD'} SAR`
+        `- ${p.name} (ID: ${p.product_id}): Quantity ${p.quantity} ${p.unit}, Base Price: ${p.base_price || "TBD"} SAR`,
     )
-    .join('\n');
+    .join("\n");
 
-  const customerType = requestData.customer?.type || 'retail';
+  const customerType = requestData.customer?.type || "retail";
   const customerInfo =
-    customerType === 'enterprise'
-      ? `Enterprise customer, Volume: ${requestData.customer?.volume || 'Large'}, Loyalty: ${requestData.customer?.loyalty || 'new'}`
-      : customerType === 'wholesale'
-        ? 'Wholesale customer'
-        : 'Retail customer';
+    customerType === "enterprise"
+      ? `Enterprise customer, Volume: ${requestData.customer?.volume || "Large"}, Loyalty: ${requestData.customer?.loyalty || "new"}`
+      : customerType === "wholesale"
+        ? "Wholesale customer"
+        : "Retail customer";
 
   const taxRate = pricingRules?.tax_rate || 15; // Saudi VAT
 
@@ -191,11 +194,11 @@ PRICING RULES:
 - Enterprise Discount: ${pricingRules?.enterprise_discount || 20}%
 ${
   pricingRules?.volume_thresholds
-    ? `- Volume Thresholds: ${pricingRules.volume_thresholds.map((t) => `${t.min}+ units = ${t.discount}% discount`).join(', ')}`
-    : ''
+    ? `- Volume Thresholds: ${pricingRules.volume_thresholds.map((t) => `${t.min}+ units = ${t.discount}% discount`).join(", ")}`
+    : ""
 }
 
-SPECIAL REQUIREMENTS: ${requestData.special_requirements || 'None'}
+SPECIAL REQUIREMENTS: ${requestData.special_requirements || "None"}
 
 Generate:
 1. Line items with unit prices and totals
@@ -220,7 +223,7 @@ export function generateQuoteId(): string {
 export async function calculateBulkDiscount(
   totalQuantity: number,
   basePrice: number,
-  pricingTiers?: Array<{ min: number; discount: number }>
+  pricingTiers?: Array<{ min: number; discount: number }>,
 ): Promise<{ discount_percentage: number; discounted_price: number }> {
   const defaultTiers = [
     { min: 0, discount: 0 },
@@ -246,7 +249,7 @@ export async function validateQuoteData(quoteData: {
   const errors: string[] = [];
 
   if (!quoteData.items || quoteData.items.length === 0) {
-    errors.push('No items in quote');
+    errors.push("No items in quote");
   }
 
   quoteData.items.forEach((item, index) => {
@@ -261,8 +264,8 @@ export async function validateQuoteData(quoteData: {
     }
   });
 
-  if (!['retail', 'wholesale', 'enterprise'].includes(quoteData.customer_type)) {
-    errors.push('Invalid customer type');
+  if (!["retail", "wholesale", "enterprise"].includes(quoteData.customer_type)) {
+    errors.push("Invalid customer type");
   }
 
   return {
@@ -281,7 +284,7 @@ Valid Until: ${quote.valid_until.toLocaleDateString()}
 LINE ITEMS
 ========================================
 Product | Qty | Unit | Price | Total
-${quote.items.map((item) => `${item.product_name} | ${item.quantity} | ${item.unit} | ${item.unit_price} | ${item.total}`).join('\n')}
+${quote.items.map((item) => `${item.product_name} | ${item.quantity} | ${item.unit} | ${item.unit_price} | ${item.total}`).join("\n")}
 
 ========================================
 SUMMARY

@@ -59,15 +59,13 @@ export function ChatProductivityTools({
   }
 
   const handleExportJSON = () => {
-    const filename =
-      `chat-${new Date().toISOString().split("T")[0]}.json`;
+    const filename = `chat-${new Date().toISOString().split("T")[0]}.json`;
     exportChatToJSON(messages, filename);
     toast.success("تم تصدير المحادثة كـ JSON");
   };
 
   const handleExportCSV = () => {
-    const filename =
-      `chat-${new Date().toISOString().split("T")[0]}.csv`;
+    const filename = `chat-${new Date().toISOString().split("T")[0]}.csv`;
     exportChatToCSV(messages, filename);
     toast.success("تم تصدير المحادثة كـ CSV");
   };
@@ -97,11 +95,7 @@ export function ChatProductivityTools({
       {/* Main Tools Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="sm"
-            variant="outline"
-            className="gap-1 text-xs h-8"
-          >
+          <Button size="sm" variant="outline" className="gap-1 text-xs h-8">
             <BarChart3 className="size-3.5" />
             الأدوات
             <ChevronDown className="size-3 ml-[-0.25rem]" />
@@ -109,9 +103,7 @@ export function ChatProductivityTools({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           {/* Export Section */}
-          <DropdownMenuLabel className="text-xs">
-            تصدير
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs">تصدير</DropdownMenuLabel>
           <DropdownMenuItem onClick={handleExportJSON}>
             <FileJson className="size-3.5 mr-2" />
             تصدير كـ JSON
@@ -128,9 +120,7 @@ export function ChatProductivityTools({
           <DropdownMenuSeparator />
 
           {/* Analytics Section */}
-          <DropdownMenuLabel className="text-xs">
-            تحليلات
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs">تحليلات</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setShowAnalytics(true)}>
             <TrendingUp className="size-3.5 mr-2" />
             عرض الإحصائيات
@@ -139,9 +129,7 @@ export function ChatProductivityTools({
           <DropdownMenuSeparator />
 
           {/* Save Section */}
-          <DropdownMenuLabel className="text-xs">
-            حفظ
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs">حفظ</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setShowSaveDialog(true)}>
             <Save className="size-3.5 mr-2" />
             حفظ المحادثة
@@ -154,9 +142,7 @@ export function ChatProductivityTools({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>إحصائيات المحادثة</DialogTitle>
-            <DialogDescription>
-              تحليل تفصيلي لمحادثتك
-            </DialogDescription>
+            <DialogDescription>تحليل تفصيلي لمحادثتك</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -165,79 +151,49 @@ export function ChatProductivityTools({
               <div className="bg-secondary/50 rounded-lg p-3">
                 <div className="flex items-center gap-1 mb-1">
                   <MessageSquare className="size-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
-                    إجمالي الرسائل
-                  </span>
+                  <span className="text-xs text-muted-foreground">إجمالي الرسائل</span>
                 </div>
-                <p className="text-lg font-bold">
-                  {analytics.totalMessages}
-                </p>
+                <p className="text-lg font-bold">{analytics.totalMessages}</p>
               </div>
 
               <div className="bg-secondary/50 rounded-lg p-3">
                 <div className="flex items-center gap-1 mb-1">
                   <Clock className="size-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
-                    المدة
-                  </span>
+                  <span className="text-xs text-muted-foreground">المدة</span>
                 </div>
-                <p className="text-lg font-bold">
-                  {analytics.conversationDuration}
-                </p>
+                <p className="text-lg font-bold">{analytics.conversationDuration}</p>
               </div>
 
               <div className="bg-secondary/50 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground mb-1">
-                  رسائل المستخدم
-                </div>
-                <p className="text-lg font-bold">
-                  {analytics.userMessages}
-                </p>
+                <div className="text-xs text-muted-foreground mb-1">رسائل المستخدم</div>
+                <p className="text-lg font-bold">{analytics.userMessages}</p>
               </div>
 
               <div className="bg-secondary/50 rounded-lg p-3">
-                <div className="text-xs text-muted-foreground mb-1">
-                  ردود المساعد
-                </div>
-                <p className="text-lg font-bold">
-                  {analytics.assistantMessages}
-                </p>
+                <div className="text-xs text-muted-foreground mb-1">ردود المساعد</div>
+                <p className="text-lg font-bold">{analytics.assistantMessages}</p>
               </div>
             </div>
 
             {/* Average Lengths */}
             <div className="space-y-2">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">
-                  متوسط طول رسالة المستخدم
-                </p>
-                <p className="text-sm font-medium">
-                  {analytics.averageUserLength} حرف
-                </p>
+                <p className="text-xs text-muted-foreground mb-1">متوسط طول رسالة المستخدم</p>
+                <p className="text-sm font-medium">{analytics.averageUserLength} حرف</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">
-                  متوسط طول رد المساعد
-                </p>
-                <p className="text-sm font-medium">
-                  {analytics.averageAssistantLength} حرف
-                </p>
+                <p className="text-xs text-muted-foreground mb-1">متوسط طول رد المساعد</p>
+                <p className="text-sm font-medium">{analytics.averageAssistantLength} حرف</p>
               </div>
             </div>
 
             {/* Top Keywords */}
             {analytics.topKeywords.length > 0 && (
               <div>
-                <p className="text-xs font-semibold mb-2">
-                  الكلمات الرئيسية
-                </p>
+                <p className="text-xs font-semibold mb-2">الكلمات الرئيسية</p>
                 <div className="flex flex-wrap gap-2">
                   {analytics.topKeywords.map((kw) => (
-                    <Badge
-                      key={kw.word}
-                      variant="secondary"
-                      className="text-xs"
-                    >
+                    <Badge key={kw.word} variant="secondary" className="text-xs">
                       {kw.word} ({kw.count})
                     </Badge>
                   ))}
@@ -253,9 +209,7 @@ export function ChatProductivityTools({
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>حفظ المحادثة</DialogTitle>
-            <DialogDescription>
-              أعط اسماً لهذه المحادثة (اختياري)
-            </DialogDescription>
+            <DialogDescription>أعط اسماً لهذه المحادثة (اختياري)</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -276,17 +230,12 @@ export function ChatProductivityTools({
               </p>
               <p>{analytics.totalMessages} رسالة</p>
               <p>
-                من {analytics.userMessages} مستخدم و{" "}
-                {analytics.assistantMessages} مساعد
+                من {analytics.userMessages} مستخدم و {analytics.assistantMessages} مساعد
               </p>
             </div>
 
             <div className="flex gap-2">
-              <Button
-                onClick={handleSaveChat}
-                className="flex-1"
-                size="sm"
-              >
+              <Button onClick={handleSaveChat} className="flex-1" size="sm">
                 <Save className="size-3.5 mr-1" />
                 حفظ
               </Button>

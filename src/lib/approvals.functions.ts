@@ -251,11 +251,7 @@ export const reassignApproval = createServerFn({ method: "POST" })
 
     // Only admins, the original submitter, or the currently assigned reviewer may reassign
     const admin = await isAdmin(supabase, userId);
-    if (
-      !admin &&
-      appr.requested_by !== userId &&
-      appr.assigned_to !== userId
-    ) {
+    if (!admin && appr.requested_by !== userId && appr.assigned_to !== userId) {
       throw new Error("Forbidden: cannot reassign this approval");
     }
 

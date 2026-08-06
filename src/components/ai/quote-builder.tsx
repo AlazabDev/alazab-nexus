@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Plus, Trash2, Copy } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Plus, Trash2, Copy } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface QuoteItem {
   productId: string;
@@ -25,17 +25,17 @@ interface QuoteState {
 }
 
 export function QuoteBuilder() {
-  const [customerType, setCustomerType] = useState<'retail' | 'wholesale' | 'enterprise'>('retail');
+  const [customerType, setCustomerType] = useState<"retail" | "wholesale" | "enterprise">("retail");
   const [state, setState] = useState<QuoteState>({
     loading: false,
     generated: false,
-    items: [{ productId: '', productName: '', quantity: 1, unit: 'pcs' }],
+    items: [{ productId: "", productName: "", quantity: 1, unit: "pcs" }],
   });
 
   const handleAddItem = () => {
     setState({
       ...state,
-      items: [...state.items, { productId: '', productName: '', quantity: 1, unit: 'pcs' }],
+      items: [...state.items, { productId: "", productName: "", quantity: 1, unit: "pcs" }],
     });
   };
 
@@ -54,16 +54,16 @@ export function QuoteBuilder() {
 
   const handleGenerateQuote = async () => {
     if (state.items.length === 0 || state.items.some((item) => !item.productId)) {
-      setState({ ...state, error: 'Please add at least one product' });
+      setState({ ...state, error: "Please add at least one product" });
       return;
     }
 
     setState({ ...state, loading: true, error: undefined });
 
     try {
-      const response = await fetch('/api/public/v1/ai/quotes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/public/v1/ai/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           products: state.items.map((item) => ({
             product_id: item.productId,
@@ -74,7 +74,7 @@ export function QuoteBuilder() {
         }),
       });
 
-      if (!response.ok) throw new Error('Quote generation failed');
+      if (!response.ok) throw new Error("Quote generation failed");
 
       const data = await response.json();
       setState({
@@ -89,7 +89,7 @@ export function QuoteBuilder() {
       setState({
         ...state,
         loading: false,
-        error: error instanceof Error ? error.message : 'Failed to generate quote',
+        error: error instanceof Error ? error.message : "Failed to generate quote",
       });
     }
   };
@@ -106,10 +106,10 @@ export function QuoteBuilder() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Customer Type</label>
             <div className="flex gap-2">
-              {(['retail', 'wholesale', 'enterprise'] as const).map((type) => (
+              {(["retail", "wholesale", "enterprise"] as const).map((type) => (
                 <Button
                   key={type}
-                  variant={customerType === type ? 'default' : 'outline'}
+                  variant={customerType === type ? "default" : "outline"}
                   onClick={() => setCustomerType(type)}
                   className="flex-1 capitalize"
                 >
@@ -123,11 +123,7 @@ export function QuoteBuilder() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">Products</label>
-              <Button
-                onClick={handleAddItem}
-                variant="outline"
-                size="sm"
-              >
+              <Button onClick={handleAddItem} variant="outline" size="sm">
                 <Plus className="h-4 w-4 mr-1" />
                 Add Product
               </Button>
@@ -140,7 +136,7 @@ export function QuoteBuilder() {
                     <input
                       placeholder="Product ID or Name"
                       value={item.productName}
-                      onChange={(e) => handleItemChange(idx, 'productName', e.target.value)}
+                      onChange={(e) => handleItemChange(idx, "productName", e.target.value)}
                       className="w-full text-sm px-2 py-1 border rounded bg-background"
                     />
                   </div>
@@ -149,14 +145,14 @@ export function QuoteBuilder() {
                     type="number"
                     min="1"
                     value={item.quantity}
-                    onChange={(e) => handleItemChange(idx, 'quantity', parseInt(e.target.value))}
+                    onChange={(e) => handleItemChange(idx, "quantity", parseInt(e.target.value))}
                     className="w-16 text-sm px-2 py-1 border rounded bg-background"
                     placeholder="Qty"
                   />
 
                   <select
                     value={item.unit}
-                    onChange={(e) => handleItemChange(idx, 'unit', e.target.value)}
+                    onChange={(e) => handleItemChange(idx, "unit", e.target.value)}
                     className="text-sm px-2 py-1 border rounded bg-background"
                   >
                     <option>pcs</option>
@@ -186,14 +182,19 @@ export function QuoteBuilder() {
           )}
 
           {/* Generate Button */}
-          <Button onClick={handleGenerateQuote} disabled={state.loading} size="lg" className="w-full">
+          <Button
+            onClick={handleGenerateQuote}
+            disabled={state.loading}
+            size="lg"
+            className="w-full"
+          >
             {state.loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Generating Quote...
               </>
             ) : (
-              'Generate Quote'
+              "Generate Quote"
             )}
           </Button>
         </CardContent>
@@ -216,9 +217,11 @@ export function QuoteBuilder() {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Quote ID</span>
                 <div className="flex items-center gap-2">
-                  <code className="text-sm font-mono bg-muted px-2 py-1 rounded">{state.quoteId}</code>
+                  <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                    {state.quoteId}
+                  </code>
                   <Button
-                    onClick={() => navigator.clipboard.writeText(state.quoteId || '')}
+                    onClick={() => navigator.clipboard.writeText(state.quoteId || "")}
                     variant="ghost"
                     size="sm"
                   >
@@ -234,7 +237,9 @@ export function QuoteBuilder() {
 
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Valid Until</span>
-                <span>{state.validUntil ? new Date(state.validUntil).toLocaleDateString() : 'N/A'}</span>
+                <span>
+                  {state.validUntil ? new Date(state.validUntil).toLocaleDateString() : "N/A"}
+                </span>
               </div>
             </div>
 
@@ -243,9 +248,7 @@ export function QuoteBuilder() {
               <Button className="flex-1" variant="outline">
                 Preview
               </Button>
-              <Button className="flex-1">
-                Send Quote
-              </Button>
+              <Button className="flex-1">Send Quote</Button>
             </div>
           </CardContent>
         </Card>

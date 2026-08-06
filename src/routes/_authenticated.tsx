@@ -68,7 +68,9 @@ function TopBar() {
         >
           <Search className="size-3.5" />
           <span>بحث سريع</span>
-          <kbd className="num text-[10px] bg-background border border-border rounded px-1 py-0.5">⌘K</kbd>
+          <kbd className="num text-[10px] bg-background border border-border rounded px-1 py-0.5">
+            ⌘K
+          </kbd>
         </button>
         <NotificationBell />
       </div>

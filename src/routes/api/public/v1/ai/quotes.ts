@@ -1,21 +1,21 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey, logCall, corsHeaders} from '@/lib/api-auth';
-import { generateQuoteFromRequest, generateQuoteId } from '@/lib/ai/quote-generator';
-import { z } from 'zod';
-import crypto from 'crypto';
+import { createFileRoute } from "@tanstack/react-router";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { CORS, json, requireApiKey, logCall, corsHeaders } from "@/lib/api-auth";
+import { generateQuoteFromRequest, generateQuoteId } from "@/lib/ai/quote-generator";
+import { z } from "zod";
+import crypto from "crypto";
 
 const QuoteRequestSchema = z.object({
   products: z.array(
     z.object({
       product_id: z.string().uuid(),
       quantity: z.number().positive(),
-      unit: z.string().default('pcs'),
-    })
+      unit: z.string().default("pcs"),
+    }),
   ),
   customer: z
     .object({
-      type: z.enum(['retail', 'wholesale', 'enterprise']).default('retail'),
+      type: z.enum(["retail", "wholesale", "enterprise"]).default("retail"),
       name: z.string().optional(),
       email: z.string().email().optional(),
       phone: z.string().optional(),
@@ -25,15 +25,16 @@ const QuoteRequestSchema = z.object({
   deadline: z.string().datetime().optional(),
 });
 
-export const Route = createFileRoute('/api/public/v1/ai/quotes')({
+export const Route = createFileRoute("/api/public/v1/ai/quotes")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       POST: async ({ request }) => {
         const started = Date.now();
 
         // Check API key
-        const authResult = await requireApiKey(request, '/api/public/v1/ai/quotes');
+        const authResult = await requireApiKey(request, "/api/public/v1/ai/quotes");
         if (authResult.error) {
           return authResult.error;
         }
@@ -46,12 +47,12 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
           // Fetch product data for pricing
           const productIds = validated.products.map((p) => p.product_id);
           const { data: products, error: productsError } = await supabaseAdmin
-            .from('products')
-            .select('id, name_en, name_ar, category, price')
-            .in('id', productIds);
+            .from("products")
+            .select("id, name_en, name_ar, category, price")
+            .in("id", productIds);
 
           if (productsError || !products || products.length === 0) {
-            return json({ error: 'Products not found' }, 404);
+            return json({ error: "Products not found" }, 404);
           }
 
           // Build request data for AI
@@ -60,7 +61,7 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
               const product = products.find((pr) => pr.id === p.product_id);
               return {
                 product_id: p.product_id,
-                name: product?.name_en || product?.name_ar || 'Unknown',
+                name: product?.name_en || product?.name_ar || "Unknown",
                 quantity: p.quantity,
                 unit: p.unit,
                 base_price: product?.price || 0,
@@ -74,21 +75,23 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
 
           // Fetch pricing rules
           const { data: pricingRules } = await supabaseAdmin
-            .from('pricing_rules')
-            .select('*')
-            .eq('is_active', true)
+            .from("pricing_rules")
+            .select("*")
+            .eq("is_active", true)
             .maybeSingle();
 
-
           // Generate quote using AI
-          const generatedQuote = await generateQuoteFromRequest(requestData as any, (pricingRules || undefined) as any);
+          const generatedQuote = await generateQuoteFromRequest(
+            requestData as any,
+            (pricingRules || undefined) as any,
+          );
 
           // Generate secure token for external access
-          const quoteToken = crypto.randomBytes(32).toString('hex');
+          const quoteToken = crypto.randomBytes(32).toString("hex");
 
           // Store quote in database
           const { data: savedQuote, error: insertError } = await supabaseAdmin
-            .from('api_quotes')
+            .from("api_quotes")
             .insert({
               product_id: validated.products[0]?.product_id,
               quote_request_data: {
@@ -107,10 +110,10 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
                 terms_conditions: generatedQuote.terms_conditions,
                 notes: generatedQuote.notes,
               } as never,
-              status: 'approved' as never,
-              generated_by: 'google/gemini-2.5-flash',
+              status: "approved" as never,
+              generated_by: "google/gemini-2.5-flash",
               generated_at: new Date().toISOString(),
-              api_endpoint: '/api/public/v1/ai/quotes',
+              api_endpoint: "/api/public/v1/ai/quotes",
               quote_token: quoteToken,
               consumer_id: consumer?.id ?? null,
             } as never)
@@ -126,7 +129,7 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
           await logCall({
             consumer,
             request,
-            endpoint: '/api/public/v1/ai/quotes',
+            endpoint: "/api/public/v1/ai/quotes",
             status: 200,
             startedAt: started,
             payload: validated,
@@ -149,15 +152,15 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
                 notes: generatedQuote.notes,
               },
             },
-            200
+            200,
           );
         } catch (error) {
-          console.error('[v0] Quote generation error:', error);
+          console.error("[v0] Quote generation error:", error);
 
           await logCall({
             consumer: null,
             request,
-            endpoint: '/api/public/v1/ai/quotes',
+            endpoint: "/api/public/v1/ai/quotes",
             status: 500,
             startedAt: started,
             error: error instanceof Error ? error.message : String(error),
@@ -165,9 +168,9 @@ export const Route = createFileRoute('/api/public/v1/ai/quotes')({
 
           return json(
             {
-              error: error instanceof Error ? error.message : 'Quote generation failed',
+              error: error instanceof Error ? error.message : "Quote generation failed",
             },
-            500
+            500,
           );
         }
       },

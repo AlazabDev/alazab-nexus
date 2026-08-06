@@ -35,7 +35,9 @@ function shortError(e: unknown): string {
   return msg.slice(0, 140);
 }
 
-async function timed<T>(fn: (signal: AbortSignal) => Promise<T>): Promise<{ value?: T; error?: string; ms: number }> {
+async function timed<T>(
+  fn: (signal: AbortSignal) => Promise<T>,
+): Promise<{ value?: T; error?: string; ms: number }> {
   const started = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -72,7 +74,9 @@ async function checkFoundry(): Promise<ServiceHealth> {
     ok: !!card?.ok,
     status: card?.status ?? 0,
     latencyMs: res.ms,
-    detail: card?.ok ? "بطاقة الوكيل متاحة" : (card?.error?.slice(0, 140) ?? res.error ?? "تعذر الوصول للوكيل"),
+    detail: card?.ok
+      ? "بطاقة الوكيل متاحة"
+      : (card?.error?.slice(0, 140) ?? res.error ?? "تعذر الوصول للوكيل"),
   };
 }
 
@@ -112,14 +116,15 @@ async function checkOpenAI(): Promise<ServiceHealth> {
     ok: !!res.value?.ok,
     status,
     latencyMs: res.ms,
-    detail: res.value?.ok ? "النموذج يستجيب" : res.error ?? `استجابة ${status}`,
+    detail: res.value?.ok ? "النموذج يستجيب" : (res.error ?? `استجابة ${status}`),
   };
 }
 
 async function checkSearch(): Promise<ServiceHealth> {
   const endpoint = process.env.AZURE_SEARCH_ENDPOINT;
   const apiKey = process.env.AZURE_SEARCH_API_KEY;
-  const index = process.env.AZURE_SEARCH_INDEX ?? process.env.AZURE_SEARCH_INDEX_NAME ?? "alazab-products";
+  const index =
+    process.env.AZURE_SEARCH_INDEX ?? process.env.AZURE_SEARCH_INDEX_NAME ?? "alazab-products";
 
   if (!endpoint || !apiKey) {
     return {
@@ -143,7 +148,7 @@ async function checkSearch(): Promise<ServiceHealth> {
     ok: !!res.value?.ok,
     status,
     latencyMs: res.ms,
-    detail: res.value?.ok ? "الفهرس متاح" : res.error ?? `استجابة ${status}`,
+    detail: res.value?.ok ? "الفهرس متاح" : (res.error ?? `استجابة ${status}`),
   };
 }
 
@@ -155,7 +160,13 @@ export async function collectAgentHealth(): Promise<AgentHealth> {
   const okCount = services.filter((s) => s.ok).length;
 
   const overall: AgentHealth["overall"] =
-    configured.length === 0 ? "unconfigured" : okCount === services.length ? "ok" : okCount === 0 ? "down" : "degraded";
+    configured.length === 0
+      ? "unconfigured"
+      : okCount === services.length
+        ? "ok"
+        : okCount === 0
+          ? "down"
+          : "degraded";
 
   return {
     checkedAt: new Date().toISOString(),

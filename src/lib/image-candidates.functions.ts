@@ -43,7 +43,10 @@ export const generateImageCandidates = createServerFn({ method: "POST" })
       .object({
         productName: z.string().min(2).max(200),
         context: z.string().max(1000).optional(),
-        types: z.array(z.enum(["product_photo", "lifestyle", "technical", "render_3d"])).min(1).max(4),
+        types: z
+          .array(z.enum(["product_photo", "lifestyle", "technical", "render_3d"]))
+          .min(1)
+          .max(4),
       })
       .parse(i),
   )

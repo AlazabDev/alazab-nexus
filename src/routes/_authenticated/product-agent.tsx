@@ -18,7 +18,6 @@ import { Bot, Send, User, Sparkles, Check, Search, CircleDot } from "lucide-reac
 import { toast } from "sonner";
 import { AgentHealthIndicator } from "@/components/agent-health-indicator";
 
-
 export const Route = createFileRoute("/_authenticated/product-agent")({
   head: () => ({
     meta: [
@@ -134,10 +133,10 @@ function ProductAgentPage() {
         <div className="mr-auto flex items-center gap-2">
           <AgentHealthIndicator />
           <Badge variant={status.data?.apiKey ? "secondary" : "destructive"} className="gap-1">
-            <CircleDot className="size-3" /> {status.data?.apiKey ? "المفتاح مهيأ" : "المفتاح مفقود"}
+            <CircleDot className="size-3" />{" "}
+            {status.data?.apiKey ? "المفتاح مهيأ" : "المفتاح مفقود"}
           </Badge>
         </div>
-
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[280px_1fr_300px]">
@@ -188,7 +187,10 @@ function ProductAgentPage() {
             <Sparkles className="size-4 text-accent" />
             {selected ? (
               <span className="font-medium">
-                {selected.name_ar} <span className="num text-muted-foreground" dir="ltr">({selected.az_code})</span>
+                {selected.name_ar}{" "}
+                <span className="num text-muted-foreground" dir="ltr">
+                  ({selected.az_code})
+                </span>
               </span>
             ) : (
               <span className="text-muted-foreground">لم يتم اختيار منتج</span>

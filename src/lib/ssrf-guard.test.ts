@@ -60,15 +60,11 @@ describe("assertSafeUrl", () => {
   });
 
   it("accepts allowlisted hosts and subdomains", () => {
-    expect(assertSafeUrl("https://images.unsplash.com/a.jpg").hostname).toBe(
-      "images.unsplash.com",
-    );
+    expect(assertSafeUrl("https://images.unsplash.com/a.jpg").hostname).toBe("images.unsplash.com");
     // subdomain of an allowed host
     expect(
-      assertSafeUrl(
-        "https://cdn.eesxiwdeeipfzyarycgo.supabase.co/x.jpg",
-        DEFAULT_ALLOWED_HOSTS,
-      ).hostname,
+      assertSafeUrl("https://cdn.eesxiwdeeipfzyarycgo.supabase.co/x.jpg", DEFAULT_ALLOWED_HOSTS)
+        .hostname,
     ).toBe("cdn.eesxiwdeeipfzyarycgo.supabase.co");
   });
 });

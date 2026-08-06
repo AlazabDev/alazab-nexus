@@ -81,7 +81,7 @@ export async function testConnection(config: IntegrationConfig): Promise<{
   latency?: number;
 }> {
   const startTime = Date.now();
-  
+
   try {
     logIntegrationAction({
       integrationId: config.id,
@@ -227,9 +227,7 @@ export async function syncData(config: IntegrationConfig): Promise<SyncResult> {
       integrationName: config.name,
       action: "sync",
       status: result.success ? "success" : "failed",
-      message: result.success
-        ? `تمت مزامنة ${result.recordsProcessed} سجل`
-        : "فشلت المزامنة",
+      message: result.success ? `تمت مزامنة ${result.recordsProcessed} سجل` : "فشلت المزامنة",
       details: { ...result, duration },
     });
 
@@ -306,9 +304,7 @@ async function syncShopifyData(config: IntegrationConfig): Promise<SyncResult> {
 /**
  * الحصول على توصيات الإصلاح تلقائياً
  */
-export function getAutoFixRecommendations(
-  integrationId: string,
-): string[] {
+export function getAutoFixRecommendations(integrationId: string): string[] {
   const logs = getIntegrationLogs(integrationId);
   const recentErrors = logs.filter((l) => l.status === "failed").slice(-5);
 
@@ -316,9 +312,7 @@ export function getAutoFixRecommendations(
 
   if (recentErrors.length > 0) {
     // تحليل الأخطاء الأخيرة
-    const errorMessages = recentErrors
-      .map((l) => l.error?.toLowerCase() || "")
-      .join(" ");
+    const errorMessages = recentErrors.map((l) => l.error?.toLowerCase() || "").join(" ");
 
     if (errorMessages.includes("timeout") || errorMessages.includes("connection")) {
       recommendations.push("تحقق من اتصال الإنترنت");

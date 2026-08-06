@@ -1,21 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
-import { CORS, json, requireApiKey, logCall, corsHeaders} from '@/lib/api-auth';
-import { z } from 'zod';
+import { createFileRoute } from "@tanstack/react-router";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { CORS, json, requireApiKey, logCall, corsHeaders } from "@/lib/api-auth";
+import { z } from "zod";
 
 const StatusRequestSchema = z.object({
   jobId: z.string(),
 });
 
-export const Route = createFileRoute('/api/private/v1/ai/job-status')({
+export const Route = createFileRoute("/api/private/v1/ai/job-status")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       GET: async ({ request }) => {
         const started = Date.now();
 
         // Verify authentication
-        const authResult = await requireApiKey(request, '/api/private/v1/ai/job-status');
+        const authResult = await requireApiKey(request, "/api/private/v1/ai/job-status");
         if (authResult.error) {
           return authResult.error;
         }
@@ -23,50 +24,50 @@ export const Route = createFileRoute('/api/private/v1/ai/job-status')({
 
         try {
           const url = new URL(request.url);
-          const jobId = url.searchParams.get('jobId');
+          const jobId = url.searchParams.get("jobId");
 
           if (!jobId) {
             await logCall({
               consumer,
               request,
-              endpoint: '/api/private/v1/ai/job-status',
+              endpoint: "/api/private/v1/ai/job-status",
               status: 400,
               startedAt: started,
-              error: 'Missing jobId parameter',
+              error: "Missing jobId parameter",
             });
-            return json({ error: 'jobId query parameter required' }, 400);
+            return json({ error: "jobId query parameter required" }, 400);
           }
 
           // Fetch job status
           const { data: job, error: jobError } = await supabaseAdmin
-            .from('ai_optimization_jobs')
-            .select('*')
-            .eq('job_id', jobId)
-            .eq('consumer_id', consumer?.id)
+            .from("ai_optimization_jobs")
+            .select("*")
+            .eq("job_id", jobId)
+            .eq("consumer_id", consumer?.id)
             .maybeSingle();
 
           if (jobError) {
             await logCall({
               consumer,
               request,
-              endpoint: '/api/private/v1/ai/job-status',
+              endpoint: "/api/private/v1/ai/job-status",
               status: 404,
               startedAt: started,
-              error: 'Job not found',
+              error: "Job not found",
             });
-            return json({ error: 'Job not found' }, 404);
+            return json({ error: "Job not found" }, 404);
           }
 
           if (!job) {
             await logCall({
               consumer,
               request,
-              endpoint: '/api/private/v1/ai/job-status',
+              endpoint: "/api/private/v1/ai/job-status",
               status: 403,
               startedAt: started,
-              error: 'Access denied to job',
+              error: "Access denied to job",
             });
-            return json({ error: 'Unauthorized: Job not found or access denied' }, 403);
+            return json({ error: "Unauthorized: Job not found or access denied" }, 403);
           }
 
           // Calculate time remaining
@@ -97,15 +98,15 @@ export const Route = createFileRoute('/api/private/v1/ai/job-status')({
                 results: job.results || {},
               },
             },
-            200
+            200,
           );
         } catch (error) {
-          console.error('[v0] Job status error:', error);
-          
+          console.error("[v0] Job status error:", error);
+
           await logCall({
             consumer: null,
             request,
-            endpoint: '/api/private/v1/ai/job-status',
+            endpoint: "/api/private/v1/ai/job-status",
             status: 500,
             startedAt: started,
             error: error instanceof Error ? error.message : String(error),
@@ -113,9 +114,9 @@ export const Route = createFileRoute('/api/private/v1/ai/job-status')({
 
           return json(
             {
-              error: error instanceof Error ? error.message : 'Failed to fetch job status',
+              error: error instanceof Error ? error.message : "Failed to fetch job status",
             },
-            500
+            500,
           );
         }
       },

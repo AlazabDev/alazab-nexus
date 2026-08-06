@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Sparkles,
   FileText,
@@ -11,12 +11,12 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-} from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+} from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 export interface OptimizationJob {
   job_id: string;
-  status: 'queued' | 'processing' | 'completed' | 'failed';
+  status: "queued" | "processing" | "completed" | "failed";
   progress_percent: number;
   total_products: number;
   processed_count: number;
@@ -41,32 +41,32 @@ export function AIStudioDashboard({
   const actions = [
     {
       icon: Sparkles,
-      title: 'Optimize Content',
-      description: 'Enhance product names, descriptions, and metadata with AI',
-      color: 'from-blue-500 to-blue-600',
+      title: "Optimize Content",
+      description: "Enhance product names, descriptions, and metadata with AI",
+      color: "from-blue-500 to-blue-600",
       onClick: onStartOptimization,
-      badge: 'Most Popular',
+      badge: "Most Popular",
     },
     {
       icon: FileText,
-      title: 'Generate Datasheet',
-      description: 'Create professional technical datasheets automatically',
-      color: 'from-purple-500 to-purple-600',
+      title: "Generate Datasheet",
+      description: "Create professional technical datasheets automatically",
+      color: "from-purple-500 to-purple-600",
       onClick: onStartDatasheet,
-      badge: 'New',
+      badge: "New",
     },
     {
       icon: ImageIcon,
-      title: 'Fetch & Match Images',
-      description: 'Find professional images and match them to products',
-      color: 'from-green-500 to-green-600',
+      title: "Fetch & Match Images",
+      description: "Find professional images and match them to products",
+      color: "from-green-500 to-green-600",
       onClick: onStartImageFetch,
     },
     {
       icon: ReceiptText,
-      title: 'Generate Quotes',
-      description: 'Auto-generate quotes with intelligent pricing',
-      color: 'from-orange-500 to-orange-600',
+      title: "Generate Quotes",
+      description: "Auto-generate quotes with intelligent pricing",
+      color: "from-orange-500 to-orange-600",
       onClick: onStartQuote,
     },
   ];
@@ -105,13 +105,19 @@ export function AIStudioDashboard({
                   <div className={`p-2 rounded-lg bg-gradient-to-br ${action.color} text-white`}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  {action.badge && <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-full">{action.badge}</span>}
+                  {action.badge && (
+                    <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-full">
+                      {action.badge}
+                    </span>
+                  )}
                 </div>
                 <CardTitle className="text-lg mt-3">{action.title}</CardTitle>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <CardDescription className="text-sm leading-relaxed">{action.description}</CardDescription>
+                <CardDescription className="text-sm leading-relaxed">
+                  {action.description}
+                </CardDescription>
                 <Button
                   onClick={action.onClick}
                   className={`w-full bg-gradient-to-r ${action.color} hover:opacity-90 text-white border-0`}
@@ -140,7 +146,9 @@ export function AIStudioDashboard({
                     {statusIcons[job.status]}
                     <div className="text-sm">
                       <p className="font-medium">{job.type}</p>
-                      <p className="text-xs text-muted-foreground">{job.processed_count} of {job.total_products} products</p>
+                      <p className="text-xs text-muted-foreground">
+                        {job.processed_count} of {job.total_products} products
+                      </p>
                     </div>
                   </div>
                   <span className="text-xs font-semibold">{job.progress_percent}%</span>
@@ -156,7 +164,9 @@ export function AIStudioDashboard({
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Optimized This Month</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Optimized This Month
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,247</div>
@@ -166,7 +176,9 @@ export function AIStudioDashboard({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Datasheets Generated</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Datasheets Generated
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">342</div>
@@ -176,7 +188,9 @@ export function AIStudioDashboard({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Quotes Created</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Quotes Created
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">89</div>

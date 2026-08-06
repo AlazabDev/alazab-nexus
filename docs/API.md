@@ -14,6 +14,7 @@ Production: https://azproud.vercel.app/api
 All endpoints require authentication via Supabase Auth token.
 
 **Headers:**
+
 ```
 Authorization: Bearer <supabase_auth_token>
 Content-Type: application/json
@@ -39,12 +40,14 @@ Get all products with optional filtering, sorting, and pagination.
 | `sort` | string | -created_at | Sort field with direction (-field = desc, field = asc) |
 
 **Example Request:**
+
 ```bash
 curl -H "Authorization: Bearer TOKEN" \
   "http://localhost:8084/api/products?status=approved&limit=20&page=1"
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "data": [
@@ -74,6 +77,7 @@ curl -H "Authorization: Bearer TOKEN" \
 ```
 
 **Error Response (401):**
+
 ```json
 {
   "error": "Unauthorized",
@@ -86,6 +90,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Endpoint:** `GET /api/products/:id`
 
 **Success Response (200):**
+
 ```json
 {
   "id": "uuid",
@@ -104,7 +109,7 @@ curl -H "Authorization: Bearer TOKEN" \
   "prices": [
     {
       "supplier_id": "uuid",
-      "price": 100.00,
+      "price": 100.0,
       "currency": "SAR",
       "created_at": "2026-05-22T10:30:00Z"
     }
@@ -117,6 +122,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Endpoint:** `POST /api/products`
 
 **Request Body:**
+
 ```json
 {
   "name_ar": "منتج جديد",
@@ -131,6 +137,7 @@ curl -H "Authorization: Bearer TOKEN" \
 ```
 
 **Validation Rules:**
+
 - `name_ar`: Required, min 2 chars, max 255 chars
 - `name_en`: Required, min 2 chars, max 255 chars
 - `az_code`: Required, unique, alphanumeric + hyphens
@@ -139,6 +146,7 @@ curl -H "Authorization: Bearer TOKEN" \
 - `description_*`: Optional, max 2000 chars
 
 **Success Response (201):**
+
 ```json
 {
   "id": "uuid",
@@ -150,6 +158,7 @@ curl -H "Authorization: Bearer TOKEN" \
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "error": "Validation Error",
@@ -169,6 +178,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Success Response (200):** Updated product object
 
 **Error Response (404):**
+
 ```json
 {
   "error": "Not Found",
@@ -198,6 +208,7 @@ curl -H "Authorization: Bearer TOKEN" \
 | `limit` | number | 50 | Items per page |
 
 **Success Response (200):**
+
 ```json
 {
   "data": [
@@ -223,6 +234,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Endpoint:** `POST /api/suppliers`
 
 **Request Body:**
+
 ```json
 {
   "name_ar": "مورد جديد",
@@ -236,6 +248,7 @@ curl -H "Authorization: Bearer TOKEN" \
 ```
 
 **Validation Rules:**
+
 - `name_ar`: Required, min 2 chars
 - `name_en`: Required, min 2 chars
 - `supplier_code`: Required, unique
@@ -269,6 +282,7 @@ curl -H "Authorization: Bearer TOKEN" \
 | `limit` | number | 50 | Items per page |
 
 **Success Response (200):**
+
 ```json
 {
   "data": [
@@ -292,6 +306,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Endpoint:** `POST /api/requests`
 
 **Request Body:**
+
 ```json
 {
   "product_name_ar": "منتج مطلوب",
@@ -307,6 +322,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Endpoint:** `PATCH /api/requests/:id/status`
 
 **Request Body:**
+
 ```json
 {
   "status": "in_review",
@@ -315,6 +331,7 @@ curl -H "Authorization: Bearer TOKEN" \
 ```
 
 **Valid Status Values:**
+
 - open
 - in_review
 - approved
@@ -334,6 +351,7 @@ curl -H "Authorization: Bearer TOKEN" \
 | `supplier_id` | string | Filter by supplier |
 
 **Success Response (200):**
+
 ```json
 {
   "data": [
@@ -344,7 +362,7 @@ curl -H "Authorization: Bearer TOKEN" \
       "rule_type": "volume_based",
       "min_quantity": 100,
       "max_quantity": 500,
-      "price": 50.00,
+      "price": 50.0,
       "discount_percent": 5,
       "created_at": "2026-05-22T10:30:00Z"
     }
@@ -357,6 +375,7 @@ curl -H "Authorization: Bearer TOKEN" \
 **Endpoint:** `POST /api/pricing/rules`
 
 **Request Body:**
+
 ```json
 {
   "product_id": "uuid",
@@ -364,7 +383,7 @@ curl -H "Authorization: Bearer TOKEN" \
   "rule_type": "volume_based",
   "min_quantity": 100,
   "max_quantity": 500,
-  "price": 50.00,
+  "price": 50.0,
   "discount_percent": 5
 }
 ```
@@ -383,15 +402,15 @@ All errors follow this format:
 
 ### Common Error Codes
 
-| Code | Meaning |
-|------|---------|
-| 400 | Bad Request - Validation failed |
-| 401 | Unauthorized - Missing/invalid auth token |
-| 403 | Forbidden - Insufficient permissions |
-| 404 | Not Found - Resource doesn't exist |
-| 409 | Conflict - Duplicate or state conflict |
-| 429 | Too Many Requests - Rate limited |
-| 500 | Server Error - Unexpected error |
+| Code | Meaning                                   |
+| ---- | ----------------------------------------- |
+| 400  | Bad Request - Validation failed           |
+| 401  | Unauthorized - Missing/invalid auth token |
+| 403  | Forbidden - Insufficient permissions      |
+| 404  | Not Found - Resource doesn't exist        |
+| 409  | Conflict - Duplicate or state conflict    |
+| 429  | Too Many Requests - Rate limited          |
+| 500  | Server Error - Unexpected error           |
 
 ## Rate Limiting
 
@@ -399,6 +418,7 @@ All errors follow this format:
 - **Headers:** `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
 
 **Example Response Header:**
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 87
@@ -424,6 +444,7 @@ Paginated endpoints return:
 ## Timestamps
 
 All timestamps are in ISO 8601 format (UTC):
+
 ```
 2026-05-22T10:30:00Z
 ```
@@ -443,27 +464,27 @@ All timestamps are in ISO 8601 format (UTC):
 ### JavaScript/TypeScript
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(url, key)
+const supabase = createClient(url, key);
 
 // Get products
 const { data: products } = await supabase
-  .from('products')
-  .select('*')
-  .eq('status', 'approved')
-  .limit(20)
+  .from("products")
+  .select("*")
+  .eq("status", "approved")
+  .limit(20);
 
 // Create product
 const { data: newProduct } = await supabase
-  .from('products')
+  .from("products")
   .insert({
-    name_ar: 'منتج جديد',
-    name_en: 'New Product',
-    az_code: 'AZ-003'
+    name_ar: "منتج جديد",
+    name_en: "New Product",
+    az_code: "AZ-003",
   })
   .select()
-  .single()
+  .single();
 ```
 
 ---

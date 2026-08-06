@@ -143,7 +143,6 @@ function ManufacturingOrdersPage() {
     },
   });
 
-
   const statCards = [
     { label: "اجمالي الاوامر", value: stats?.total || 0, icon: FileText, color: "text-primary" },
     { label: "في الانتظار", value: stats?.pending || 0, icon: Clock, color: "text-amber-600" },

@@ -8,7 +8,6 @@ const BUCKET = "product-assets";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-2.5-flash-image";
 
-
 async function callGeminiImageEdit(prompt: string, imageDataUrl: string) {
   const apiKey = process.env.LOVABLE_API_KEY;
   if (!apiKey) throw new Error("LOVABLE_API_KEY not configured");
@@ -44,15 +43,16 @@ async function callGeminiImageEdit(prompt: string, imageDataUrl: string) {
 
 export const aiEditProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { productId: string; sourceUrl: string; prompt: string; replaceLinkId?: string }) =>
-    z
-      .object({
-        productId: z.string().uuid(),
-        sourceUrl: z.string().url(),
-        prompt: z.string().min(3).max(2000),
-        replaceLinkId: z.string().uuid().optional(),
-      })
-      .parse(input),
+  .inputValidator(
+    (input: { productId: string; sourceUrl: string; prompt: string; replaceLinkId?: string }) =>
+      z
+        .object({
+          productId: z.string().uuid(),
+          sourceUrl: z.string().url(),
+          prompt: z.string().min(3).max(2000),
+          replaceLinkId: z.string().uuid().optional(),
+        })
+        .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { data: roleRow } = await context.supabase

@@ -3,10 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeSearchTerm } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
-import {
-  Search, Grid3X3, List,
-  Package, ChevronLeft,
-} from "lucide-react";
+import { Search, Grid3X3, List, Package, ChevronLeft } from "lucide-react";
 
 type ItemType = Database["public"]["Enums"]["item_type"];
 
@@ -18,12 +15,14 @@ export const Route = createFileRoute("/catalog/")({
   head: () => ({
     meta: [
       { title: "كتالوج العزب للتشطيبات — كل المنتجات والخدمات" },
-      { name: "description", content: "كتالوج شامل لمنتجات وخدمات العزب للتشطيبات المعمارية — أكثر من 3,000 بند" },
+      {
+        name: "description",
+        content: "كتالوج شامل لمنتجات وخدمات العزب للتشطيبات المعمارية — أكثر من 3,000 بند",
+      },
     ],
   }),
   component: CatalogPage,
 });
-
 
 // ── Types ──────────────────────────────────────────────────
 type Product = {
@@ -54,16 +53,18 @@ type Filters = {
 // ── Constants ──────────────────────────────────────────────
 const PAGE = 24;
 
-
 const BRAND_META: Record<string, { label: string; color: string; bg: string }> = {
   luxury_finishing: { label: "Luxury Finishing", color: "#534AB7", bg: "#EEEDFE" },
-  brand_identity:   { label: "Brand Identity",   color: "#0F6E56", bg: "#E1F5EE" },
-  uberfix:          { label: "UberFix",           color: "#185FA5", bg: "#E6F1FB" },
-  laban_alasfour:   { label: "Laban Alasfour",    color: "#BA7517", bg: "#FEF3E2" },
+  brand_identity: { label: "Brand Identity", color: "#0F6E56", bg: "#E1F5EE" },
+  uberfix: { label: "UberFix", color: "#185FA5", bg: "#E6F1FB" },
+  laban_alasfour: { label: "Laban Alasfour", color: "#BA7517", bg: "#FEF3E2" },
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  product: "منتج", service: "خدمة", material: "مادة", spare_part: "قطعة غيار",
+  product: "منتج",
+  service: "خدمة",
+  material: "مادة",
+  spare_part: "قطعة غيار",
 };
 
 // ── Helpers ────────────────────────────────────────────────
@@ -72,8 +73,6 @@ function imgSrc(p: Product): string | undefined {
   // so we let onError fall back to the placeholder instead of guessing a URL.
   return p.main_image_url ?? undefined;
 }
-
-
 
 function priceLabel(p: Product) {
   const v = p.unit_price ?? p.estimated_price;
@@ -141,9 +140,11 @@ function ProductCard({ p }: { p: Product }) {
 
       <div className="px-4 py-3 border-t border-[#F0EDE8] flex items-center justify-between gap-2">
         <span className="font-mono text-[10px] text-[#534AB7] font-semibold">{p.az_code}</span>
-        {price
-          ? <span className="text-sm font-bold text-[#0F6E56]">{price}</span>
-          : <span className="text-xs text-[#B0A89E]">بدون سعر</span>}
+        {price ? (
+          <span className="text-sm font-bold text-[#0F6E56]">{price}</span>
+        ) : (
+          <span className="text-xs text-[#B0A89E]">بدون سعر</span>
+        )}
       </div>
     </Link>
   );
@@ -162,9 +163,17 @@ function ProductRow({ p }: { p: Product }) {
     >
       <div className="size-14 rounded-xl bg-[#F5F3EE] overflow-hidden shrink-0">
         {!imgErr ? (
-          <img src={imgSrc(p)} alt="" loading="lazy" className="size-full object-cover" onError={() => setImgErr(true)} />
+          <img
+            src={imgSrc(p)}
+            alt=""
+            loading="lazy"
+            className="size-full object-cover"
+            onError={() => setImgErr(true)}
+          />
         ) : (
-          <div className="size-full flex items-center justify-center"><Package className="size-5 text-[#C5BEE8]" /></div>
+          <div className="size-full flex items-center justify-center">
+            <Package className="size-5 text-[#C5BEE8]" />
+          </div>
         )}
       </div>
       <div className="flex-1 min-w-0">
@@ -180,22 +189,23 @@ function ProductRow({ p }: { p: Product }) {
   );
 }
 
-
 // ── Main Page ──────────────────────────────────────────────
 function CatalogPage() {
-  const [products, setProducts]   = useState<Product[]>([]);
-  const [total, setTotal]         = useState(0);
-  const [loading, setLoading]     = useState(true);
-  const [page, setPage]           = useState(1);
-  const [view, setView]           = useState<"grid" | "list">("grid");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-  const [stats, setStats]         = useState({ total: 0, priced: 0, synced: 0 });
-  const [filters, setFilters]     = useState<Filters>({
-    q: "", brand: "", type: "", sort: "name_ar",
+  const [stats, setStats] = useState({ total: 0, priced: 0, synced: 0 });
+  const [filters, setFilters] = useState<Filters>({
+    q: "",
+    brand: "",
+    type: "",
+    sort: "name_ar",
   });
 
   const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
 
   // إحصائيات سريعة
   useEffect(() => {
@@ -212,29 +222,42 @@ function CatalogPage() {
 
   const load = useCallback(async (f: Filters, pg: number) => {
     setLoading(true);
-    let q = supabase.from("products")
-      .select("id,az_code,name_ar,name_en,description_ar,brand,item_type,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,gpc_class,operational_track,status", { count: "exact" })
+    let q = supabase
+      .from("products")
+      .select(
+        "id,az_code,name_ar,name_en,description_ar,brand,item_type,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,gpc_class,operational_track,status",
+        { count: "exact" },
+      )
       .not("status", "in", "(archived,rejected)")
       .range((pg - 1) * PAGE, pg * PAGE - 1);
 
-
-    if (f.q)     q = q.or(`name_ar.ilike.%${sanitizeSearchTerm(f.q)}%,az_code.ilike.%${sanitizeSearchTerm(f.q)}%,name_en.ilike.%${sanitizeSearchTerm(f.q)}%`);
+    if (f.q)
+      q = q.or(
+        `name_ar.ilike.%${sanitizeSearchTerm(f.q)}%,az_code.ilike.%${sanitizeSearchTerm(f.q)}%,name_en.ilike.%${sanitizeSearchTerm(f.q)}%`,
+      );
     if (f.brand) q = q.eq("brand", f.brand);
-    if (f.type)  q = q.eq("item_type", f.type as ItemType);
+    if (f.type) q = q.eq("item_type", f.type as ItemType);
 
-    if (f.sort === "unit_price_asc")  q = q.order("unit_price", { ascending: true,  nullsFirst: false });
-    else if (f.sort === "unit_price_desc") q = q.order("unit_price", { ascending: false, nullsFirst: false });
-    else                              q = q.order("name_ar", { ascending: true });
+    if (f.sort === "unit_price_asc")
+      q = q.order("unit_price", { ascending: true, nullsFirst: false });
+    else if (f.sort === "unit_price_desc")
+      q = q.order("unit_price", { ascending: false, nullsFirst: false });
+    else q = q.order("name_ar", { ascending: true });
 
     const { data, count, error } = await q;
-    if (!error) { setProducts(data ?? []); setTotal(count ?? 0); }
+    if (!error) {
+      setProducts(data ?? []);
+      setTotal(count ?? 0);
+    }
     setLoading(false);
   }, []);
 
-  useEffect(() => { load(filters, page); }, [filters, page, load]);
+  useEffect(() => {
+    load(filters, page);
+  }, [filters, page, load]);
 
   const setFilter = (key: keyof Filters, val: string) => {
-    setFilters(prev => ({ ...prev, [key]: val }));
+    setFilters((prev) => ({ ...prev, [key]: val }));
     setPage(1);
   };
 
@@ -246,21 +269,31 @@ function CatalogPage() {
   const totalPages = Math.ceil(total / PAGE);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]" dir="rtl"
-      style={{ fontFamily: MONO_STACK }}>
-
+    <div className="min-h-screen bg-[#FAFAF8]" dir="rtl" style={{ fontFamily: MONO_STACK }}>
       {/* ── Hero ── */}
-      <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0D1B2A 0%, #1a2f4a 60%, #0D1B2A 100%)" }}>
-        <div className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: "radial-gradient(circle at 20% 50%, #C9A84C 0%, transparent 50%)" }} />
+      <div
+        className="relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #0D1B2A 0%, #1a2f4a 60%, #0D1B2A 100%)" }}
+      >
+        <div
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: "radial-gradient(circle at 20% 50%, #C9A84C 0%, transparent 50%)",
+          }}
+        />
         <div className="relative max-w-6xl mx-auto px-6 py-12">
           <div className="flex items-center gap-3 mb-6">
-            <div className="size-9 rounded-xl flex items-center justify-center font-bold text-sm"
-              style={{ background: "#C9A84C", color: "#0D1B2A" }}>AZ</div>
+            <div
+              className="size-9 rounded-xl flex items-center justify-center font-bold text-sm"
+              style={{ background: "#C9A84C", color: "#0D1B2A" }}
+            >
+              AZ
+            </div>
             <span className="text-white font-bold text-lg">العزب للتشطيبات المعمارية</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">
-            كتالوج المنتجات<br />
+            كتالوج المنتجات
+            <br />
             <span style={{ color: "#C9A84C" }}>والخدمات</span>
           </h1>
           <p className="text-white/70 text-sm leading-loose max-w-md mb-8">
@@ -272,9 +305,17 @@ function CatalogPage() {
               { v: stats.synced.toLocaleString("ar-EG"), l: "في دفترة" },
               { v: stats.priced.toLocaleString("ar-EG"), l: "بسعر" },
             ].map(({ v, l }) => (
-              <div key={l} className="rounded-xl p-3 text-center"
-                style={{ background: "rgba(201,168,76,.1)", border: "1px solid rgba(201,168,76,.2)" }}>
-                <div className="text-xl font-black" style={{ color: "#C9A84C" }}>{v}</div>
+              <div
+                key={l}
+                className="rounded-xl p-3 text-center"
+                style={{
+                  background: "rgba(201,168,76,.1)",
+                  border: "1px solid rgba(201,168,76,.2)",
+                }}
+              >
+                <div className="text-xl font-black" style={{ color: "#C9A84C" }}>
+                  {v}
+                </div>
                 <div className="text-xs text-white/60 mt-0.5">{l}</div>
               </div>
             ))}
@@ -286,18 +327,33 @@ function CatalogPage() {
       <div className="sticky top-0 z-40 bg-white border-b border-[#E8E4DC] shadow-sm">
         {/* Brand tabs */}
         <div className="flex gap-2 px-6 pt-3 overflow-x-auto pb-2 scrollbar-hide">
-          {[{ key: "", label: "الكل" }, ...Object.entries(BRAND_META).map(([k, m]) => ({ key: k, label: m.label }))].map(({ key, label }) => {
+          {[
+            { key: "", label: "الكل" },
+            ...Object.entries(BRAND_META).map(([k, m]) => ({ key: k, label: m.label })),
+          ].map(({ key, label }) => {
             const active = filters.brand === key;
             const m = BRAND_META[key];
             return (
-              <button key={key}
+              <button
+                key={key}
                 onClick={() => setFilter("brand", key)}
                 className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all"
-                style={active
-                  ? { background: m?.color ?? "#0D1B2A", color: "#fff", borderColor: m?.color ?? "#0D1B2A" }
-                  : { background: m?.bg ?? "#F5F3EE", color: m?.color ?? "#4A4540", borderColor: "transparent" }
+                style={
+                  active
+                    ? {
+                        background: m?.color ?? "#0D1B2A",
+                        color: "#fff",
+                        borderColor: m?.color ?? "#0D1B2A",
+                      }
+                    : {
+                        background: m?.bg ?? "#F5F3EE",
+                        color: m?.color ?? "#4A4540",
+                        borderColor: "transparent",
+                      }
                 }
-              >{label}</button>
+              >
+                {label}
+              </button>
             );
           })}
         </div>
@@ -307,21 +363,32 @@ function CatalogPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#B0A89E]" />
             <input
-              type="text" placeholder="ابحث بالاسم أو الكود..."
+              type="text"
+              placeholder="ابحث بالاسم أو الكود..."
               onChange={(e) => onSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none
                          focus:border-[#C9A84C] bg-[#FAFAF8] transition"
             />
           </div>
 
-          <select value={filters.type} onChange={(e) => setFilter("type", e.target.value)}
-            className="px-3 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none bg-[#FAFAF8] focus:border-[#C9A84C]">
+          <select
+            value={filters.type}
+            onChange={(e) => setFilter("type", e.target.value)}
+            className="px-3 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none bg-[#FAFAF8] focus:border-[#C9A84C]"
+          >
             <option value="">كل الأنواع</option>
-            {Object.entries(TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            {Object.entries(TYPE_LABELS).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
           </select>
 
-          <select value={filters.sort} onChange={(e) => setFilter("sort", e.target.value as Filters["sort"])}
-            className="px-3 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none bg-[#FAFAF8] focus:border-[#C9A84C]">
+          <select
+            value={filters.sort}
+            onChange={(e) => setFilter("sort", e.target.value as Filters["sort"])}
+            className="px-3 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none bg-[#FAFAF8] focus:border-[#C9A84C]"
+          >
             <option value="name_ar">الاسم</option>
             <option value="unit_price_asc">السعر ↑</option>
             <option value="unit_price_desc">السعر ↓</option>
@@ -329,9 +396,12 @@ function CatalogPage() {
 
           <div className="flex gap-1">
             {(["grid", "list"] as const).map((v) => (
-              <button key={v} onClick={() => setView(v)}
+              <button
+                key={v}
+                onClick={() => setView(v)}
                 className={`size-9 rounded-xl border flex items-center justify-center transition
-                  ${view === v ? "bg-[#0D1B2A] border-[#0D1B2A] text-white" : "border-[#E8E4DC] text-[#8C8680]"}`}>
+                  ${view === v ? "bg-[#0D1B2A] border-[#0D1B2A] text-white" : "border-[#E8E4DC] text-[#8C8680]"}`}
+              >
                 {v === "grid" ? <Grid3X3 className="size-4" /> : <List className="size-4" />}
               </button>
             ))}
@@ -357,34 +427,47 @@ function CatalogPage() {
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((p) => <ProductCard key={p.id} p={p} />)}
+            {products.map((p) => (
+              <ProductCard key={p.id} p={p} />
+            ))}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {products.map((p) => <ProductRow key={p.id} p={p} />)}
+            {products.map((p) => (
+              <ProductRow key={p.id} p={p} />
+            ))}
           </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-10 flex-wrap">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-              className="px-4 py-2 text-sm rounded-xl border border-[#E8E4DC] disabled:opacity-40 hover:border-[#C9A84C] transition">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm rounded-xl border border-[#E8E4DC] disabled:opacity-40 hover:border-[#C9A84C] transition"
+            >
               ‹ السابق
             </button>
             {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
               const n = page <= 4 ? i + 1 : page + i - 3;
               if (n < 1 || n > totalPages) return null;
               return (
-                <button key={n} onClick={() => setPage(n)}
+                <button
+                  key={n}
+                  onClick={() => setPage(n)}
                   className={`size-9 rounded-xl text-sm font-medium border transition
-                    ${n === page ? "bg-[#0D1B2A] text-white border-[#0D1B2A]" : "border-[#E8E4DC] hover:border-[#C9A84C]"}`}>
+                    ${n === page ? "bg-[#0D1B2A] text-white border-[#0D1B2A]" : "border-[#E8E4DC] hover:border-[#C9A84C]"}`}
+                >
                   {n}
                 </button>
               );
             })}
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              className="px-4 py-2 text-sm rounded-xl border border-[#E8E4DC] disabled:opacity-40 hover:border-[#C9A84C] transition">
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm rounded-xl border border-[#E8E4DC] disabled:opacity-40 hover:border-[#C9A84C] transition"
+            >
               التالي ›
             </button>
           </div>

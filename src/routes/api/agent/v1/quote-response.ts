@@ -51,7 +51,9 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
           }
 
           let query = supabaseAdmin.from("quote_requests").select("*");
-          query = body.quote_id ? query.eq("id", body.quote_id) : query.eq("request_id", body.request_id);
+          query = body.quote_id
+            ? query.eq("id", body.quote_id)
+            : query.eq("request_id", body.request_id);
           const { data: quote, error: quoteError } = await query.maybeSingle();
 
           if (quoteError || !quote) {
@@ -73,7 +75,10 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
             );
           }
           if (quote.quote_valid_until && new Date(quote.quote_valid_until) < new Date()) {
-            await supabaseAdmin.from("quote_requests").update({ status: "expired" }).eq("id", quote.id);
+            await supabaseAdmin
+              .from("quote_requests")
+              .update({ status: "expired" })
+              .eq("id", quote.id);
             return json(
               { success: false, error: "Quote has expired", code: "quote_expired" },
               400,

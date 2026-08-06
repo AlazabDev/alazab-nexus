@@ -23,14 +23,14 @@ function SupplierDetails() {
   const { id } = Route.useParams();
   const qc = useQueryClient();
 
-  const { data: supplier, isLoading, error } = useQuery({
+  const {
+    data: supplier,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["supplier", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("suppliers")
-        .select("*")
-        .eq("id", id)
-        .single();
+      const { data, error } = await supabase.from("suppliers").select("*").eq("id", id).single();
       if (error) throw error;
       return data;
     },
@@ -38,10 +38,7 @@ function SupplierDetails() {
 
   const updateStatus = useMutation({
     mutationFn: async (newStatus: string) => {
-      const { error } = await supabase
-        .from("suppliers")
-        .update({ status: newStatus })
-        .eq("id", id);
+      const { error } = await supabase.from("suppliers").update({ status: newStatus }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -77,8 +74,7 @@ function SupplierDetails() {
 
   if (isLoading) return <div className="p-6 text-muted-foreground">جاري التحميل...</div>;
   if (error) return <div className="p-6 text-destructive">حدث خطأ في التحميل</div>;
-  if (!supplier)
-    return <div className="p-6 text-muted-foreground">المورد غير موجود</div>;
+  if (!supplier) return <div className="p-6 text-muted-foreground">المورد غير موجود</div>;
 
   return (
     <div className="p-6 space-y-4 max-w-[1200px] mx-auto">
@@ -94,7 +90,9 @@ function SupplierDetails() {
           <div className="flex-1">
             <h1 className="text-2xl font-bold">{supplier.name}</h1>
             <div className="text-sm text-muted-foreground mt-1">
-              {supplier.supplier_type && <span className="capitalize">{supplier.supplier_type.replace(/_/g, " ")}</span>}
+              {supplier.supplier_type && (
+                <span className="capitalize">{supplier.supplier_type.replace(/_/g, " ")}</span>
+              )}
             </div>
             <div className="flex gap-3 mt-3">
               {supplier.email && (
@@ -142,9 +140,7 @@ function SupplierDetails() {
         </Card>
 
         <Card className="p-4 surface-elevated border-0">
-          <div className="text-xs text-muted-foreground font-semibold uppercase mb-2">
-            التقييم
-          </div>
+          <div className="text-xs text-muted-foreground font-semibold uppercase mb-2">التقييم</div>
           <div className="text-sm font-medium">{supplier.rating || "—"}</div>
         </Card>
 

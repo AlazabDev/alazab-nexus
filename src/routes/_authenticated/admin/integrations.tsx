@@ -11,7 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Network, Zap, CheckCircle2, XCircle, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
-import { testIntegrationConnection, type IntegrationType } from "@/lib/integrations-admin.functions";
+import {
+  testIntegrationConnection,
+  type IntegrationType,
+} from "@/lib/integrations-admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/integrations")({
   beforeLoad: async () => {
@@ -174,7 +177,9 @@ function IntegrationCard({
   const initial = (row?.config as Record<string, string>) || {};
   const [values, setValues] = useState<Record<string, string>>(initial);
   const [testing, setTesting] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean; message?: string; latency?: number } | null>(null);
+  const [result, setResult] = useState<{ ok: boolean; message?: string; latency?: number } | null>(
+    null,
+  );
 
   const saveMut = useMutation({
     mutationFn: async (status?: string) => {
@@ -186,7 +191,10 @@ function IntegrationCard({
         updated_at: new Date().toISOString(),
       };
       if (row?.id) {
-        const { error } = await supabase.from("integration_configs").update(payload).eq("id", row.id);
+        const { error } = await supabase
+          .from("integration_configs")
+          .update(payload)
+          .eq("id", row.id);
         if (error) throw error;
       } else {
         const { error } = await supabase.from("integration_configs").insert(payload);
@@ -210,19 +218,17 @@ function IntegrationCard({
       });
       setResult(res);
       // persist status
-      await supabase
-        .from("integration_configs")
-        .upsert(
-          {
-            type: def.type,
-            name: def.name,
-            config: values,
-            status: res.ok ? "active" : "error",
-            last_error: res.ok ? null : res.message ?? null,
-            last_sync_at: new Date().toISOString(),
-          },
-          { onConflict: "type" },
-        );
+      await supabase.from("integration_configs").upsert(
+        {
+          type: def.type,
+          name: def.name,
+          config: values,
+          status: res.ok ? "active" : "error",
+          last_error: res.ok ? null : (res.message ?? null),
+          last_sync_at: new Date().toISOString(),
+        },
+        { onConflict: "type" },
+      );
       onSaved();
       if (res.ok) toast.success(`${def.name}: متصل (${res.latency}ms)`);
       else toast.error(`${def.name}: ${res.message}`);

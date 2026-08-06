@@ -53,6 +53,7 @@ A comprehensive, AI-powered product and service management system built for ente
 ## Overview
 
 Alazab Nexus is a professional product management platform designed for organizations that need to:
+
 - Manage large product catalogs efficiently
 - Integrate with multiple business systems (Daftra, ERPNext, Bot Gateway)
 - Leverage AI for product classification and analysis
@@ -62,6 +63,7 @@ Alazab Nexus is a professional product management platform designed for organiza
 ## Features
 
 ### Core Functionality
+
 - **Product Management** - Complete CRUD with bulk operations, versioning, and AI-assisted creation
 - **Asset Management** - Professional image gallery with drag-drop, optimization, and linking
 - **Supplier Management** - Track suppliers by tier, performance metrics, and inventory links
@@ -70,6 +72,7 @@ Alazab Nexus is a professional product management platform designed for organiza
 - **Dashboard** - Real-time KPIs with drill-down analytics and status indicators
 
 ### Advanced Features
+
 - Real-time data synchronization with Supabase
 - AI-powered product classification (Azure OpenAI)
 - Multi-language support (Arabic/English, RTL-friendly)
@@ -79,18 +82,19 @@ Alazab Nexus is a professional product management platform designed for organiza
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 19.2, TypeScript, TanStack Router, Tailwind CSS v4 |
-| **State** | TanStack Query, React Hook Form, Zod validation |
-| **Backend** | Supabase PostgreSQL, Real-time subscriptions |
-| **AI/ML** | Azure OpenAI for product analysis |
-| **Storage** | Supabase Storage for assets and documents |
-| **UI Components** | shadcn/ui (30+ components) |
+| Layer             | Technology                                               |
+| ----------------- | -------------------------------------------------------- |
+| **Frontend**      | React 19.2, TypeScript, TanStack Router, Tailwind CSS v4 |
+| **State**         | TanStack Query, React Hook Form, Zod validation          |
+| **Backend**       | Supabase PostgreSQL, Real-time subscriptions             |
+| **AI/ML**         | Azure OpenAI for product analysis                        |
+| **Storage**       | Supabase Storage for assets and documents                |
+| **UI Components** | shadcn/ui (30+ components)                               |
 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 22+ recommended
 - pnpm 11.6.0 via Corepack
 - Supabase account with database connection
@@ -99,12 +103,14 @@ Alazab Nexus is a professional product management platform designed for organiza
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/AlazabDev/alazab-nexus.git
    cd alazab-nexus
    ```
 
 2. **Install dependencies**
+
    ```bash
    corepack enable
    corepack prepare pnpm@11.6.0 --activate
@@ -112,9 +118,11 @@ Alazab Nexus is a professional product management platform designed for organiza
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
+
    Required variables:
    - `VITE_SUPABASE_URL` - Supabase project URL for the browser client
    - `VITE_SUPABASE_PUBLISHABLE_KEY` - Supabase publishable/anon key for the browser client
@@ -125,6 +133,7 @@ Alazab Nexus is a professional product management platform designed for organiza
    - `AZURE_OPENAI_API_KEY` - Azure OpenAI API key (optional)
 
 4. **Run development server**
+
    ```bash
    pnpm dev
    ```
@@ -158,24 +167,28 @@ src/
 ## Key Components
 
 ### Dashboard
+
 - KPI cards with drill-down navigation
 - Quick action buttons (Create Product, Import Data, Manage Pricing)
 - System health indicators
 - Recent activity feed
 
 ### Product Management
+
 - **Form Component** - Product creation/editing with full validation
 - **Gallery Component** - Professional asset viewing and management
 - **Upload Zone** - Drag-drop file upload with progress tracking
 - **Products List** - Sortable, filterable product table with bulk operations
 
 ### Supplier Management
+
 - Supplier registry with tier classification
 - Contact information management
 - Performance metrics and inventory linking
 - Sheet-based inline editing
 
 ### Request Management
+
 - Product request lifecycle (Open → Review → Approval → Conversion)
 - Status tracking with visual indicators
 - Priority and type categorization
@@ -184,21 +197,27 @@ src/
 ## Architecture Decisions
 
 ### State Management
+
 Uses TanStack Query for server state management because:
+
 - Automatic caching and synchronization
 - Background refetching capabilities
 - Built-in error and loading states
 - Minimal boilerplate
 
 ### Form Handling
+
 React Hook Form + Zod for:
+
 - Type-safe form validation
 - Better performance (field-level updates)
 - Seamless integration with Supabase types
 - Arabic error messages
 
 ### Styling
+
 Tailwind CSS v4 with design tokens in `styles.css` for:
+
 - Consistent color system
 - RTL-first approach
 - Dark/Light theme support
@@ -207,17 +226,20 @@ Tailwind CSS v4 with design tokens in `styles.css` for:
 ## Security
 
 ### Authentication
+
 - Supabase Auth with email/password
 - Session management with secure cookies
 - Protected routes requiring authentication
 
 ### Database Security
+
 - Row-Level Security (RLS) policies on all tables
 - Parameterized queries through Supabase client APIs
 - Service role key restricted to server-side code and hosting secrets
 - API key rate limiting
 
 ### API Security
+
 - CORS policy configured through `ALLOWED_ORIGINS`
 - Rate limiting through `API_RATE_LIMIT_PER_MINUTE`
 - Input validation on public and agent endpoints
@@ -225,13 +247,13 @@ Tailwind CSS v4 with design tokens in `styles.css` for:
 
 ## Performance Targets
 
-| Metric | Target | Status |
-|--------|--------|--------|
-| Dashboard Load Time | < 2s | target |
-| Product List (1000 items) | < 1s | target |
-| Search Response | < 500ms | target |
-| API Response | < 200ms | target |
-| Mobile FCP | < 2.5s | target |
+| Metric                    | Target  | Status |
+| ------------------------- | ------- | ------ |
+| Dashboard Load Time       | < 2s    | target |
+| Product List (1000 items) | < 1s    | target |
+| Search Response           | < 500ms | target |
+| API Response              | < 200ms | target |
+| Mobile FCP                | < 2.5s  | target |
 
 ## Deployment
 
@@ -254,12 +276,14 @@ sudo DEPLOY_BRANCH=main bash scripts/deploy-production.sh
 ```
 
 ### Docker
+
 ```bash
 docker build -t alazab-nexus .
 docker run --env-file .env.production -p 3000:3000 alazab-nexus
 ```
 
 ### Manual
+
 ```bash
 pnpm install --frozen-lockfile
 pnpm run ci
@@ -269,16 +293,19 @@ pnpm preview
 ## Integration Points
 
 ### Daftra (Accounting)
+
 - Sync product catalog to Daftra
 - Create invoices from product requests
 - Two-way sync with price updates
 
 ### Bot Gateway
+
 - Expose product list API for chatbots
 - AI-powered product recommendations
 - Real-time inventory status
 
 ### ERPNext
+
 - Inventory management sync
 - Manufacturing orders integration
 - Supply chain coordination
@@ -286,14 +313,17 @@ pnpm preview
 ## API Reference
 
 ### Products
+
 - `GET /api/public/v1/products` - List products (paginated)
 - `GET /api/public/v1/products/$azCode` - Get public product details
 
 ### Suppliers
+
 - `GET /api/public/v1/suppliers` - List suppliers
 - `POST /api/public/v1/suppliers/webhook` - Supplier price/inventory webhook
 
 ### Requests
+
 - `POST /api/agent/v1/quote-request` - Create quote request
 - `POST /api/agent/v1/quote-response` - Record customer quote response
 - `GET /api/agent/v1/order-status` - Get order status
@@ -301,15 +331,19 @@ pnpm preview
 ## Troubleshooting
 
 ### Issue: "VITE_SUPABASE_URL is not set"
+
 **Solution:** Ensure `.env.local` file exists with all required environment variables.
 
 ### Issue: "SUPABASE_PUBLISHABLE_KEY is not set"
+
 **Solution:** Configure `VITE_SUPABASE_PUBLISHABLE_KEY` for browser use and `SUPABASE_PUBLISHABLE_KEY` for SSR/server use.
 
 ### Issue: Auth redirects to login
+
 **Solution:** Check Supabase Auth settings, redirect URLs, and email confirmation policy.
 
 ### Issue: Images not displaying
+
 **Solution:** Check Supabase Storage bucket permissions and CORS settings.
 
 ## Contributing
@@ -331,6 +365,7 @@ pnpm preview
 ## Testing
 
 Current production gate:
+
 ```bash
 pnpm run ci
 ```
@@ -340,16 +375,19 @@ pnpm run ci
 ## Monitoring & Maintenance
 
 ### Database Health
+
 - Monitor query performance: Supabase Dashboard → Performance
 - Check storage usage: Supabase Dashboard → Storage
 - Review audit logs in the database
 
 ### Error Tracking
+
 - Monitor errors in Supabase logs
 - Toast notifications for user-facing errors
 - Console logs for debugging in development only
 
 ### Performance
+
 - Use Lighthouse for performance audits
 - Monitor bundle size: `pnpm build` → dist/ folder
 - Check Core Web Vitals in hosting analytics
@@ -357,6 +395,7 @@ pnpm run ci
 ## Support & Troubleshooting
 
 For issues:
+
 1. Check existing GitHub Issues
 2. Review logs in Supabase Dashboard
 3. Test in development environment first

@@ -59,7 +59,9 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
   const genFn = useServerFn(generateProductImages);
   const editFn = useServerFn(aiEditProductImage);
   const aiOps = useAiOps();
-  const aiBusy = aiOps.ops.some((o) => (o.kind === "ai-generate" || o.kind === "ai-edit") && o.status === "running");
+  const aiBusy = aiOps.ops.some(
+    (o) => (o.kind === "ai-generate" || o.kind === "ai-edit") && o.status === "running",
+  );
 
   const { data: rows, isLoading } = useQuery<Row[]>({
     queryKey: ["product-assets", productId],
@@ -186,16 +188,20 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     const role = rows?.length ? "gallery" : "main_image";
     const sortOrder = rows?.length ?? 0;
     setUrlInput("");
-    await aiOps.start("url", `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`, async (ctx) => {
-      ctx.log(`URL: ${url}`);
-      ctx.log(`الدور: ${role} · ترتيب ${sortOrder}`);
-      ctx.setProgress(40);
-      ctx.log("التحقق من الرابط وإنشاء سجل الأصل…");
-      await linkAssetFromUrl({ url, productId, azCode, role, sortOrder });
-      ctx.setProgress(85);
-      ctx.log("تم ربط الأصل بالمنتج");
-      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-    });
+    await aiOps.start(
+      "url",
+      `رابط: ${url.slice(0, 48)}${url.length > 48 ? "…" : ""}`,
+      async (ctx) => {
+        ctx.log(`URL: ${url}`);
+        ctx.log(`الدور: ${role} · ترتيب ${sortOrder}`);
+        ctx.setProgress(40);
+        ctx.log("التحقق من الرابط وإنشاء سجل الأصل…");
+        await linkAssetFromUrl({ url, productId, azCode, role, sortOrder });
+        ctx.setProgress(85);
+        ctx.log("تم ربط الأصل بالمنتج");
+        qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      },
+    );
   };
 
   const onGenerateAI = async () => {
@@ -219,24 +225,28 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
     setEditDialog(null);
     setEditPrompt("");
     setReplaceOriginal(false);
-    await aiOps.start("ai-edit", `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`, async (ctx) => {
-      ctx.log(`المصدر: ${dlg.url}`);
-      ctx.log(`التعليمات: ${prompt}`);
-      ctx.log(`استبدال الأصل: ${replace ? "نعم" : "لا"}`);
-      ctx.setProgress(30);
-      ctx.log("استدعاء وكيل تعديل الصورة…");
-      await editFn({
-        data: {
-          productId,
-          sourceUrl: dlg.url,
-          prompt,
-          replaceLinkId: replace ? dlg.linkId : undefined,
-        },
-      });
-      ctx.setProgress(90);
-      ctx.log("تم تطبيق التعديل وحفظ النسخة الجديدة", "success");
-      qc.invalidateQueries({ queryKey: ["product-assets", productId] });
-    });
+    await aiOps.start(
+      "ai-edit",
+      `تعديل AI: ${prompt.slice(0, 40)}${prompt.length > 40 ? "…" : ""}`,
+      async (ctx) => {
+        ctx.log(`المصدر: ${dlg.url}`);
+        ctx.log(`التعليمات: ${prompt}`);
+        ctx.log(`استبدال الأصل: ${replace ? "نعم" : "لا"}`);
+        ctx.setProgress(30);
+        ctx.log("استدعاء وكيل تعديل الصورة…");
+        await editFn({
+          data: {
+            productId,
+            sourceUrl: dlg.url,
+            prompt,
+            replaceLinkId: replace ? dlg.linkId : undefined,
+          },
+        });
+        ctx.setProgress(90);
+        ctx.log("تم تطبيق التعديل وحفظ النسخة الجديدة", "success");
+        qc.invalidateQueries({ queryKey: ["product-assets", productId] });
+      },
+    );
   };
 
   if (isLoading) {
@@ -333,12 +343,7 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Sparkles className="size-4 text-accent" /> أدوات الذكاء الاصطناعي والروابط
           </div>
-          <Button
-            onClick={onGenerateAI}
-            disabled={aiBusy}
-            size="sm"
-            className="gap-2"
-          >
+          <Button onClick={onGenerateAI} disabled={aiBusy} size="sm" className="gap-2">
             <Sparkles className="size-4" />
             {aiBusy ? "جاري الإنشاء..." : "إنشاء صور AI (3)"}
           </Button>
@@ -353,7 +358,12 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
             className="flex-1"
             onKeyDown={(e) => e.key === "Enter" && onAddUrl()}
           />
-          <Button onClick={onAddUrl} disabled={busy || !urlInput.trim()} variant="outline" size="sm">
+          <Button
+            onClick={onAddUrl}
+            disabled={busy || !urlInput.trim()}
+            variant="outline"
+            size="sm"
+          >
             إضافة من رابط
           </Button>
         </div>
@@ -370,8 +380,6 @@ export function ProductAssetsTab({ productId, azCode }: { productId: string; azC
         onDismiss={aiOps.remove}
         onClearDone={aiOps.clearDone}
       />
-
-
 
       {/* Gallery */}
       <div className="space-y-3">

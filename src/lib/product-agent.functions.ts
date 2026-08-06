@@ -23,7 +23,9 @@ export const getProductAgentStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => {
     const status = azureProductAgentStatus();
-    const card = status.apiKey ? await fetchAgentCard() : { ok: false, status: 0, error: "missing key" };
+    const card = status.apiKey
+      ? await fetchAgentCard()
+      : { ok: false, status: 0, error: "missing key" };
     return { ...status, reachable: card.ok, cardStatus: card.status, cardError: card.error };
   });
 

@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { ProductContentOptimizer } from '@/components/ai/product-content-optimizer';
-import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { createFileRoute } from "@tanstack/react-router";
+import { ProductContentOptimizer } from "@/components/ai/product-content-optimizer";
+import { PageHeader } from "@/components/page-header";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const Route = createFileRoute('/_authenticated/ai-studio/optimize')({
+export const Route = createFileRoute("/_authenticated/ai-studio/optimize")({
   component: OptimizePage,
 });
 
@@ -30,19 +30,27 @@ function OptimizePage() {
             <CardContent className="space-y-3 text-sm">
               <div className="space-y-1">
                 <p className="font-medium">1. Enter Content</p>
-                <p className="text-muted-foreground">Provide your current product name and description</p>
+                <p className="text-muted-foreground">
+                  Provide your current product name and description
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="font-medium">2. Choose Level</p>
-                <p className="text-muted-foreground">Select optimization depth (Basic, Standard, Premium)</p>
+                <p className="text-muted-foreground">
+                  Select optimization depth (Basic, Standard, Premium)
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="font-medium">3. Get Results</p>
-                <p className="text-muted-foreground">AI generates enhanced versions in English & Arabic</p>
+                <p className="text-muted-foreground">
+                  AI generates enhanced versions in English & Arabic
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="font-medium">4. Review & Apply</p>
-                <p className="text-muted-foreground">Preview changes before applying to your products</p>
+                <p className="text-muted-foreground">
+                  Preview changes before applying to your products
+                </p>
               </div>
             </CardContent>
           </Card>

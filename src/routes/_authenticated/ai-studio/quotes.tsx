@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { QuoteBuilder } from '@/components/ai/quote-builder';
-import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { createFileRoute } from "@tanstack/react-router";
+import { QuoteBuilder } from "@/components/ai/quote-builder";
+import { PageHeader } from "@/components/page-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const Route = createFileRoute('/_authenticated/ai-studio/quotes')({
+export const Route = createFileRoute("/_authenticated/ai-studio/quotes")({
   component: QuotesPage,
 });
 

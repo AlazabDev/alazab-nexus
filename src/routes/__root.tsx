@@ -88,11 +88,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
-      { name: "description", content: "منصة العزب لإدارة المنتجات والخدمات والأصول الرقمية والتسعير والموردين — مصدر بيانات موحد مع API مركزي." },
-      { property: "og:description", content: "منصة العزب لإدارة المنتجات والخدمات والأصول الرقمية والتسعير والموردين — مصدر بيانات موحد مع API مركزي." },
-      { name: "twitter:description", content: "منصة العزب لإدارة المنتجات والخدمات والأصول الرقمية والتسعير والموردين — مصدر بيانات موحد مع API مركزي." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d2727b8c-daf3-4fa2-9e88-9be6f89beb85/id-preview-1e340f89--45ec4524-1d67-4c5c-b22a-f92a4bed6aac.lovable.app-1779327481711.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d2727b8c-daf3-4fa2-9e88-9be6f89beb85/id-preview-1e340f89--45ec4524-1d67-4c5c-b22a-f92a4bed6aac.lovable.app-1779327481711.png" },
+      {
+        name: "description",
+        content:
+          "منصة العزب لإدارة المنتجات والخدمات والأصول الرقمية والتسعير والموردين — مصدر بيانات موحد مع API مركزي.",
+      },
+      {
+        property: "og:description",
+        content:
+          "منصة العزب لإدارة المنتجات والخدمات والأصول الرقمية والتسعير والموردين — مصدر بيانات موحد مع API مركزي.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "منصة العزب لإدارة المنتجات والخدمات والأصول الرقمية والتسعير والموردين — مصدر بيانات موحد مع API مركزي.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d2727b8c-daf3-4fa2-9e88-9be6f89beb85/id-preview-1e340f89--45ec4524-1d67-4c5c-b22a-f92a4bed6aac.lovable.app-1779327481711.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d2727b8c-daf3-4fa2-9e88-9be6f89beb85/id-preview-1e340f89--45ec4524-1d67-4c5c-b22a-f92a4bed6aac.lovable.app-1779327481711.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

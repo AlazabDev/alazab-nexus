@@ -190,7 +190,9 @@ async function executeToolCall(toolName: string, args: Record<string, unknown>):
       let queryBuilder = supabase
         .from("products")
         .select("id, az_code, name_ar, item_type, status, gpc_family, confidence_level")
-        .or(`name_ar.ilike.%${sanitizeSearchTerm(query)}%,az_code.ilike.%${sanitizeSearchTerm(query)}%,description_ar.ilike.%${sanitizeSearchTerm(query)}%`)
+        .or(
+          `name_ar.ilike.%${sanitizeSearchTerm(query)}%,az_code.ilike.%${sanitizeSearchTerm(query)}%,description_ar.ilike.%${sanitizeSearchTerm(query)}%`,
+        )
         .limit(limit);
 
       if (item_type) queryBuilder = queryBuilder.eq("item_type", item_type as any);
@@ -506,4 +508,3 @@ export async function sendChatMessage(
 
 // Export types and utilities
 export { TOOLS, SYSTEM_PROMPT };
-

@@ -5,17 +5,20 @@ These serverless functions power AzProud's integrations and background processin
 ## Functions Overview
 
 ### 1. `sync-integration`
+
 **Purpose:** Synchronize AzProud data with external systems (Daftra, Bot Gateway, ERPNext, Azure OpenAI)
 
 **Trigger:** Manual or scheduled (via Vercel Cron)
 
 **Supported Integrations:**
+
 - Daftra (products, pricing, invoices)
 - Bot Gateway API (product catalog)
 - ERPNext (inventory - planned Q3-Q4 2026)
 - Azure OpenAI (product analysis)
 
 **Request:**
+
 ```json
 {
   "integrationId": "daftra" | "bot-gateway" | "erpnext" | "azure-openai"
@@ -23,6 +26,7 @@ These serverless functions power AzProud's integrations and background processin
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -33,20 +37,24 @@ These serverless functions power AzProud's integrations and background processin
 ```
 
 **Environment Variables:**
+
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin operations
 
 ### 2. `daftra-webhook`
+
 **Purpose:** Receive and process real-time updates from Daftra
 
 **Trigger:** Daftra webhook (configured in Daftra dashboard)
 
 **Webhook Events:**
+
 - `invoice.created` - New invoice created in Daftra
 - `invoice.paid` - Invoice marked as paid
 - `item.updated` - Product pricing/details updated
 
 **Request Body Example:**
+
 ```json
 {
   "event": "invoice.created",
@@ -60,6 +68,7 @@ These serverless functions power AzProud's integrations and background processin
 ```
 
 **Processing Flow:**
+
 1. Receive webhook from Daftra
 2. Validate event type
 3. Create/update records in AzProud
@@ -67,16 +76,19 @@ These serverless functions power AzProud's integrations and background processin
 5. Return success response
 
 ### 3. `duplicate-check`
+
 **Purpose:** Find potential duplicate products using multiple matching algorithms
 
 **Trigger:** Scheduled task or manual invocation
 
 **Matching Criteria:**
+
 1. **Exact Code Match** - Same `az_code` (similarity: 1.0)
 2. **Name Similarity** - Similar Arabic names using Levenshtein distance (similarity: 0.75+)
 3. **Same GPC Family** - Products in same category (similarity: 0.6)
 
 **Request:**
+
 ```json
 {
   "productId": "uuid",
@@ -88,6 +100,7 @@ These serverless functions power AzProud's integrations and background processin
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -109,6 +122,7 @@ These serverless functions power AzProud's integrations and background processin
 ## Deployment
 
 ### Prerequisites
+
 ```bash
 # Install Supabase CLI
 brew install supabase/tap/supabase
@@ -118,6 +132,7 @@ supabase login
 ```
 
 ### Deploy Functions
+
 ```bash
 # Deploy all functions
 supabase functions deploy
@@ -131,6 +146,7 @@ supabase functions serve
 ```
 
 ### Set Environment Variables
+
 ```bash
 # In Supabase dashboard: Settings → Edge Functions Secrets
 supabase secrets set SUPABASE_URL=https://your-project.supabase.co
@@ -140,6 +156,7 @@ supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your-service-key
 ## Testing
 
 ### Test sync-integration
+
 ```bash
 curl -X POST http://localhost:3000/functions/v1/sync-integration \
   -H "Content-Type: application/json" \
@@ -148,6 +165,7 @@ curl -X POST http://localhost:3000/functions/v1/sync-integration \
 ```
 
 ### Test daftra-webhook (local)
+
 ```bash
 curl -X POST http://localhost:3000/functions/v1/daftra-webhook \
   -H "Content-Type: application/json" \
@@ -158,6 +176,7 @@ curl -X POST http://localhost:3000/functions/v1/daftra-webhook \
 ```
 
 ### Test duplicate-check
+
 ```bash
 curl -X POST http://localhost:3000/functions/v1/duplicate-check \
   -H "Content-Type: application/json" \
@@ -170,6 +189,7 @@ curl -X POST http://localhost:3000/functions/v1/duplicate-check \
 ## Database Tables Used
 
 ### integration_configs
+
 ```sql
 CREATE TABLE integration_configs (
   id UUID PRIMARY KEY,
@@ -182,6 +202,7 @@ CREATE TABLE integration_configs (
 ```
 
 ### sync_logs
+
 ```sql
 CREATE TABLE sync_logs (
   id UUID PRIMARY KEY,
@@ -194,6 +215,7 @@ CREATE TABLE sync_logs (
 ```
 
 ### webhook_logs
+
 ```sql
 CREATE TABLE webhook_logs (
   id UUID PRIMARY KEY,
@@ -205,6 +227,7 @@ CREATE TABLE webhook_logs (
 ```
 
 ### orders
+
 ```sql
 CREATE TABLE orders (
   id UUID PRIMARY KEY,
@@ -222,6 +245,7 @@ CREATE TABLE orders (
 ## Monitoring & Logs
 
 ### View Function Logs
+
 ```bash
 # Real-time logs
 supabase functions logs sync-integration --follow
@@ -231,6 +255,7 @@ supabase functions logs sync-integration --filter "error"
 ```
 
 ### Performance Metrics
+
 - Track in `sync_logs` and `webhook_logs` tables
 - Monitor success rate and error patterns
 - Check execution time for optimization
@@ -239,12 +264,12 @@ supabase functions logs sync-integration --filter "error"
 
 ### Common Errors
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| Missing Supabase credentials | ENV vars not set | Set credentials in Function Settings |
-| Integration not found | Invalid integrationId | Check integration_configs table |
-| Database connection failed | Network/auth issue | Verify service role key |
-| Rate limit exceeded | Too many requests | Implement exponential backoff |
+| Error                        | Cause                 | Solution                             |
+| ---------------------------- | --------------------- | ------------------------------------ |
+| Missing Supabase credentials | ENV vars not set      | Set credentials in Function Settings |
+| Integration not found        | Invalid integrationId | Check integration_configs table      |
+| Database connection failed   | Network/auth issue    | Verify service role key              |
+| Rate limit exceeded          | Too many requests     | Implement exponential backoff        |
 
 ## Security
 

@@ -21,7 +21,12 @@ async function timedFetch(url: string, init: RequestInit, timeoutMs = 8000) {
     const res = await fetch(safeUrl, { ...init, signal: ctrl.signal, redirect: "error" });
     return { ok: res.ok, status: res.status, latency: Date.now() - start };
   } catch (e: any) {
-    return { ok: false, status: 0, latency: Date.now() - start, error: e?.message || "network_error" };
+    return {
+      ok: false,
+      status: 0,
+      latency: Date.now() - start,
+      error: e?.message || "network_error",
+    };
   } finally {
     clearTimeout(t);
   }
@@ -52,7 +57,12 @@ export const testIntegrationConnection = createServerFn({ method: "POST" })
           method: "GET",
           headers,
         });
-        return { ok: r.ok, status: r.status, latency: r.latency, message: r.ok ? "متصل" : r.error || `HTTP ${r.status}` };
+        return {
+          ok: r.ok,
+          status: r.status,
+          latency: r.latency,
+          message: r.ok ? "متصل" : r.error || `HTTP ${r.status}`,
+        };
       }
       case "daftra": {
         const base = endpoint || "https://api.daftra.com";
@@ -61,7 +71,12 @@ export const testIntegrationConnection = createServerFn({ method: "POST" })
           method: "GET",
           headers: { APIKEY: data.apiKey, Accept: "application/json" },
         });
-        return { ok: r.ok, status: r.status, latency: r.latency, message: r.ok ? "متصل" : r.error || `HTTP ${r.status}` };
+        return {
+          ok: r.ok,
+          status: r.status,
+          latency: r.latency,
+          message: r.ok ? "متصل" : r.error || `HTTP ${r.status}`,
+        };
       }
       case "supabase": {
         const url = endpoint || process.env.SUPABASE_URL || "";
@@ -71,14 +86,24 @@ export const testIntegrationConnection = createServerFn({ method: "POST" })
           method: "GET",
           headers: { apikey: key },
         });
-        return { ok: r.ok, status: r.status, latency: r.latency, message: r.ok ? "متصل" : r.error || `HTTP ${r.status}` };
+        return {
+          ok: r.ok,
+          status: r.status,
+          latency: r.latency,
+          message: r.ok ? "متصل" : r.error || `HTTP ${r.status}`,
+        };
       }
       case "rasa": {
         if (!endpoint) return { ok: false, message: "أدخل عنوان Rasa" };
         const headers: Record<string, string> = { Accept: "application/json" };
         if (data.apiKey) headers.Authorization = `Bearer ${data.apiKey}`;
         const r = await timedFetch(`${endpoint}/status`, { method: "GET", headers });
-        return { ok: r.ok, status: r.status, latency: r.latency, message: r.ok ? "متصل" : r.error || `HTTP ${r.status}` };
+        return {
+          ok: r.ok,
+          status: r.status,
+          latency: r.latency,
+          message: r.ok ? "متصل" : r.error || `HTTP ${r.status}`,
+        };
       }
       case "ai_agents": {
         const url = endpoint || process.env.AZURE_OPENAI_ENDPOINT || "";
@@ -86,11 +111,19 @@ export const testIntegrationConnection = createServerFn({ method: "POST" })
         if (!url) return { ok: false, message: "أدخل عنوان الخدمة" };
         const headers: Record<string, string> = { Accept: "application/json" };
         if (key) headers["api-key"] = key;
-        const r = await timedFetch(`${url.replace(/\/+$/, "")}/openai/models?api-version=2024-08-01-preview`, {
-          method: "GET",
-          headers,
-        });
-        return { ok: r.ok, status: r.status, latency: r.latency, message: r.ok ? "متصل" : r.error || `HTTP ${r.status}` };
+        const r = await timedFetch(
+          `${url.replace(/\/+$/, "")}/openai/models?api-version=2024-08-01-preview`,
+          {
+            method: "GET",
+            headers,
+          },
+        );
+        return {
+          ok: r.ok,
+          status: r.status,
+          latency: r.latency,
+          message: r.ok ? "متصل" : r.error || `HTTP ${r.status}`,
+        };
       }
       default:
         return { ok: false, message: "نوع تكامل غير معروف" };

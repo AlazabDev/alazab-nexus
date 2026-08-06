@@ -7,9 +7,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Activity, CheckCircle2, AlertTriangle, XCircle, RefreshCw, Loader2 } from "lucide-react";
 
 const OVERALL: Record<string, { label: string; className: string }> = {
-  ok: { label: "الاتصال سليم", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
-  degraded: { label: "اتصال جزئي", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
-  down: { label: "الاتصال متعطل", className: "bg-destructive/15 text-destructive border-destructive/30" },
+  ok: {
+    label: "الاتصال سليم",
+    className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30",
+  },
+  degraded: {
+    label: "اتصال جزئي",
+    className: "bg-amber-500/15 text-amber-600 border-amber-500/30",
+  },
+  down: {
+    label: "الاتصال متعطل",
+    className: "bg-destructive/15 text-destructive border-destructive/30",
+  },
   unconfigured: { label: "غير مهيأ", className: "bg-muted text-muted-foreground border-border" },
 };
 
@@ -83,9 +92,7 @@ export function AgentHealthIndicator({ compact = false }: { compact?: boolean })
               )}
             </div>
           ))}
-          {health.isError && (
-            <div className="text-xs text-destructive">تعذر جلب حالة الاتصال.</div>
-          )}
+          {health.isError && <div className="text-xs text-destructive">تعذر جلب حالة الاتصال.</div>}
         </div>
 
         {health.data && (

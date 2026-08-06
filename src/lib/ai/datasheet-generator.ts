@@ -3,8 +3,8 @@
  * Automatically generates technical datasheets for products
  */
 
-import { generateObject, generateText } from 'ai';
-import { z } from 'zod';
+import { generateObject, generateText } from "ai";
+import { z } from "zod";
 
 export interface DatasheetContent {
   product_name: string;
@@ -43,7 +43,7 @@ const DatasheetSchema = z.object({
       parameter: z.string(),
       value: z.string(),
       unit: z.string().optional(),
-    })
+    }),
   ),
   dimensions: z
     .object({
@@ -66,26 +66,24 @@ export interface GeneratedDatasheet {
   id: string;
   content: DatasheetContent;
   generated_at: Date;
-  status: 'draft' | 'generated' | 'exported';
+  status: "draft" | "generated" | "exported";
   version: number;
 }
 
-export async function generateProductDatasheet(
-  productData: {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    specifications?: Record<string, any>;
-    materials?: string[];
-    images?: Array<{ url: string }>;
-  }
-): Promise<DatasheetContent> {
+export async function generateProductDatasheet(productData: {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  specifications?: Record<string, any>;
+  materials?: string[];
+  images?: Array<{ url: string }>;
+}): Promise<DatasheetContent> {
   try {
     const prompt = buildDatasheetPrompt(productData);
 
     const result = await generateObject({
-      model: 'google/gemini-2.5-flash',
+      model: "google/gemini-2.5-flash",
       schema: DatasheetSchema,
       prompt,
       system: `You are a professional technical datasheet generator. 
@@ -100,8 +98,10 @@ export async function generateProductDatasheet(
 
     return result.object as DatasheetContent;
   } catch (error) {
-    console.error('[v0] Datasheet generation error:', error);
-    throw new Error(`Datasheet generation failed: ${error instanceof Error ? error.message : String(error)}`);
+    console.error("[v0] Datasheet generation error:", error);
+    throw new Error(
+      `Datasheet generation failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
@@ -114,8 +114,10 @@ function buildDatasheetPrompt(productData: {
   materials?: string[];
   images?: Array<{ url: string }>;
 }): string {
-  const specs = productData.specifications ? JSON.stringify(productData.specifications, null, 2) : '';
-  const materials = productData.materials ? productData.materials.join(', ') : '';
+  const specs = productData.specifications
+    ? JSON.stringify(productData.specifications, null, 2)
+    : "";
+  const materials = productData.materials ? productData.materials.join(", ") : "";
   const imageCount = productData.images?.length || 0;
 
   return `Generate a comprehensive technical datasheet for this product:
@@ -123,8 +125,8 @@ function buildDatasheetPrompt(productData: {
 Product Name: ${productData.name}
 Category: ${productData.category}
 Description: ${productData.description}
-Specifications: ${specs || 'Not provided'}
-Materials: ${materials || 'Not specified'}
+Specifications: ${specs || "Not provided"}
+Materials: ${materials || "Not specified"}
 Number of Images: ${imageCount}
 
 Create a datasheet that includes:
@@ -146,9 +148,9 @@ Ensure all information is accurate, professional, and follows standard technical
 
 export async function generatePDFDatasheet(
   content: DatasheetContent,
-  format: 'html' | 'markdown' = 'html'
+  format: "html" | "markdown" = "html",
 ): Promise<string> {
-  if (format === 'html') {
+  if (format === "html") {
     return generateHTMLDatasheet(content);
   }
   return generateMarkdownDatasheet(content);
@@ -181,7 +183,7 @@ function generateHTMLDatasheet(content: DatasheetContent): string {
     <div class="header">
       <div>
         <h1>${content.product_name}</h1>
-        ${content.product_code ? `<p><strong>Product Code:</strong> ${content.product_code}</p>` : ''}
+        ${content.product_code ? `<p><strong>Product Code:</strong> ${content.product_code}</p>` : ""}
         <p><strong>Category:</strong> ${content.category}</p>
       </div>
     </div>
@@ -197,14 +199,14 @@ function generateHTMLDatasheet(content: DatasheetContent): string {
     <section>
       <h2>Dimensions & Physical Properties</h2>
       <div class="spec-grid">
-        ${content.dimensions.length ? `<div class="spec-card"><strong>Length:</strong> ${content.dimensions.length} ${content.dimensions.unit}</div>` : ''}
-        ${content.dimensions.width ? `<div class="spec-card"><strong>Width:</strong> ${content.dimensions.width} ${content.dimensions.unit}</div>` : ''}
-        ${content.dimensions.height ? `<div class="spec-card"><strong>Height:</strong> ${content.dimensions.height} ${content.dimensions.unit}</div>` : ''}
-        ${content.dimensions.weight ? `<div class="spec-card"><strong>Weight:</strong> ${content.dimensions.weight} kg</div>` : ''}
+        ${content.dimensions.length ? `<div class="spec-card"><strong>Length:</strong> ${content.dimensions.length} ${content.dimensions.unit}</div>` : ""}
+        ${content.dimensions.width ? `<div class="spec-card"><strong>Width:</strong> ${content.dimensions.width} ${content.dimensions.unit}</div>` : ""}
+        ${content.dimensions.height ? `<div class="spec-card"><strong>Height:</strong> ${content.dimensions.height} ${content.dimensions.unit}</div>` : ""}
+        ${content.dimensions.weight ? `<div class="spec-card"><strong>Weight:</strong> ${content.dimensions.weight} kg</div>` : ""}
       </div>
     </section>
     `
-        : ''
+        : ""
     }
 
     <section>
@@ -214,17 +216,21 @@ function generateHTMLDatasheet(content: DatasheetContent): string {
           <tr>
             <th>Parameter</th>
             <th>Value</th>
-            ${content.technical_specs[0]?.unit ? '<th>Unit</th>' : ''}
+            ${content.technical_specs[0]?.unit ? "<th>Unit</th>" : ""}
           </tr>
         </thead>
         <tbody>
-          ${content.technical_specs.map((spec) => `
+          ${content.technical_specs
+            .map(
+              (spec) => `
             <tr>
               <td><strong>${spec.parameter}</strong></td>
               <td>${spec.value}</td>
-              ${spec.unit ? `<td>${spec.unit}</td>` : ''}
+              ${spec.unit ? `<td>${spec.unit}</td>` : ""}
             </tr>
-          `).join('')}
+          `,
+            )
+            .join("")}
         </tbody>
       </table>
     </section>
@@ -235,11 +241,11 @@ function generateHTMLDatasheet(content: DatasheetContent): string {
     <section>
       <h2>Materials</h2>
       <ul>
-        ${content.materials.map((m) => `<li>${m}</li>`).join('')}
+        ${content.materials.map((m) => `<li>${m}</li>`).join("")}
       </ul>
     </section>
     `
-        : ''
+        : ""
     }
 
     ${
@@ -248,11 +254,11 @@ function generateHTMLDatasheet(content: DatasheetContent): string {
     <section>
       <h2>Certifications & Compliance</h2>
       <ul>
-        ${content.certifications.map((c) => `<li>${c}</li>`).join('')}
+        ${content.certifications.map((c) => `<li>${c}</li>`).join("")}
       </ul>
     </section>
     `
-        : ''
+        : ""
     }
 
     <section>
@@ -265,12 +271,16 @@ function generateHTMLDatasheet(content: DatasheetContent): string {
       <p>${content.safety_info}</p>
     </section>
 
-    ${content.storage_conditions ? `
+    ${
+      content.storage_conditions
+        ? `
     <section>
       <h2>Storage Conditions</h2>
       <p>${content.storage_conditions}</p>
     </section>
-    ` : ''}
+    `
+        : ""
+    }
 
     <section>
       <h2>Warranty</h2>
@@ -301,26 +311,29 @@ function generateMarkdownDatasheet(content: DatasheetContent): string {
 
   if (content.dimensions) {
     markdown += `## Physical Properties\n\n`;
-    if (content.dimensions.length) markdown += `- **Length:** ${content.dimensions.length} ${content.dimensions.unit}\n`;
-    if (content.dimensions.width) markdown += `- **Width:** ${content.dimensions.width} ${content.dimensions.unit}\n`;
-    if (content.dimensions.height) markdown += `- **Height:** ${content.dimensions.height} ${content.dimensions.unit}\n`;
+    if (content.dimensions.length)
+      markdown += `- **Length:** ${content.dimensions.length} ${content.dimensions.unit}\n`;
+    if (content.dimensions.width)
+      markdown += `- **Width:** ${content.dimensions.width} ${content.dimensions.unit}\n`;
+    if (content.dimensions.height)
+      markdown += `- **Height:** ${content.dimensions.height} ${content.dimensions.unit}\n`;
     if (content.dimensions.weight) markdown += `- **Weight:** ${content.dimensions.weight} kg\n`;
-    markdown += '\n';
+    markdown += "\n";
   }
 
   markdown += `## Technical Specifications\n\n`;
   markdown += `| Parameter | Value | Unit |\n|-----------|-------|------|\n`;
   content.technical_specs.forEach((spec) => {
-    markdown += `| ${spec.parameter} | ${spec.value} | ${spec.unit || 'N/A'} |\n`;
+    markdown += `| ${spec.parameter} | ${spec.value} | ${spec.unit || "N/A"} |\n`;
   });
-  markdown += '\n';
+  markdown += "\n";
 
   if (content.materials.length > 0) {
-    markdown += `## Materials\n\n${content.materials.map((m) => `- ${m}`).join('\n')}\n\n`;
+    markdown += `## Materials\n\n${content.materials.map((m) => `- ${m}`).join("\n")}\n\n`;
   }
 
   if (content.certifications.length > 0) {
-    markdown += `## Certifications & Compliance\n\n${content.certifications.map((c) => `- ${c}`).join('\n')}\n\n`;
+    markdown += `## Certifications & Compliance\n\n${content.certifications.map((c) => `- ${c}`).join("\n")}\n\n`;
   }
 
   markdown += `## Usage Guidelines\n\n${content.usage_guidelines}\n\n`;

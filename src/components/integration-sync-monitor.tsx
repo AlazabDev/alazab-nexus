@@ -12,7 +12,15 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface SyncEvent {
   id: string;
@@ -120,7 +128,10 @@ export function IntegrationSyncMonitor({
 
   const successCount = syncLogs.filter((l) => l.status === "success").length;
   const failureCount = syncLogs.filter((l) => l.status === "failed").length;
-  const avgDuration = syncLogs.length > 0 ? (syncLogs.reduce((acc, l) => acc + l.duration, 0) / syncLogs.length).toFixed(1) : 0;
+  const avgDuration =
+    syncLogs.length > 0
+      ? (syncLogs.reduce((acc, l) => acc + l.duration, 0) / syncLogs.length).toFixed(1)
+      : 0;
 
   return (
     <div className="space-y-4">
@@ -151,7 +162,11 @@ export function IntegrationSyncMonitor({
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-              <XAxis dataKey="time" stroke="var(--color-muted-foreground)" style={{ fontSize: "12px" }} />
+              <XAxis
+                dataKey="time"
+                stroke="var(--color-muted-foreground)"
+                style={{ fontSize: "12px" }}
+              />
               <YAxis stroke="var(--color-muted-foreground)" style={{ fontSize: "12px" }} />
               <Tooltip
                 contentStyle={{
@@ -192,20 +207,13 @@ export function IntegrationSyncMonitor({
             <span className="font-semibold">سجل العمليات</span>
             <Badge variant="secondary">{syncLogs.length}</Badge>
           </div>
-          {expandedLogs ? (
-            <ChevronUp className="size-4" />
-          ) : (
-            <ChevronDown className="size-4" />
-          )}
+          {expandedLogs ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
         </div>
 
         {expandedLogs && (
           <div className="mt-4 space-y-2 max-h-[400px] overflow-y-auto">
             {syncLogs.map((log) => (
-              <div
-                key={log.id}
-                className="p-3 rounded-lg bg-muted/30 space-y-2 text-xs"
-              >
+              <div key={log.id} className="p-3 rounded-lg bg-muted/30 space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {log.status === "success" ? (
@@ -234,9 +242,7 @@ export function IntegrationSyncMonitor({
                 </div>
 
                 {log.error && (
-                  <div className="p-2 bg-destructive/10 rounded text-destructive">
-                    {log.error}
-                  </div>
+                  <div className="p-2 bg-destructive/10 rounded text-destructive">{log.error}</div>
                 )}
               </div>
             ))}

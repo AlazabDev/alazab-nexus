@@ -90,11 +90,7 @@ function ProductDetails() {
         <div className="grid md:grid-cols-[280px_1fr] gap-0">
           <div className="hero-banner relative aspect-square md:aspect-auto grid place-items-center overflow-hidden">
             {coverUrl ? (
-              <img
-                src={coverUrl}
-                alt={p.name_ar ?? ""}
-                className="size-full object-cover"
-              />
+              <img src={coverUrl} alt={p.name_ar ?? ""} className="size-full object-cover" />
             ) : (
               <div className="text-center text-primary-foreground/70 p-6">
                 <ImageIcon className="size-12 mx-auto opacity-50" />

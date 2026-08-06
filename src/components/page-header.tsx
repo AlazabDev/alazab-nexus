@@ -24,12 +24,7 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <div
-      className={cn(
-        "border-b bg-card/80 backdrop-blur-sm sticky top-0 z-[5]",
-        className,
-      )}
-    >
+    <div className={cn("border-b bg-card/80 backdrop-blur-sm sticky top-14 z-[5]", className)}>
       <div className="px-4 md:px-6 py-4 flex flex-wrap items-center gap-3">
         {icon && (
           <div className="size-9 shrink-0 rounded-md bg-accent/15 text-accent grid place-items-center">
@@ -37,13 +32,9 @@ export function PageHeader({
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <h1 className="text-lg md:text-xl font-bold tracking-tight truncate">
-            {title}
-          </h1>
+          <h1 className="text-lg md:text-xl font-bold tracking-tight truncate">{title}</h1>
           {description && (
-            <p className="text-xs text-muted-foreground mt-0.5 truncate">
-              {description}
-            </p>
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">{description}</p>
           )}
         </div>
         {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
@@ -64,10 +55,7 @@ interface EmptyStateProps {
 export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
   return (
     <div
-      className={cn(
-        "flex flex-col items-center justify-center text-center py-12 px-6",
-        className,
-      )}
+      className={cn("flex flex-col items-center justify-center text-center py-12 px-6", className)}
     >
       {icon && (
         <div className="size-14 rounded-full bg-muted text-muted-foreground grid place-items-center mb-4">
@@ -75,9 +63,7 @@ export function EmptyState({ icon, title, description, action, className }: Empt
         </div>
       )}
       <h3 className="font-semibold text-base mb-1">{title}</h3>
-      {description && (
-        <p className="text-sm text-muted-foreground max-w-md mb-4">{description}</p>
-      )}
+      {description && <p className="text-sm text-muted-foreground max-w-md mb-4">{description}</p>}
       {action}
     </div>
   );

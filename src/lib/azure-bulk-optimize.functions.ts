@@ -53,7 +53,11 @@ function buildPrompt(p: any, fields: OptField[], overwrite: boolean) {
 }
 
 function parseJson(text: string): Record<string, unknown> {
-  const trimmed = text.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+  const trimmed = text
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/```$/, "")
+    .trim();
   const start = trimmed.indexOf("{");
   const end = trimmed.lastIndexOf("}");
   if (start === -1 || end === -1) throw new Error("لم يُرجع المساعد JSON");
@@ -119,7 +123,12 @@ export const azureBulkOptimizeContent = createServerFn({ method: "POST" })
 
         summary.push({ productId: p.id, azCode: p.az_code, updated: Object.keys(patch) });
       } catch (e: any) {
-        summary.push({ productId: p.id, azCode: p.az_code, updated: [], error: e?.message ?? String(e) });
+        summary.push({
+          productId: p.id,
+          azCode: p.az_code,
+          updated: [],
+          error: e?.message ?? String(e),
+        });
       }
     }
 

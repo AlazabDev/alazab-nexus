@@ -4,13 +4,13 @@ This is the canonical deployment guide for Alazab Nexus.
 
 ## Production identity
 
-| Item | Value |
-|---|---|
-| Application | `alazab-nexus` |
-| Repository | `https://github.com/AlazabDev/alazab-nexus.git` |
-| Production domain | `products.alazab.com` |
-| Package manager | `pnpm@11.6.0` |
-| Runtime | Node.js 22 recommended |
+| Item              | Value                                           |
+| ----------------- | ----------------------------------------------- |
+| Application       | `alazab-nexus`                                  |
+| Repository        | `https://github.com/AlazabDev/alazab-nexus.git` |
+| Production domain | `products.alazab.com`                           |
+| Package manager   | `pnpm@11.6.0`                                   |
+| Runtime           | Node.js 22 recommended                          |
 
 ## Required environment variables
 
@@ -97,14 +97,14 @@ docker run --env-file .env.production -p 3000:3000 alazab-nexus
 
 Use these settings only if deploying through Vercel:
 
-| Setting | Value |
-|---|---|
-| Git repository | `AlazabDev/alazab-nexus` |
-| Project name | `alazab-nexus` |
-| Framework preset | Vite / TanStack Start compatible |
-| Build command | `pnpm build` |
-| Output directory | `dist` |
-| Production domain | `products.alazab.com` |
+| Setting           | Value                            |
+| ----------------- | -------------------------------- |
+| Git repository    | `AlazabDev/alazab-nexus`         |
+| Project name      | `alazab-nexus`                   |
+| Framework preset  | Vite / TanStack Start compatible |
+| Build command     | `pnpm build`                     |
+| Output directory  | `dist`                           |
+| Production domain | `products.alazab.com`            |
 
 Configure the same environment variables listed above.
 

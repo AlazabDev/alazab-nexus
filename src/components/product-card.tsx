@@ -41,7 +41,9 @@ export function ProductCard({
   const conf = p.confidence_level ? CONF_MAP[p.confidence_level] : null;
 
   return (
-    <div className={`product-card group relative ${selected ? "ring-2 ring-accent border-accent" : ""}`}>
+    <div
+      className={`product-card group relative ${selected ? "ring-2 ring-accent border-accent" : ""}`}
+    >
       <div className="absolute top-3 right-3 z-10">
         <Checkbox
           checked={selected}
@@ -53,7 +55,11 @@ export function ProductCard({
         <span className={`text-[10px] px-2 py-0.5 rounded ${status.cls}`}>{status.label}</span>
       </div>
 
-      <Link to="/products/$id" params={{ id: p.id }} className="block thumb aspect-[4/3] grid place-items-center overflow-hidden">
+      <Link
+        to="/products/$id"
+        params={{ id: p.id }}
+        className="block thumb aspect-[4/3] grid place-items-center overflow-hidden"
+      >
         {p.cover_url ? (
           <img
             src={p.cover_url}
@@ -84,8 +90,12 @@ export function ProductCard({
           </div>
         )}
         <div className="flex flex-wrap gap-1 pt-1">
-          {p.gpc_family && <span className="text-[10px] px-2 py-0.5 rounded bg-secondary">{p.gpc_family}</span>}
-          {conf && <span className={`text-[10px] px-2 py-0.5 rounded ${conf.cls}`}>{conf.label}</span>}
+          {p.gpc_family && (
+            <span className="text-[10px] px-2 py-0.5 rounded bg-secondary">{p.gpc_family}</span>
+          )}
+          {conf && (
+            <span className={`text-[10px] px-2 py-0.5 rounded ${conf.cls}`}>{conf.label}</span>
+          )}
         </div>
       </div>
     </div>

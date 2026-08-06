@@ -326,10 +326,7 @@ function IntegrationsPage() {
             <p className="text-sm text-muted-foreground mb-4">
               راجع دليل التكاملات الشامل لفهم كيفية توصيل كل نظام والتعامل مع الأخطاء.
             </p>
-            <Link
-              to="/integrations"
-              className="text-accent hover:underline font-medium text-sm"
-            >
+            <Link to="/integrations" className="text-accent hover:underline font-medium text-sm">
               اقرأ دليل التكاملات الكامل →
             </Link>
           </div>

@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { ImageFetcher } from '@/components/ai/image-fetcher';
-import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { createFileRoute } from "@tanstack/react-router";
+import { ImageFetcher } from "@/components/ai/image-fetcher";
+import { PageHeader } from "@/components/page-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const Route = createFileRoute('/_authenticated/ai-studio/images')({
+export const Route = createFileRoute("/_authenticated/ai-studio/images")({
   component: ImagesPage,
 });
 

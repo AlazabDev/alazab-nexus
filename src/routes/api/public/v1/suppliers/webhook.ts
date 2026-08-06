@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createHmac, timingSafeEqual } from "crypto";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { CORS, corsHeaders} from "@/lib/api-auth";
+import { CORS, corsHeaders } from "@/lib/api-auth";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -54,12 +54,12 @@ async function resolveProductId(azCode?: string, productId?: string) {
 export const Route = createFileRoute("/api/public/v1/suppliers/webhook")({
   server: {
     handlers: {
-      OPTIONS: async ({ request }) => new Response(null, { status: 204, headers: corsHeaders(request) }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeaders(request) }),
       POST: async ({ request }) => {
         const supplierId = request.headers.get("x-supplier-id");
         const signature = request.headers.get("x-webhook-signature");
-        const ip =
-          request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? null;
+        const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? null;
 
         if (!supplierId || !signature) {
           return json({ error: "Missing x-supplier-id or x-webhook-signature" }, 401);
@@ -97,7 +97,6 @@ export const Route = createFileRoute("/api/public/v1/suppliers/webhook")({
           });
           return json({ error: "Invalid signature" }, 401);
         }
-
 
         let parsed: z.infer<typeof Payload>;
         try {
