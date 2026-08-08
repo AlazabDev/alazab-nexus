@@ -4,27 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { sanitizeSearchTerm } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
 import { Search, Grid3X3, List, Package, ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type ItemType = Database["public"]["Enums"]["item_type"];
 
-// Monospace stack — as requested by the user
-const MONO_STACK =
-  '"Menlo","Monaco","Consolas","Cascadia Mono","Ubuntu Mono","DejaVu Sans Mono","Liberation Mono","JetBrains Mono","Fira Code","Cousine","Roboto Mono","Courier New",Courier,sans-serif,system-ui';
-
-export const Route = createFileRoute("/catalog/")({
-  head: () => ({
-    meta: [
-      { title: "كتالوج العزب للتشطيبات — كل المنتجات والخدمات" },
-      {
-        name: "description",
-        content: "كتالوج شامل لمنتجات وخدمات العزب للتشطيبات المعمارية — أكثر من 3,000 بند",
-      },
-    ],
-  }),
-  component: CatalogPage,
-});
-
-// ── Types ──────────────────────────────────────────────────
 type Product = {
   id: string;
   az_code: string;
@@ -43,6 +27,15 @@ type Product = {
   status: string | null;
 };
 
+type Catalog = {
+  id: string;
+  slug: string;
+  title_ar: string;
+  title_en: string | null;
+  description_ar: string | null;
+  cover_image_url: string | null;
+};
+
 type Filters = {
   q: string;
   brand: string;
@@ -50,14 +43,13 @@ type Filters = {
   sort: "name_ar" | "unit_price_asc" | "unit_price_desc";
 };
 
-// ── Constants ──────────────────────────────────────────────
 const PAGE = 24;
 
-const BRAND_META: Record<string, { label: string; color: string; bg: string }> = {
-  luxury_finishing: { label: "Luxury Finishing", color: "#534AB7", bg: "#EEEDFE" },
-  brand_identity: { label: "Brand Identity", color: "#0F6E56", bg: "#E1F5EE" },
-  uberfix: { label: "UberFix", color: "#185FA5", bg: "#E6F1FB" },
-  laban_alasfour: { label: "Laban Alasfour", color: "#BA7517", bg: "#FEF3E2" },
+const BRAND_META: Record<string, { label: string; cls: string }> = {
+  luxury_finishing: { label: "Luxury Finishing", cls: "bg-primary/10 text-primary" },
+  brand_identity: { label: "Brand Identity", cls: "bg-success/15 text-success" },
+  uberfix: { label: "UberFix", cls: "bg-accent/20 text-accent-foreground" },
+  laban_alasfour: { label: "Laban Alasfour", cls: "bg-warning/15 text-warning" },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -65,12 +57,16 @@ const TYPE_LABELS: Record<string, string> = {
   service: "خدمة",
   material: "مادة",
   spare_part: "قطعة غيار",
+  tool: "أداة",
+  bundle: "حزمة",
+  package: "باكدج",
+  work_item: "بند عمل",
+  finish_item: "بند تشطيب",
+  supplier_item: "بند مورد",
+  custom_unit: "وحدة خاصة",
 };
 
-// ── Helpers ────────────────────────────────────────────────
 function imgSrc(p: Product): string | undefined {
-  // Only use the stored URL. The old S3 bucket returns 403 for every asset,
-  // so we let onError fall back to the placeholder instead of guessing a URL.
   return p.main_image_url ?? undefined;
 }
 
@@ -80,16 +76,12 @@ function priceLabel(p: Product) {
   return `${Number(v).toLocaleString("ar-EG")} ج.م`;
 }
 
-// ── Sub-components ─────────────────────────────────────────
 function BrandDot({ brand }: { brand: string | null }) {
   const m = BRAND_META[brand ?? ""] ?? null;
   if (!m) return null;
   return (
-    <span
-      className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-      style={{ color: m.color, background: m.bg }}
-    >
-      <span className="size-1.5 rounded-full" style={{ background: m.color }} />
+    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${m.cls}`}>
+      <span className="size-1.5 rounded-full bg-current" />
       {m.label}
     </span>
   );
@@ -103,11 +95,9 @@ function ProductCard({ p }: { p: Product }) {
     <Link
       to="/catalog/$azCode"
       params={{ azCode: p.az_code }}
-      className="group bg-white rounded-2xl border border-[#E8E4DC] overflow-hidden cursor-pointer
-                 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,.1)]
-                 hover:border-[#C9A84C] flex flex-col"
+      className="group bg-card rounded-2xl border border-border overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-ring flex flex-col"
     >
-      <div className="relative w-full h-48 bg-[#F5F3EE] overflow-hidden">
+      <div className="relative w-full h-48 bg-muted overflow-hidden">
         {!imgErr ? (
           <img
             src={imgSrc(p)}
@@ -117,12 +107,12 @@ function ProductCard({ p }: { p: Product }) {
             onError={() => setImgErr(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[#C5BEE8]">
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
             <Package className="size-12 opacity-40" />
           </div>
         )}
         {p.item_type && p.item_type !== "product" && (
-          <span className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/90 text-[#534AB7]">
+          <span className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-card/90 text-primary">
             {TYPE_LABELS[p.item_type] ?? p.item_type}
           </span>
         )}
@@ -130,20 +120,18 @@ function ProductCard({ p }: { p: Product }) {
 
       <div className="p-4 flex flex-col gap-2 flex-1">
         <BrandDot brand={p.brand} />
-        <h3 className="text-sm font-semibold leading-snug line-clamp-2 text-[#1C1917]">
-          {p.name_ar}
-        </h3>
+        <h3 className="text-sm font-semibold leading-snug line-clamp-2 text-foreground">{p.name_ar}</h3>
         {p.description_ar && (
-          <p className="text-xs text-[#8C8680] leading-relaxed line-clamp-2">{p.description_ar}</p>
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{p.description_ar}</p>
         )}
       </div>
 
-      <div className="px-4 py-3 border-t border-[#F0EDE8] flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] text-[#534AB7] font-semibold">{p.az_code}</span>
+      <div className="px-4 py-3 border-t border-border flex items-center justify-between gap-2">
+        <span className="font-mono text-[10px] text-primary font-semibold">{p.az_code}</span>
         {price ? (
-          <span className="text-sm font-bold text-[#0F6E56]">{price}</span>
+          <span className="text-sm font-bold text-success">{price}</span>
         ) : (
-          <span className="text-xs text-[#B0A89E]">بدون سعر</span>
+          <span className="text-xs text-muted-foreground">بدون سعر</span>
         )}
       </div>
     </Link>
@@ -158,10 +146,9 @@ function ProductRow({ p }: { p: Product }) {
     <Link
       to="/catalog/$azCode"
       params={{ azCode: p.az_code }}
-      className="flex items-center gap-4 bg-white rounded-xl border border-[#E8E4DC] px-4 py-3
-                 cursor-pointer hover:border-[#C9A84C] hover:shadow-sm transition-all duration-150"
+      className="flex items-center gap-4 bg-card rounded-xl border border-border px-4 py-3 cursor-pointer hover:border-ring hover:shadow-sm transition-all duration-150"
     >
-      <div className="size-14 rounded-xl bg-[#F5F3EE] overflow-hidden shrink-0">
+      <div className="size-14 rounded-xl bg-muted overflow-hidden shrink-0">
         {!imgErr ? (
           <img
             src={imgSrc(p)}
@@ -172,24 +159,62 @@ function ProductRow({ p }: { p: Product }) {
           />
         ) : (
           <div className="size-full flex items-center justify-center">
-            <Package className="size-5 text-[#C5BEE8]" />
+            <Package className="size-5 text-muted-foreground" />
           </div>
         )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold truncate">{p.name_ar}</div>
         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-          <span className="font-mono text-[10px] text-[#534AB7]">{p.az_code}</span>
+          <span className="font-mono text-[10px] text-primary">{p.az_code}</span>
           {p.brand && <BrandDot brand={p.brand} />}
         </div>
       </div>
-      {price && <span className="text-sm font-bold text-[#0F6E56] shrink-0">{price}</span>}
-      <ChevronLeft className="size-4 text-[#B0A89E] shrink-0" />
+      {price && <span className="text-sm font-bold text-success shrink-0">{price}</span>}
+      <ChevronLeft className="size-4 text-muted-foreground shrink-0" />
     </Link>
   );
 }
 
-// ── Main Page ──────────────────────────────────────────────
+function CatalogCard({ catalog }: { catalog: Catalog }) {
+  return (
+    <Link
+      to="/catalogs/$slug"
+      params={{ slug: catalog.slug }}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-ring"
+    >
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-primary/5 to-accent/10" />
+      <div className="relative">
+        <div className="size-12 rounded-xl bg-primary/10 text-primary grid place-items-center mb-4 text-xl font-bold">
+          {catalog.title_ar.charAt(0)}
+        </div>
+        <h3 className="font-bold text-lg mb-1">{catalog.title_ar}</h3>
+        {catalog.description_ar && (
+          <p className="text-sm text-muted-foreground line-clamp-2">{catalog.description_ar}</p>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+export const Route = createFileRoute("/catalog/")({
+  head: () => ({
+    meta: [
+      { title: "كتالوج العزب للتشطيبات — كل المنتجات والخدمات" },
+      {
+        name: "description",
+        content: "كتالوج شامل لمنتجات وخدمات العزب للتشطيبات المعمارية — أكثر من 3,000 بند",
+      },
+      { property: "og:title", content: "كتالوج العزب للتشطيبات — كل المنتجات والخدمات" },
+      {
+        property: "og:description",
+        content: "كتالوج شامل لمنتجات وخدمات العزب للتشطيبات المعمارية — أكثر من 3,000 بند",
+      },
+    ],
+  }),
+  component: CatalogPage,
+});
+
 function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
@@ -198,281 +223,259 @@ function CatalogPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [stats, setStats] = useState({ total: 0, priced: 0, synced: 0 });
-  const [filters, setFilters] = useState<Filters>({
-    q: "",
-    brand: "",
-    type: "",
-    sort: "name_ar",
-  });
+  const [catalogs, setCatalogs] = useState<Catalog[]>([]);
+  const [filters, setFilters] = useState<Filters>({ q: "", brand: "", type: "", sort: "name_ar" });
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  // إحصائيات سريعة
-  useEffect(() => {
-    (async () => {
-      const base = () => supabase.from("products").select("*", { count: "exact", head: true });
-      const [t, p, s] = await Promise.all([
-        base(),
-        base().not("unit_price", "is", null),
-        base().not("daftra_id", "is", null),
-      ]);
-      setStats({ total: t.count ?? 0, priced: p.count ?? 0, synced: s.count ?? 0 });
-    })();
-  }, []);
-
-  const load = useCallback(async (f: Filters, pg: number) => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
-    let q = supabase
-      .from("products")
-      .select(
-        "id,az_code,name_ar,name_en,description_ar,brand,item_type,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,gpc_class,operational_track,status",
-        { count: "exact" },
-      )
-      .not("status", "in", "(archived,rejected)")
-      .range((pg - 1) * PAGE, pg * PAGE - 1);
+    const term = sanitizeSearchTerm(filters.q).trim();
 
-    if (f.q)
-      q = q.or(
-        `name_ar.ilike.%${sanitizeSearchTerm(f.q)}%,az_code.ilike.%${sanitizeSearchTerm(f.q)}%,name_en.ilike.%${sanitizeSearchTerm(f.q)}%`,
-      );
-    if (f.brand) q = q.eq("brand", f.brand);
-    if (f.type) q = q.eq("item_type", f.type as ItemType);
+    let q = supabase.from("public_catalog_products").select("*", { count: "exact" });
 
-    if (f.sort === "unit_price_asc")
-      q = q.order("unit_price", { ascending: true, nullsFirst: false });
-    else if (f.sort === "unit_price_desc")
-      q = q.order("unit_price", { ascending: false, nullsFirst: false });
+    if (term) {
+      q = q.or(`name_ar.ilike.%${term}%,name_en.ilike.%${term}%,az_code.ilike.%${term}%`);
+    }
+    if (filters.brand) q = q.eq("brand", filters.brand);
+    if (filters.type) q = q.eq("item_type", filters.type as ItemType);
+
+    if (filters.sort === "unit_price_asc") q = q.order("unit_price", { ascending: true, nullsFirst: false });
+    else if (filters.sort === "unit_price_desc") q = q.order("unit_price", { ascending: false, nullsFirst: false });
     else q = q.order("name_ar", { ascending: true });
 
-    const { data, count, error } = await q;
+    const from = (page - 1) * PAGE;
+    const { data, error, count } = await q.range(from, from + PAGE - 1);
+
     if (!error) {
-      setProducts(data ?? []);
+      setProducts((data ?? []) as unknown as Product[]);
       setTotal(count ?? 0);
     }
     setLoading(false);
+  }, [filters, page]);
+
+  const fetchStats = useCallback(async () => {
+    const { count: total } = await supabase.from("public_catalog_products").select("*", { count: "exact", head: true });
+    const { count: priced } = await supabase
+      .from("public_catalog_products")
+      .select("*", { count: "exact", head: true })
+      .gt("unit_price", 0);
+    const { count: synced } = await supabase
+      .from("public_catalog_products")
+      .select("*", { count: "exact", head: true })
+      .not("egs_code", "is", null);
+    setStats({ total: total ?? 0, priced: priced ?? 0, synced: synced ?? 0 });
+  }, []);
+
+  const fetchCatalogs = useCallback(async () => {
+    const { data } = await supabase
+      .from("product_catalogs")
+      .select("id, slug, title_ar, title_en, description_ar, cover_image_url")
+      .eq("is_public", true)
+      .order("sort_order", { ascending: true })
+      .limit(8);
+    setCatalogs((data ?? []) as Catalog[]);
   }, []);
 
   useEffect(() => {
-    load(filters, page);
-  }, [filters, page, load]);
+    fetchProducts();
+  }, [fetchProducts]);
 
-  const setFilter = (key: keyof Filters, val: string) => {
-    setFilters((prev) => ({ ...prev, [key]: val }));
-    setPage(1);
-  };
+  useEffect(() => {
+    fetchStats();
+    fetchCatalogs();
+  }, [fetchStats, fetchCatalogs]);
 
-  const onSearch = (v: string) => {
-    clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => setFilter("q", v), 300);
-  };
+  const totalPages = Math.max(1, Math.ceil(total / PAGE));
 
-  const totalPages = Math.ceil(total / PAGE);
+  const brands = Array.from(new Set(products.map((p) => p.brand).filter((b): b is string => !!b)));
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]" dir="rtl" style={{ fontFamily: MONO_STACK }}>
-      {/* ── Hero ── */}
-      <div
-        className="relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #0D1B2A 0%, #1a2f4a 60%, #0D1B2A 100%)" }}
-      >
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: "radial-gradient(circle at 20% 50%, #C9A84C 0%, transparent 50%)",
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto px-6 py-12">
-          <div className="flex items-center gap-3 mb-6">
-            <div
-              className="size-9 rounded-xl flex items-center justify-center font-bold text-sm"
-              style={{ background: "#C9A84C", color: "#0D1B2A" }}
-            >
+    <div className="min-h-screen bg-background" dir="rtl">
+      {/* Hero */}
+      <div className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_50%,hsl(var(--accent))_0%,transparent_50%)]" />
+        <div className="relative max-w-6xl mx-auto px-4 md:px-6 py-12 md:py-20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="size-10 rounded-xl bg-accent text-accent-foreground grid place-items-center font-bold text-sm">
               AZ
             </div>
-            <span className="text-white font-bold text-lg">العزب للتشطيبات المعمارية</span>
+            <span className="font-bold text-lg">العزب للتشطيبات المعمارية</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">
-            كتالوج المنتجات
-            <br />
-            <span style={{ color: "#C9A84C" }}>والخدمات</span>
-          </h1>
-          <p className="text-white/70 text-sm leading-loose max-w-md mb-8">
-            أكثر من 3,000 منتج وخدمة في مجال التشطيبات والديكور والأعمال المعمارية
+          <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4">كتالوج المنتجات والخدمات</h1>
+          <p className="text-primary-foreground/70 max-w-2xl leading-relaxed">
+            تصفح كل بنود التشطيبات المعمارية من مواد وأدوات وخدمات — مع أسعار محدثة وأكواد مباشرة.
           </p>
-          <div className="grid grid-cols-3 gap-3 max-w-sm">
-            {[
-              { v: stats.total.toLocaleString("ar-EG"), l: "بند إجمالي" },
-              { v: stats.synced.toLocaleString("ar-EG"), l: "في دفترة" },
-              { v: stats.priced.toLocaleString("ar-EG"), l: "بسعر" },
-            ].map(({ v, l }) => (
-              <div
-                key={l}
-                className="rounded-xl p-3 text-center"
-                style={{
-                  background: "rgba(201,168,76,.1)",
-                  border: "1px solid rgba(201,168,76,.2)",
-                }}
-              >
-                <div className="text-xl font-black" style={{ color: "#C9A84C" }}>
-                  {v}
-                </div>
-                <div className="text-xs text-white/60 mt-0.5">{l}</div>
-              </div>
-            ))}
+        </div>
+      </div>
+
+      {/* KPIs */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 -mt-8 relative z-10">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-card rounded-2xl border border-border p-4 shadow-sm">
+            <div className="text-xs text-muted-foreground mb-1">إجمالي البنود</div>
+            <div className="text-2xl font-black text-foreground">{stats.total.toLocaleString("ar-EG")}</div>
+          </div>
+          <div className="bg-card rounded-2xl border border-border p-4 shadow-sm">
+            <div className="text-xs text-muted-foreground mb-1">بها سعر</div>
+            <div className="text-2xl font-black text-success">{stats.priced.toLocaleString("ar-EG")}</div>
+          </div>
+          <div className="bg-card rounded-2xl border border-border p-4 shadow-sm">
+            <div className="text-xs text-muted-foreground mb-1">متزامنة مع EGS</div>
+            <div className="text-2xl font-black text-primary">{stats.synced.toLocaleString("ar-EG")}</div>
           </div>
         </div>
       </div>
 
-      {/* ── Sticky controls ── */}
-      <div className="sticky top-0 z-40 bg-white border-b border-[#E8E4DC] shadow-sm">
-        {/* Brand tabs */}
-        <div className="flex gap-2 px-6 pt-3 overflow-x-auto pb-2 scrollbar-hide">
-          {[
-            { key: "", label: "الكل" },
-            ...Object.entries(BRAND_META).map(([k, m]) => ({ key: k, label: m.label })),
-          ].map(({ key, label }) => {
-            const active = filters.brand === key;
-            const m = BRAND_META[key];
-            return (
-              <button
-                key={key}
-                onClick={() => setFilter("brand", key)}
-                className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-all"
-                style={
-                  active
-                    ? {
-                        background: m?.color ?? "#0D1B2A",
-                        color: "#fff",
-                        borderColor: m?.color ?? "#0D1B2A",
-                      }
-                    : {
-                        background: m?.bg ?? "#F5F3EE",
-                        color: m?.color ?? "#4A4540",
-                        borderColor: "transparent",
-                      }
-                }
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Search & tools */}
-        <div className="flex items-center gap-2 px-6 pb-3 pt-1">
+      {/* Search & controls */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6">
+        <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#B0A89E]" />
-            <input
-              type="text"
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              ref={searchRef}
+              value={filters.q}
+              onChange={(e) => setFilters((f) => ({ ...f, q: e.target.value }))}
+              onKeyDown={(e) => e.key === "Enter" && setPage(1)}
               placeholder="ابحث بالاسم أو الكود..."
-              onChange={(e) => onSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none
-                         focus:border-[#C9A84C] bg-[#FAFAF8] transition"
+              className="pr-10"
             />
           </div>
-
-          <select
-            value={filters.type}
-            onChange={(e) => setFilter("type", e.target.value)}
-            className="px-3 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none bg-[#FAFAF8] focus:border-[#C9A84C]"
-          >
-            <option value="">كل الأنواع</option>
-            {Object.entries(TYPE_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={filters.sort}
-            onChange={(e) => setFilter("sort", e.target.value as Filters["sort"])}
-            className="px-3 py-2.5 text-sm border border-[#E8E4DC] rounded-xl outline-none bg-[#FAFAF8] focus:border-[#C9A84C]"
-          >
-            <option value="name_ar">الاسم</option>
-            <option value="unit_price_asc">السعر ↑</option>
-            <option value="unit_price_desc">السعر ↓</option>
-          </select>
-
-          <div className="flex gap-1">
+          <Button variant="outline" onClick={() => setShowFilters((s) => !s)}>
+            فلترة
+          </Button>
+          <div className="flex gap-1 border rounded-lg p-1 bg-card">
             {(["grid", "list"] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className={`size-9 rounded-xl border flex items-center justify-center transition
-                  ${view === v ? "bg-[#0D1B2A] border-[#0D1B2A] text-white" : "border-[#E8E4DC] text-[#8C8680]"}`}
+                className={`size-9 rounded-md flex items-center justify-center transition ${
+                  view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                }`}
               >
                 {v === "grid" ? <Grid3X3 className="size-4" /> : <List className="size-4" />}
               </button>
             ))}
           </div>
-
-          <span className="text-xs text-[#8C8680] whitespace-nowrap font-medium">
-            {total.toLocaleString("ar-EG")} بند
-          </span>
         </div>
+
+        {showFilters && (
+          <div className="mt-3 p-4 bg-card rounded-xl border border-border grid md:grid-cols-3 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground block mb-1.5">العلامة التجارية</label>
+              <select
+                value={filters.brand}
+                onChange={(e) => setFilters((f) => ({ ...f, brand: e.target.value, page: 1 }))}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="">الكل</option>
+                {brands.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground block mb-1.5">نوع البند</label>
+              <select
+                value={filters.type}
+                onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value, page: 1 }))}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="">الكل</option>
+                {Object.entries(TYPE_LABELS).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground block mb-1.5">الترتيب</label>
+              <select
+                value={filters.sort}
+                onChange={(e) =>
+                  setFilters((f) => ({ ...f, sort: e.target.value as Filters["sort"], page: 1 }))
+                }
+                className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="name_ar">الاسم</option>
+                <option value="unit_price_asc">السعر: الأقل أولاً</option>
+                <option value="unit_price_desc">السعر: الأعلى أولاً</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* ── Content ── */}
-      <main className="max-w-6xl mx-auto px-6 py-6">
+      {/* Catalogs */}
+      {catalogs.length > 0 && (
+        <div className="max-w-6xl mx-auto px-4 md:px-6 pb-6">
+          <h2 className="text-lg font-bold mb-4">كتالوجات الأعمال</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {catalogs.map((c) => (
+              <CatalogCard key={c.id} catalog={c} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Products */}
+      <main className="max-w-6xl mx-auto px-4 md:px-6 pb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold">كل المنتجات</h2>
+          <span className="text-sm text-muted-foreground">
+            {total.toLocaleString("ar-EG")} نتيجة
+          </span>
+        </div>
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <div className="size-10 rounded-full border-3 border-[#E8E4DC] border-t-[#C9A84C] animate-spin" />
-            <p className="text-sm text-[#8C8680]">جاري تحميل المنتجات...</p>
+            <div className="size-10 rounded-full border-3 border-muted border-t-accent animate-spin" />
+            <p className="text-sm text-muted-foreground">جاري تحميل البنود...</p>
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-24">
-            <Package className="size-12 mx-auto text-[#C5BEE8] mb-4" />
-            <p className="text-[#8C8680]">لا توجد نتائج</p>
+            <Package className="size-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">لا توجد نتائج مطابقة</p>
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((p) => (
-              <ProductCard key={p.id} p={p} />
+              <ProductCard key={p.az_code} p={p} />
             ))}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
             {products.map((p) => (
-              <ProductRow key={p.id} p={p} />
+              <ProductRow key={p.az_code} p={p} />
             ))}
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-10 flex-wrap">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4 py-2 text-sm rounded-xl border border-[#E8E4DC] disabled:opacity-40 hover:border-[#C9A84C] transition"
-            >
-              ‹ السابق
-            </button>
-            {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-              const n = page <= 4 ? i + 1 : page + i - 3;
-              if (n < 1 || n > totalPages) return null;
-              return (
-                <button
-                  key={n}
-                  onClick={() => setPage(n)}
-                  className={`size-9 rounded-xl text-sm font-medium border transition
-                    ${n === page ? "bg-[#0D1B2A] text-white border-[#0D1B2A]" : "border-[#E8E4DC] hover:border-[#C9A84C]"}`}
-                >
-                  {n}
-                </button>
-              );
-            })}
-            <button
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+              السابق
+            </Button>
+            <span className="text-sm text-muted-foreground px-2">
+              صفحة {page.toLocaleString("ar-EG")} من {totalPages.toLocaleString("ar-EG")}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 text-sm rounded-xl border border-[#E8E4DC] disabled:opacity-40 hover:border-[#C9A84C] transition"
             >
-              التالي ›
-            </button>
+              التالي
+            </Button>
           </div>
         )}
       </main>
+
+      <footer className="border-t py-6 mt-6 text-center text-xs text-muted-foreground">
+        © {new Date().getFullYear()} العزب للتشطيبات المعمارية — كتالوج المنتجات والخدمات
+      </footer>
     </div>
   );
 }

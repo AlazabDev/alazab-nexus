@@ -13,6 +13,8 @@ import {
   Bell,
   Truck,
   LayoutGrid,
+  Package,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +45,20 @@ type AdminNavItem = {
 
 export const ADMIN_NAV: AdminNavItem[] = [
   { to: "/admin", label: "نظرة عامة", icon: LayoutGrid, exact: true, section: "general" },
+  {
+    to: "/admin/products/settings",
+    label: "إعدادات المنتجات",
+    icon: Package,
+    section: "general",
+    adminOnly: true,
+  },
+  {
+    to: "/admin/catalogs",
+    label: "كتالوجات الأعمال",
+    icon: FolderOpen,
+    section: "general",
+    adminOnly: true,
+  },
   {
     to: "/admin/users",
     label: "المستخدمون والأدوار",
