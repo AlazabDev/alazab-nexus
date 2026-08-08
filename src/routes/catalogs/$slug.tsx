@@ -133,7 +133,8 @@ function CatalogDetail() {
     }
   };
 
-  const products = items?.map((i) => i.product).filter(Boolean) ?? [];
+  const products =
+    items?.map((i) => i.product).filter((p): p is NonNullable<typeof p> => !!p) ?? [];
 
   const jsonLd = {
     "@context": "https://schema.org",

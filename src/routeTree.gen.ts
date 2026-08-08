@@ -28,6 +28,7 @@ import { Route as AuthenticatedSupplierInventoryRouteImport } from './routes/_au
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as CatalogIndexRouteImport } from './routes/catalog/index'
 import { Route as CatalogAzCodeRouteImport } from './routes/catalog/$azCode'
+import { Route as CatalogsSlugRouteImport } from './routes/catalogs/$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminApiKeysRouteImport } from './routes/_authenticated/admin/api-keys'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
@@ -179,6 +180,11 @@ const CatalogIndexRoute = CatalogIndexRouteImport.update({
 const CatalogAzCodeRoute = CatalogAzCodeRouteImport.update({
   id: '/catalog/$azCode',
   path: '/catalog/$azCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogsSlugRoute = CatalogsSlugRouteImport.update({
+  id: '/catalogs/$slug',
+  path: '/catalogs/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -491,6 +497,7 @@ export interface FileRoutesByFullPath {
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
+  '/catalogs/$slug': typeof CatalogsSlugRoute
   '/catalog/': typeof CatalogIndexRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
@@ -561,6 +568,7 @@ export interface FileRoutesByTo {
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
+  '/catalogs/$slug': typeof CatalogsSlugRoute
   '/catalog': typeof CatalogIndexRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
@@ -634,6 +642,7 @@ export interface FileRoutesById {
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
+  '/catalogs/$slug': typeof CatalogsSlugRoute
   '/catalog/': typeof CatalogIndexRoute
   '/_authenticated/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
@@ -707,6 +716,7 @@ export interface FileRouteTypes {
     | '/supplier-inventory'
     | '/support'
     | '/catalog/$azCode'
+    | '/catalogs/$slug'
     | '/catalog/'
     | '/admin/api-keys'
     | '/admin/categories'
@@ -777,6 +787,7 @@ export interface FileRouteTypes {
     | '/supplier-inventory'
     | '/support'
     | '/catalog/$azCode'
+    | '/catalogs/$slug'
     | '/catalog'
     | '/admin/api-keys'
     | '/admin/categories'
@@ -849,6 +860,7 @@ export interface FileRouteTypes {
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
     | '/catalog/$azCode'
+    | '/catalogs/$slug'
     | '/catalog/'
     | '/_authenticated/admin/api-keys'
     | '/_authenticated/admin/categories'
@@ -908,6 +920,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   CatalogAzCodeRoute: typeof CatalogAzCodeRoute
+  CatalogsSlugRoute: typeof CatalogsSlugRoute
   CatalogIndexRoute: typeof CatalogIndexRoute
   ApiAgentV1InternalApprovalRoute: typeof ApiAgentV1InternalApprovalRoute
   ApiAgentV1OrderStatusRoute: typeof ApiAgentV1OrderStatusRoute
@@ -1058,6 +1071,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog/$azCode'
       fullPath: '/catalog/$azCode'
       preLoaderRoute: typeof CatalogAzCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogs/$slug': {
+      id: '/catalogs/$slug'
+      path: '/catalogs/$slug'
+      fullPath: '/catalogs/$slug'
+      preLoaderRoute: typeof CatalogsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -1573,6 +1593,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   CatalogAzCodeRoute: CatalogAzCodeRoute,
+  CatalogsSlugRoute: CatalogsSlugRoute,
   CatalogIndexRoute: CatalogIndexRoute,
   ApiAgentV1InternalApprovalRoute: ApiAgentV1InternalApprovalRoute,
   ApiAgentV1OrderStatusRoute: ApiAgentV1OrderStatusRoute,
@@ -1592,13 +1613,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
