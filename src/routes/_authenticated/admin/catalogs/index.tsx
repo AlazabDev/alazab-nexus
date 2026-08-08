@@ -21,7 +21,7 @@ type Catalog = {
   cover_image_url: string | null;
 };
 
-export const Route = createFileRoute("/admin/catalogs/")({
+export const Route = createFileRoute("/_authenticated/admin/catalogs/")({
   head: () => ({ meta: [{ title: "إدارة الكتالوجات — Alazab PAOP" }] }),
   component: CatalogsAdmin,
 });

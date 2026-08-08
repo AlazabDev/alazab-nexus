@@ -44,7 +44,7 @@ type ProductOption = {
   main_image_url: string | null;
 };
 
-export const Route = createFileRoute("/admin/catalogs/$slug")({
+export const Route = createFileRoute("/_authenticated/admin/catalogs/$slug")({
   loader: async ({ params }) => {
     const { data, error } = await supabase
       .from("product_catalogs")
@@ -187,13 +187,13 @@ function CatalogEdit() {
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label>العنوان بالعربي</Label>
-            <Input value={form.title_ar} onChange={(e) => setForm((f) => ({ ...f, title_ar: e.target.value }))} />
+            <Input value={form.title_ar} onChange={(e) => setForm((f: Catalog) => ({ ...f, title_ar: e.target.value }))} />
           </div>
           <div className="space-y-1.5">
             <Label>العنوان بالإنجليزي</Label>
             <Input
               value={form.title_en ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, title_en: e.target.value }))}
+              onChange={(e) => setForm((f: Catalog) => ({ ...f, title_en: e.target.value }))}
               dir="ltr"
             />
           </div>
@@ -203,14 +203,14 @@ function CatalogEdit() {
             <Label>الوصف بالعربي</Label>
             <Input
               value={form.description_ar ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, description_ar: e.target.value }))}
+              onChange={(e) => setForm((f: Catalog) => ({ ...f, description_ar: e.target.value }))}
             />
           </div>
           <div className="space-y-1.5">
             <Label>الوصف بالإنجليزي</Label>
             <Input
               value={form.description_en ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, description_en: e.target.value }))}
+              onChange={(e) => setForm((f: Catalog) => ({ ...f, description_en: e.target.value }))}
               dir="ltr"
             />
           </div>
@@ -219,7 +219,7 @@ function CatalogEdit() {
           <Label>رابط صورة الغلاف</Label>
           <Input
             value={form.cover_image_url ?? ""}
-            onChange={(e) => setForm((f) => ({ ...f, cover_image_url: e.target.value }))}
+            onChange={(e) => setForm((f: Catalog) => ({ ...f, cover_image_url: e.target.value }))}
             dir="ltr"
             placeholder="https://..."
           />
@@ -228,7 +228,7 @@ function CatalogEdit() {
           <Checkbox
             id="is_public"
             checked={form.is_public}
-            onCheckedChange={(v) => setForm((f) => ({ ...f, is_public: v === true }))}
+            onCheckedChange={(v) => setForm((f: Catalog) => ({ ...f, is_public: v === true }))}
           />
           <Label htmlFor="is_public" className="cursor-pointer">
             نشر الكتالوج للعامة
