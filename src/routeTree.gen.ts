@@ -66,6 +66,7 @@ import { Route as AuthenticatedSuppliersIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedSuppliersIdRouteImport } from './routes/_authenticated/suppliers/$id'
 import { Route as AuthenticatedAdminCatalogsIndexRouteImport } from './routes/_authenticated/admin/catalogs/index'
 import { Route as AuthenticatedAdminCatalogsSlugRouteImport } from './routes/_authenticated/admin/catalogs/$slug'
+import { Route as AuthenticatedAdminProductsSettingsRouteImport } from './routes/_authenticated/admin/products/settings'
 import { Route as ApiAgentV1InternalApprovalRouteImport } from './routes/api/agent/v1/internal-approval'
 import { Route as ApiAgentV1OrderStatusRouteImport } from './routes/api/agent/v1/order-status'
 import { Route as ApiAgentV1ProductAgentRouteImport } from './routes/api/agent/v1/product-agent'
@@ -406,6 +407,12 @@ const AuthenticatedAdminCatalogsSlugRoute =
     path: '/catalogs/$slug',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminProductsSettingsRoute =
+  AuthenticatedAdminProductsSettingsRouteImport.update({
+    id: '/products/settings',
+    path: '/products/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const ApiAgentV1InternalApprovalRoute =
   ApiAgentV1InternalApprovalRouteImport.update({
     id: '/api/agent/v1/internal-approval',
@@ -549,6 +556,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/suppliers/': typeof AuthenticatedSuppliersIndexRoute
   '/admin/catalogs/$slug': typeof AuthenticatedAdminCatalogsSlugRoute
+  '/admin/products/settings': typeof AuthenticatedAdminProductsSettingsRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
   '/api/agent/v1/product-agent': typeof ApiAgentV1ProductAgentRoute
@@ -622,6 +630,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/suppliers': typeof AuthenticatedSuppliersIndexRoute
   '/admin/catalogs/$slug': typeof AuthenticatedAdminCatalogsSlugRoute
+  '/admin/products/settings': typeof AuthenticatedAdminProductsSettingsRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
   '/api/agent/v1/product-agent': typeof ApiAgentV1ProductAgentRoute
@@ -698,6 +707,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/suppliers/': typeof AuthenticatedSuppliersIndexRoute
   '/_authenticated/admin/catalogs/$slug': typeof AuthenticatedAdminCatalogsSlugRoute
+  '/_authenticated/admin/products/settings': typeof AuthenticatedAdminProductsSettingsRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
   '/api/agent/v1/product-agent': typeof ApiAgentV1ProductAgentRoute
@@ -774,6 +784,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/suppliers/'
     | '/admin/catalogs/$slug'
+    | '/admin/products/settings'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
     | '/api/agent/v1/product-agent'
@@ -847,6 +858,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/suppliers'
     | '/admin/catalogs/$slug'
+    | '/admin/products/settings'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
     | '/api/agent/v1/product-agent'
@@ -922,6 +934,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/suppliers/'
     | '/_authenticated/admin/catalogs/$slug'
+    | '/_authenticated/admin/products/settings'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
     | '/api/agent/v1/product-agent'
@@ -1365,6 +1378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCatalogsSlugRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/products/settings': {
+      id: '/_authenticated/admin/products/settings'
+      path: '/products/settings'
+      fullPath: '/admin/products/settings'
+      preLoaderRoute: typeof AuthenticatedAdminProductsSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/api/agent/v1/internal-approval': {
       id: '/api/agent/v1/internal-approval'
       path: '/api/agent/v1/internal-approval'
@@ -1489,6 +1509,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminCatalogsSlugRoute: typeof AuthenticatedAdminCatalogsSlugRoute
+  AuthenticatedAdminProductsSettingsRoute: typeof AuthenticatedAdminProductsSettingsRoute
   AuthenticatedAdminCatalogsIndexRoute: typeof AuthenticatedAdminCatalogsIndexRoute
 }
 
@@ -1501,6 +1522,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminCatalogsSlugRoute: AuthenticatedAdminCatalogsSlugRoute,
+  AuthenticatedAdminProductsSettingsRoute:
+    AuthenticatedAdminProductsSettingsRoute,
   AuthenticatedAdminCatalogsIndexRoute: AuthenticatedAdminCatalogsIndexRoute,
 }
 

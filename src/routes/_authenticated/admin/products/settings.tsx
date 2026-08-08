@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Package, Tags, Ruler, DollarSign, Layers, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/admin/products/settings")({
+export const Route = createFileRoute("/_authenticated/admin/products/settings")({
   head: () => ({ meta: [{ title: "إعدادات المنتجات — Alazab PAOP" }] }),
   component: ProductSettings,
 });
