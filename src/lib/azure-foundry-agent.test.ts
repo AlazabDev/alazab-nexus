@@ -16,7 +16,7 @@ describe("Azure Foundry product agent", () => {
   beforeEach(() => {
     process.env["AZURE_AI_API_KEY"] = "test-key";
     vi.mocked(generateText).mockReset();
-    vi.mocked(createAzure).mockReset().mockReturnValue(vi.fn(() => ({})));
+    vi.mocked(createAzure).mockReset().mockReturnValue(vi.fn(() => ({})) as any);
   });
 
   afterEach(() => {
