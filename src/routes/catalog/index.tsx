@@ -287,7 +287,7 @@ function CatalogPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE));
 
-  const brands = Array.from(new Set(products.map((p) => p.brand).filter(Boolean)));
+  const brands = Array.from(new Set(products.map((p) => p.brand).filter((b): b is string => !!b)));
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">
