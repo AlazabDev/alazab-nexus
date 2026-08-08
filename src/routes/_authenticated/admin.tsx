@@ -13,6 +13,8 @@ import {
   Bell,
   Truck,
   LayoutGrid,
+  Package,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
