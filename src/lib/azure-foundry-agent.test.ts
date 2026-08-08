@@ -6,7 +6,7 @@ vi.mock("ai", () => ({
 }));
 
 vi.mock("@ai-sdk/azure", () => ({
-  createAzure: vi.fn(() => vi.fn(() => ({}))),
+  createAzure: vi.fn(() => vi.fn(() => ({})) as any),
 }));
 
 import { generateText } from "ai";
