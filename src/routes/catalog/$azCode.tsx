@@ -2,11 +2,9 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
-import { ArrowRight, Package, Download, Printer, Share2 } from "lucide-react";
-
-// Same monospace stack used on the catalog list — as requested
-const MONO_STACK =
-  '"Menlo","Monaco","Consolas","Cascadia Mono","Ubuntu Mono","DejaVu Sans Mono","Liberation Mono","JetBrains Mono","Fira Code","Cousine","Roboto Mono","Courier New",Courier,sans-serif,system-ui';
+import { ArrowRight, Package, Printer, Share2, Phone, FileText, Info, ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PublicProduct = {
   id: string;
@@ -31,14 +29,9 @@ type PublicProduct = {
   main_image_url: string | null;
   image_url_2: string | null;
   image_url_3: string | null;
+  specifications: any;
+  materials: any;
   status: string | null;
-};
-
-const BRAND_META: Record<string, { label: string; color: string; bg: string }> = {
-  luxury_finishing: { label: "Luxury Finishing", color: "#534AB7", bg: "#EEEDFE" },
-  brand_identity: { label: "Brand Identity", color: "#0F6E56", bg: "#E1F5EE" },
-  uberfix: { label: "UberFix", color: "#185FA5", bg: "#E6F1FB" },
-  laban_alasfour: { label: "Laban Alasfour", color: "#BA7517", bg: "#FEF3E2" },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -58,9 +51,9 @@ const TYPE_LABELS: Record<string, string> = {
 export const Route = createFileRoute("/catalog/$azCode")({
   loader: async ({ params }) => {
     const { data, error } = await supabase
-      .from("products")
+      .from("public_catalog_products")
       .select(
-        "id,az_code,daftra_id,egs_code,name_ar,name_en,description_ar,description_en,brand,item_type,unit_label,category,gpc_class,gpc_family,gpc_segment,gpc_brick_title,operational_track,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,status" as never,
+        "id,az_code,daftra_id,egs_code,name_ar,name_en,description_ar,description_en,brand,item_type,unit_label,category,gpc_class,gpc_family,gpc_segment,gpc_brick_title,operational_track,unit_price,estimated_price,main_image_url,image_url_2,image_url_3,specifications,materials,status",
       )
       .eq("az_code", params.azCode)
       .maybeSingle();
@@ -76,6 +69,19 @@ export const Route = createFileRoute("/catalog/$azCode")({
             name: "description",
             content: loaderData.product.description_ar ?? loaderData.product.name_ar,
           },
+          { property: "og:title", content: loaderData.product.name_ar },
+          {
+            property: "og:description",
+            content: loaderData.product.description_ar ?? loaderData.product.name_ar,
+          },
+          ...(loaderData.product.main_image_url
+            ? [
+                { property: "og:image", content: loaderData.product.main_image_url },
+                { name: "twitter:image", content: loaderData.product.main_image_url },
+              ]
+            : []),
+          { property: "og:type", content: "product" },
+          { name: "twitter:card", content: "summary_large_image" },
         ]
       : [{ title: "منتج غير موجود" }],
   }),
@@ -85,20 +91,15 @@ export const Route = createFileRoute("/catalog/$azCode")({
 
 function NotFound() {
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-[#FAFAF8]"
-      dir="rtl"
-      style={{ fontFamily: MONO_STACK }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
       <div className="text-center space-y-4">
-        <Package className="size-14 mx-auto text-[#C5BEE8]" />
+        <Package className="size-14 mx-auto text-muted-foreground" />
         <h1 className="text-lg font-bold">المنتج غير متوفر</h1>
-        <Link
-          to="/catalog"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0D1B2A] text-white text-sm"
-        >
-          <ArrowRight className="size-4" /> رجوع للكتالوج
-        </Link>
+        <Button asChild>
+          <Link to="/catalog" className="gap-2">
+            <ArrowRight className="size-4" /> رجوع للكتالوج
+          </Link>
+        </Button>
       </div>
     </div>
   );
@@ -110,7 +111,6 @@ function ProductDetail() {
   const [active, setActive] = useState<string | null>(images[0] ?? null);
   const qrRef = useRef<HTMLDivElement>(null);
   const price = p.unit_price ?? p.estimated_price;
-  const bm = BRAND_META[p.brand ?? ""];
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : `/catalog/${p.az_code}`;
 
@@ -123,7 +123,6 @@ function ProductDetail() {
       }
     } else if (typeof navigator !== "undefined") {
       await navigator.clipboard.writeText(shareUrl);
-      alert("تم نسخ الرابط");
     }
   };
 
@@ -142,32 +141,44 @@ function ProductDetail() {
     ["المسار التشغيلي", p.operational_track],
   ];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: p.name_ar,
+    sku: p.az_code,
+    description: p.description_ar ?? p.name_ar,
+    image: images[0],
+    brand: p.brand ? { "@type": "Brand", name: p.brand } : undefined,
+    offers: price
+      ? {
+          "@type": "Offer",
+          priceCurrency: "EGP",
+          price: String(price),
+          availability: "https://schema.org/InStock",
+          url: shareUrl,
+        }
+      : undefined,
+  };
+
   return (
-    <div className="min-h-screen bg-[#FAFAF8]" dir="rtl" style={{ fontFamily: MONO_STACK }}>
+    <div className="min-h-screen bg-background" dir="rtl">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       {/* Top bar */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-[#E8E4DC]">
+      <header className="sticky top-0 z-30 bg-card/95 backdrop-blur border-b">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-3">
-          <Link
-            to="/catalog"
-            className="inline-flex items-center gap-2 text-xs md:text-sm text-[#4A4540] hover:text-[#0D1B2A] transition"
-          >
-            <ArrowRight className="size-4" /> الكتالوج
-          </Link>
+          <Button variant="ghost" size="sm" asChild className="gap-2">
+            <Link to="/catalog">
+              <ArrowRight className="size-4" /> الكتالوج
+            </Link>
+          </Button>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleShare}
-              className="size-9 rounded-lg border border-[#E8E4DC] flex items-center justify-center hover:border-[#C9A84C] transition"
-              title="مشاركة"
-            >
+            <Button variant="outline" size="icon" onClick={handleShare} title="مشاركة">
               <Share2 className="size-4" />
-            </button>
-            <button
-              onClick={handlePrint}
-              className="size-9 rounded-lg border border-[#E8E4DC] flex items-center justify-center hover:border-[#C9A84C] transition"
-              title="طباعة"
-            >
+            </Button>
+            <Button variant="outline" size="icon" onClick={handlePrint} title="طباعة">
               <Printer className="size-4" />
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -175,11 +186,11 @@ function ProductDetail() {
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10 grid gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         {/* Gallery */}
         <section className="space-y-3">
-          <div className="w-full aspect-square rounded-2xl bg-white border border-[#E8E4DC] overflow-hidden flex items-center justify-center">
+          <div className="w-full aspect-square rounded-2xl bg-card border border-border overflow-hidden flex items-center justify-center">
             {active ? (
               <img src={active} alt={p.name_ar} className="w-full h-full object-contain p-6" />
             ) : (
-              <Package className="size-20 text-[#C5BEE8]" />
+              <Package className="size-20 text-muted-foreground" />
             )}
           </div>
           {images.length > 1 && (
@@ -188,7 +199,7 @@ function ProductDetail() {
                 <button
                   key={url}
                   onClick={() => setActive(url)}
-                  className={`size-16 md:size-20 shrink-0 rounded-xl overflow-hidden border-2 transition ${active === url ? "border-[#C9A84C]" : "border-transparent hover:border-[#E8E4DC]"}`}
+                  className={`size-16 md:size-20 shrink-0 rounded-xl overflow-hidden border-2 transition ${active === url ? "border-ring" : "border-transparent hover:border-border"}`}
                 >
                   <img src={url} alt="" className="size-full object-cover" />
                 </button>
@@ -199,101 +210,98 @@ function ProductDetail() {
 
         {/* Info */}
         <section className="space-y-5">
-          <div className="space-y-2">
-            {bm && (
-              <span
-                className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                style={{ color: bm.color, background: bm.bg }}
-              >
-                <span className="size-1.5 rounded-full" style={{ background: bm.color }} />
-                {bm.label}
-              </span>
+          <div>
+            {p.brand && (
+              <div className="text-xs font-semibold text-primary mb-2">{p.brand}</div>
             )}
-            <h1 className="text-xl md:text-2xl font-bold leading-snug text-[#0D1B2A]">
-              {p.name_ar}
-            </h1>
-            {p.name_en && <p className="text-sm text-[#8C8680]">{p.name_en}</p>}
+            <h1 className="text-2xl md:text-3xl font-black leading-tight text-foreground">{p.name_ar}</h1>
+            {p.name_en && <div className="text-sm text-muted-foreground mt-1" dir="ltr">{p.name_en}</div>}
           </div>
 
-          <div className="flex items-baseline gap-3 flex-wrap">
-            {price ? (
-              <>
-                <span className="text-2xl md:text-3xl font-bold text-[#0F6E56]">
-                  {Number(price).toLocaleString("ar-EG")} <span className="text-sm">ج.م</span>
-                </span>
-                {p.unit_label && <span className="text-xs text-[#8C8680]">/ {p.unit_label}</span>}
-                {!p.unit_price && p.estimated_price != null && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FEF3E2] text-[#BA7517] font-semibold">
-                    تقديري
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="text-sm text-[#B0A89E]">السعر عند الطلب</span>
-            )}
-          </div>
-
-          {p.description_ar && (
-            <p className="text-sm leading-loose text-[#4A4540] whitespace-pre-line">
-              {p.description_ar}
-            </p>
+          {price && (
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-success">{Number(price).toLocaleString("ar-EG")}</span>
+              <span className="text-sm text-muted-foreground">ج.م</span>
+            </div>
           )}
 
-          {/* QR + AZ code card */}
-          <div className="rounded-2xl bg-white border border-[#E8E4DC] p-4 flex items-center gap-4">
-            <div ref={qrRef} className="p-2 bg-white rounded-lg border border-[#E8E4DC]">
-              <QRCodeSVG value={shareUrl} size={96} level="M" includeMargin={false} />
-            </div>
-            <div className="flex-1 min-w-0 space-y-1.5">
-              <div className="text-[10px] uppercase tracking-wider text-[#8C8680]">AZ Code</div>
-              <div className="text-lg font-bold text-[#534AB7] break-all">{p.az_code}</div>
-              <button
-                type="button"
-                onClick={() => {
-                  const svg = qrRef.current?.querySelector("svg");
-                  if (!svg) return;
-                  const clone = svg.cloneNode(true) as SVGSVGElement;
-                  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-                  const blob = new Blob(
-                    [
-                      '<?xml version="1.0" encoding="UTF-8"?>',
-                      new XMLSerializer().serializeToString(clone),
-                    ],
-                    { type: "image/svg+xml" },
-                  );
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `qr-${p.az_code}.svg`;
-                  a.click();
-                  URL.revokeObjectURL(url);
-                }}
-                className="inline-flex items-center gap-1 text-[11px] text-[#0D1B2A] hover:text-[#C9A84C] transition"
-              >
-                <Download className="size-3" /> تنزيل QR (SVG)
-              </button>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild className="gap-2">
+              <a href={`https://wa.me/?text=${encodeURIComponent(`شاهد هذا البند: ${p.name_ar} - ${shareUrl}`)}`} target="_blank" rel="noreferrer">
+                <Phone className="size-4" /> استفسر عبر واتساب
+              </a>
+            </Button>
+            <Button variant="outline" onClick={handleShare} className="gap-2">
+              <Share2 className="size-4" /> مشاركة الرابط
+            </Button>
           </div>
 
-          {/* Specs table */}
-          <div className="rounded-2xl bg-white border border-[#E8E4DC] overflow-hidden">
-            <table className="w-full text-sm">
-              <tbody>
-                {rows
-                  .filter(([, v]) => v !== null && v !== undefined && v !== "")
-                  .map(([k, v]) => (
-                    <tr key={k} className="border-b border-[#F0EDE8] last:border-b-0">
-                      <td className="py-2.5 px-4 text-[#8C8680] w-1/3 text-xs">{k}</td>
-                      <td className="py-2.5 px-4 font-medium text-[#1C1917]">{String(v)}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+          <Tabs defaultValue="description" className="w-full">
+            <TabsList className="bg-card border">
+              <TabsTrigger value="description" className="gap-1">
+                <FileText className="size-3.5" /> الوصف
+              </TabsTrigger>
+              <TabsTrigger value="specs" className="gap-1">
+                <Info className="size-3.5" /> المواصفات
+              </TabsTrigger>
+              <TabsTrigger value="qr" className="gap-1">
+                <ChevronLeft className="size-3.5" /> QR
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="description" className="mt-4">
+              <div className="bg-card rounded-2xl border border-border p-5">
+                {p.description_ar ? (
+                  <p className="text-sm leading-loose text-foreground">{p.description_ar}</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">لا يوجد وصف تفصيلي.</p>
+                )}
+                {p.description_en && (
+                  <p className="text-sm leading-loose text-muted-foreground mt-4" dir="ltr">
+                    {p.description_en}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+            <TabsContent value="specs" className="mt-4">
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {rows
+                    .filter(([, v]) => v)
+                    .map(([label, value]) => (
+                      <div key={label}>
+                        <dt className="text-xs text-muted-foreground mb-0.5">{label}</dt>
+                        <dd className="text-sm font-medium text-foreground">{value}</dd>
+                      </div>
+                    ))}
+                </dl>
+                {p.specifications && Object.keys(p.specifications).length > 0 && (
+                  <div className="mt-6 pt-4 border-t border-border">
+                    <h4 className="text-sm font-bold mb-3">تفاصيل فنية</h4>
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {Object.entries(p.specifications).map(([k, v]) => (
+                        <div key={k}>
+                          <dt className="text-xs text-muted-foreground mb-0.5">{k}</dt>
+                          <dd className="text-sm font-medium text-foreground">{String(v)}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+            <TabsContent value="qr" className="mt-4">
+              <div className="bg-card rounded-2xl border border-border p-8 text-center">
+                <div ref={qrRef} className="inline-block p-4 bg-white rounded-xl">
+                  <QRCodeSVG value={shareUrl} size={180} level="H" />
+                </div>
+                <p className="text-sm text-muted-foreground mt-4">امسح الكود للوصول إلى صفحة هذا البند مباشرة</p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </section>
       </main>
 
-      <footer className="border-t border-[#E8E4DC] py-6 mt-6 text-center text-[11px] text-[#8C8680]">
+      <footer className="border-t py-6 mt-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} العزب للتشطيبات المعمارية — كتالوج المنتجات والخدمات
       </footer>
     </div>
