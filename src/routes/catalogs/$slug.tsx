@@ -119,7 +119,12 @@ function CatalogNotFound() {
 
 function CatalogDetail() {
   const { catalog } = Route.useLoaderData();
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const { q, type, view, page } = Route.useSearch();
+  const navigate = useNavigate({ from: "/catalogs/$slug" });
+  const [term, setTerm] = useState(q);
+
+  const setSearch = (patch: Record<string, unknown>) =>
+    navigate({ search: (prev) => ({ ...prev, page: 1, ...patch }) });
 
   const { data: items, isLoading } = useQuery({
     queryKey: ["catalog-items", catalog.id],
@@ -127,7 +132,7 @@ function CatalogDetail() {
       const { data, error } = await supabase
         .from("catalog_items")
         .select(
-          "sort_order, featured, product:public_catalog_products(id, az_code, name_ar, name_en, description_ar, item_type, unit_price, estimated_price, main_image_url, image_url_2, image_url_3)",
+          "product_id, sort_order, featured, product:public_catalog_products(id, az_code, name_ar, name_en, description_ar, item_type, unit_price, estimated_price, main_image_url, image_url_2, image_url_3)",
         )
         .eq("catalog_id", catalog.id)
         .order("sort_order", { ascending: true });
@@ -150,8 +155,36 @@ function CatalogDetail() {
     }
   };
 
-  const products =
-    items?.map((i) => i.product).filter((p): p is NonNullable<typeof p> => !!p) ?? [];
+  const allProducts = useMemo(
+    () => items?.map((i) => i.product).filter((p): p is NonNullable<typeof p> => !!p) ?? [],
+    [items],
+  );
+
+  // بنود مضافة للكتالوج لكن منتجاتها غير معتمدة (approved) → غير متاحة للزائر
+  const unavailableCount = (items?.length ?? 0) - allProducts.length;
+
+  const types = useMemo(() => {
+    const s = new Set<string>();
+    allProducts.forEach((p) => p.item_type && s.add(p.item_type));
+    return Array.from(s);
+  }, [allProducts]);
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase().slice(0, 100);
+    return allProducts.filter((p) => {
+      if (type !== "all" && p.item_type !== type) return false;
+      if (!needle) return true;
+      return [p.name_ar, p.name_en, p.az_code, p.description_ar]
+        .filter(Boolean)
+        .some((v) => v!.toLowerCase().includes(needle));
+    });
+  }, [allProducts, q, type]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const products = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const gridView = view === "list" ? "list" : "grid";
+
 
   const jsonLd = {
     "@context": "https://schema.org",
