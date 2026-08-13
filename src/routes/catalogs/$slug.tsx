@@ -20,8 +20,10 @@ type Catalog = {
 };
 
 type CatalogItem = {
+  product_id: string;
   sort_order: number;
   featured: boolean;
+
   product: {
     id: string;
     az_code: string;
