@@ -53,8 +53,19 @@ const TYPE_LABELS: Record<string, string> = {
   custom_unit: "وحدة خاصة",
 };
 
+const searchSchema = z.object({
+  q: fallback(z.string(), "").default(""),
+  type: fallback(z.string(), "all").default("all"),
+  view: fallback(z.string(), "grid").default("grid"),
+  page: fallback(z.number().int(), 1).default(1),
+});
+
+const PAGE_SIZE = 24;
+
 export const Route = createFileRoute("/catalogs/$slug")({
+  validateSearch: zodValidator(searchSchema),
   loader: async ({ params }) => {
+
     const { data: catalog, error } = await supabase
       .from("product_catalogs")
       .select("id, slug, title_ar, title_en, description_ar, description_en, cover_image_url")
