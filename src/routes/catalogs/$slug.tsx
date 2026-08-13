@@ -1,9 +1,13 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, ArrowRight, Share2, Grid3X3, List } from "lucide-react";
+import { Package, ArrowRight, Share2, Grid3X3, List, Search, X, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 
 type Catalog = {
   id: string;
@@ -16,8 +20,10 @@ type Catalog = {
 };
 
 type CatalogItem = {
+  product_id: string;
   sort_order: number;
   featured: boolean;
+
   product: {
     id: string;
     az_code: string;
@@ -47,8 +53,19 @@ const TYPE_LABELS: Record<string, string> = {
   custom_unit: "وحدة خاصة",
 };
 
+const searchSchema = z.object({
+  q: fallback(z.string(), "").default(""),
+  type: fallback(z.string(), "all").default("all"),
+  view: fallback(z.string(), "grid").default("grid"),
+  page: fallback(z.number().int(), 1).default(1),
+});
+
+const PAGE_SIZE = 24;
+
 export const Route = createFileRoute("/catalogs/$slug")({
+  validateSearch: zodValidator(searchSchema),
   loader: async ({ params }) => {
+
     const { data: catalog, error } = await supabase
       .from("product_catalogs")
       .select("id, slug, title_ar, title_en, description_ar, description_en, cover_image_url")
@@ -102,7 +119,12 @@ function CatalogNotFound() {
 
 function CatalogDetail() {
   const { catalog } = Route.useLoaderData();
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const { q, type, view, page } = Route.useSearch();
+  const navigate = useNavigate({ from: "/catalogs/$slug" });
+  const [term, setTerm] = useState(q);
+
+  const setSearch = (patch: Record<string, unknown>) =>
+    navigate({ search: (prev) => ({ ...prev, page: 1, ...patch }) });
 
   const { data: items, isLoading } = useQuery({
     queryKey: ["catalog-items", catalog.id],
@@ -110,7 +132,7 @@ function CatalogDetail() {
       const { data, error } = await supabase
         .from("catalog_items")
         .select(
-          "sort_order, featured, product:public_catalog_products(id, az_code, name_ar, name_en, description_ar, item_type, unit_price, estimated_price, main_image_url, image_url_2, image_url_3)",
+          "product_id, sort_order, featured, product:public_catalog_products(id, az_code, name_ar, name_en, description_ar, item_type, unit_price, estimated_price, main_image_url, image_url_2, image_url_3)",
         )
         .eq("catalog_id", catalog.id)
         .order("sort_order", { ascending: true });
@@ -133,8 +155,36 @@ function CatalogDetail() {
     }
   };
 
-  const products =
-    items?.map((i) => i.product).filter((p): p is NonNullable<typeof p> => !!p) ?? [];
+  const allProducts = useMemo(
+    () => items?.map((i) => i.product).filter((p): p is NonNullable<typeof p> => !!p) ?? [],
+    [items],
+  );
+
+  // بنود مضافة للكتالوج لكن منتجاتها غير معتمدة (approved) → غير متاحة للزائر
+  const unavailableCount = (items?.length ?? 0) - allProducts.length;
+
+  const types = useMemo(() => {
+    const s = new Set<string>();
+    allProducts.forEach((p) => p.item_type && s.add(p.item_type));
+    return Array.from(s);
+  }, [allProducts]);
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase().slice(0, 100);
+    return allProducts.filter((p) => {
+      if (type !== "all" && p.item_type !== type) return false;
+      if (!needle) return true;
+      return [p.name_ar, p.name_en, p.az_code, p.description_ar]
+        .filter(Boolean)
+        .some((v) => v!.toLowerCase().includes(needle));
+    });
+  }, [allProducts, q, type]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const products = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const gridView = view === "list" ? "list" : "grid";
+
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -192,30 +242,85 @@ function CatalogDetail() {
 
       {/* Controls */}
       <div className="sticky top-[57px] z-20 bg-card border-b">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {products.length.toLocaleString("ar-EG")} منتج
-          </span>
-          <div className="flex gap-1">
-            {(["grid", "list"] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={`size-9 rounded-lg border flex items-center justify-center transition ${
-                  view === v
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground hover:border-ring"
-                }`}
-              >
-                {v === "grid" ? <Grid3X3 className="size-4" /> : <List className="size-4" />}
-              </button>
-            ))}
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <form
+              className="relative flex-1"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSearch({ q: term.trim().slice(0, 100) });
+              }}
+            >
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                placeholder="ابحث بالاسم أو الكود أو الوصف..."
+                className="pr-10 pl-9"
+              />
+              {term && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTerm("");
+                    setSearch({ q: "" });
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="مسح البحث"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </form>
+            <div className="flex gap-1">
+              {(["grid", "list"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => navigate({ search: (prev) => ({ ...prev, view: v }) })}
+                  aria-label={v === "grid" ? "عرض شبكي" : "عرض قائمة"}
+                  className={`size-9 rounded-lg border flex items-center justify-center transition ${
+                    gridView === v
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border text-muted-foreground hover:border-ring"
+                  }`}
+                >
+                  {v === "grid" ? <Grid3X3 className="size-4" /> : <List className="size-4" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">
+              {filtered.length.toLocaleString("ar-EG")} منتج متاح
+            </span>
+            <div className="flex gap-1 flex-wrap">
+              <TypeChip active={type === "all"} onClick={() => setSearch({ type: "all" })} label="الكل" />
+              {types.map((t) => (
+                <TypeChip
+                  key={t}
+                  active={type === t}
+                  onClick={() => setSearch({ type: t })}
+                  label={TYPE_LABELS[t] ?? t}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Products */}
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6">
+        {unavailableCount > 0 && (
+          <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/40 p-4">
+            <EyeOff className="size-4 mt-0.5 text-muted-foreground shrink-0" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {unavailableCount.toLocaleString("ar-EG")} من بنود هذا الكتالوج غير معروضة حالياً لأنها قيد
+              المراجعة ولم تُعتمد بعد. تواصل معنا للاستفسار عن توفرها.
+            </p>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <div className="size-10 rounded-full border-3 border-muted border-t-accent animate-spin" />
@@ -224,9 +329,26 @@ function CatalogDetail() {
         ) : products.length === 0 ? (
           <div className="text-center py-24">
             <Package className="size-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">لا توجد منتجات في هذا الكتالوج</p>
+            <p className="text-muted-foreground">
+              {allProducts.length === 0
+                ? "لا توجد منتجات معتمدة في هذا الكتالوج حالياً"
+                : "لا توجد نتائج مطابقة لبحثك"}
+            </p>
+            {allProducts.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => {
+                  setTerm("");
+                  setSearch({ q: "", type: "all" });
+                }}
+              >
+                مسح الفلاتر
+              </Button>
+            )}
           </div>
-        ) : view === "grid" ? (
+        ) : gridView === "grid" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((p) => (
               <ProductCard key={p.az_code} product={p} />
@@ -239,7 +361,32 @@ function CatalogDetail() {
             ))}
           </div>
         )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage <= 1}
+              onClick={() => navigate({ search: (prev) => ({ ...prev, page: safePage - 1 }) })}
+            >
+              السابق
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              صفحة {safePage.toLocaleString("ar-EG")} من {totalPages.toLocaleString("ar-EG")}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage >= totalPages}
+              onClick={() => navigate({ search: (prev) => ({ ...prev, page: safePage + 1 }) })}
+            >
+              التالي
+            </Button>
+          </div>
+        )}
       </main>
+
 
       <footer className="border-t py-6 mt-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} العزب للتشطيبات المعمارية — كتالوج المنتجات والخدمات
@@ -337,5 +484,20 @@ function ProductRow({ product: p }: { product: NonNullable<CatalogItem["product"
       {price && <span className="text-sm font-bold text-success shrink-0">{Number(price).toLocaleString("ar-EG")} ج.م</span>}
       <ArrowRight className="size-4 text-muted-foreground shrink-0 rotate-180" />
     </Link>
+  );
+}
+
+function TypeChip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-[11px] px-3 py-1 rounded-full border transition ${
+        active
+          ? "bg-primary text-primary-foreground border-primary"
+          : "border-border text-muted-foreground hover:border-ring"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
