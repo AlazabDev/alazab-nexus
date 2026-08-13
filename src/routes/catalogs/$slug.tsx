@@ -242,30 +242,85 @@ function CatalogDetail() {
 
       {/* Controls */}
       <div className="sticky top-[57px] z-20 bg-card border-b">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {products.length.toLocaleString("ar-EG")} منتج
-          </span>
-          <div className="flex gap-1">
-            {(["grid", "list"] as const).map((v) => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={`size-9 rounded-lg border flex items-center justify-center transition ${
-                  view === v
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground hover:border-ring"
-                }`}
-              >
-                {v === "grid" ? <Grid3X3 className="size-4" /> : <List className="size-4" />}
-              </button>
-            ))}
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <form
+              className="relative flex-1"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSearch({ q: term.trim().slice(0, 100) });
+              }}
+            >
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                placeholder="ابحث بالاسم أو الكود أو الوصف..."
+                className="pr-10 pl-9"
+              />
+              {term && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTerm("");
+                    setSearch({ q: "" });
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="مسح البحث"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </form>
+            <div className="flex gap-1">
+              {(["grid", "list"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => navigate({ search: (prev) => ({ ...prev, view: v }) })}
+                  aria-label={v === "grid" ? "عرض شبكي" : "عرض قائمة"}
+                  className={`size-9 rounded-lg border flex items-center justify-center transition ${
+                    gridView === v
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border text-muted-foreground hover:border-ring"
+                  }`}
+                >
+                  {v === "grid" ? <Grid3X3 className="size-4" /> : <List className="size-4" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">
+              {filtered.length.toLocaleString("ar-EG")} منتج متاح
+            </span>
+            <div className="flex gap-1 flex-wrap">
+              <TypeChip active={type === "all"} onClick={() => setSearch({ type: "all" })} label="الكل" />
+              {types.map((t) => (
+                <TypeChip
+                  key={t}
+                  active={type === t}
+                  onClick={() => setSearch({ type: t })}
+                  label={TYPE_LABELS[t] ?? t}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Products */}
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6">
+        {unavailableCount > 0 && (
+          <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/40 p-4">
+            <EyeOff className="size-4 mt-0.5 text-muted-foreground shrink-0" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {unavailableCount.toLocaleString("ar-EG")} من بنود هذا الكتالوج غير معروضة حالياً لأنها قيد
+              المراجعة ولم تُعتمد بعد. تواصل معنا للاستفسار عن توفرها.
+            </p>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <div className="size-10 rounded-full border-3 border-muted border-t-accent animate-spin" />
@@ -274,9 +329,26 @@ function CatalogDetail() {
         ) : products.length === 0 ? (
           <div className="text-center py-24">
             <Package className="size-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">لا توجد منتجات في هذا الكتالوج</p>
+            <p className="text-muted-foreground">
+              {allProducts.length === 0
+                ? "لا توجد منتجات معتمدة في هذا الكتالوج حالياً"
+                : "لا توجد نتائج مطابقة لبحثك"}
+            </p>
+            {allProducts.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => {
+                  setTerm("");
+                  setSearch({ q: "", type: "all" });
+                }}
+              >
+                مسح الفلاتر
+              </Button>
+            )}
           </div>
-        ) : view === "grid" ? (
+        ) : gridView === "grid" ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((p) => (
               <ProductCard key={p.az_code} product={p} />
@@ -289,7 +361,32 @@ function CatalogDetail() {
             ))}
           </div>
         )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage <= 1}
+              onClick={() => navigate({ search: (prev) => ({ ...prev, page: safePage - 1 }) })}
+            >
+              السابق
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              صفحة {safePage.toLocaleString("ar-EG")} من {totalPages.toLocaleString("ar-EG")}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage >= totalPages}
+              onClick={() => navigate({ search: (prev) => ({ ...prev, page: safePage + 1 }) })}
+            >
+              التالي
+            </Button>
+          </div>
+        )}
       </main>
+
 
       <footer className="border-t py-6 mt-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} العزب للتشطيبات المعمارية — كتالوج المنتجات والخدمات
