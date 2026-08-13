@@ -2501,7 +2501,6 @@ export type Database = {
         Row: {
           az_code: string | null
           brand: string | null
-          buy_price: number | null
           category_id: string | null
           created_at: string | null
           description_ar: string | null
@@ -2542,7 +2541,6 @@ export type Database = {
         Insert: {
           az_code?: string | null
           brand?: string | null
-          buy_price?: number | null
           category_id?: string | null
           created_at?: string | null
           description_ar?: string | null
@@ -2583,7 +2581,6 @@ export type Database = {
         Update: {
           az_code?: string | null
           brand?: string | null
-          buy_price?: number | null
           category_id?: string | null
           created_at?: string | null
           description_ar?: string | null
