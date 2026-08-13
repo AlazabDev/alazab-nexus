@@ -486,3 +486,18 @@ function ProductRow({ product: p }: { product: NonNullable<CatalogItem["product"
     </Link>
   );
 }
+
+function TypeChip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`text-[11px] px-3 py-1 rounded-full border transition ${
+        active
+          ? "bg-primary text-primary-foreground border-primary"
+          : "border-border text-muted-foreground hover:border-ring"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
