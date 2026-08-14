@@ -66,6 +66,7 @@ import { Route as AuthenticatedSuppliersIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedSuppliersIdRouteImport } from './routes/_authenticated/suppliers/$id'
 import { Route as AuthenticatedAdminCatalogsIndexRouteImport } from './routes/_authenticated/admin/catalogs/index'
 import { Route as AuthenticatedAdminCatalogsSlugRouteImport } from './routes/_authenticated/admin/catalogs/$slug'
+import { Route as AuthenticatedAdminProductsBulkApprovalRouteImport } from './routes/_authenticated/admin/products/bulk-approval'
 import { Route as AuthenticatedAdminProductsSettingsRouteImport } from './routes/_authenticated/admin/products/settings'
 import { Route as ApiAgentV1InternalApprovalRouteImport } from './routes/api/agent/v1/internal-approval'
 import { Route as ApiAgentV1OrderStatusRouteImport } from './routes/api/agent/v1/order-status'
@@ -407,6 +408,12 @@ const AuthenticatedAdminCatalogsSlugRoute =
     path: '/catalogs/$slug',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminProductsBulkApprovalRoute =
+  AuthenticatedAdminProductsBulkApprovalRouteImport.update({
+    id: '/products/bulk-approval',
+    path: '/products/bulk-approval',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminProductsSettingsRoute =
   AuthenticatedAdminProductsSettingsRouteImport.update({
     id: '/products/settings',
@@ -556,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/suppliers/': typeof AuthenticatedSuppliersIndexRoute
   '/admin/catalogs/$slug': typeof AuthenticatedAdminCatalogsSlugRoute
+  '/admin/products/bulk-approval': typeof AuthenticatedAdminProductsBulkApprovalRoute
   '/admin/products/settings': typeof AuthenticatedAdminProductsSettingsRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
@@ -630,6 +638,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/suppliers': typeof AuthenticatedSuppliersIndexRoute
   '/admin/catalogs/$slug': typeof AuthenticatedAdminCatalogsSlugRoute
+  '/admin/products/bulk-approval': typeof AuthenticatedAdminProductsBulkApprovalRoute
   '/admin/products/settings': typeof AuthenticatedAdminProductsSettingsRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
@@ -707,6 +716,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/suppliers/': typeof AuthenticatedSuppliersIndexRoute
   '/_authenticated/admin/catalogs/$slug': typeof AuthenticatedAdminCatalogsSlugRoute
+  '/_authenticated/admin/products/bulk-approval': typeof AuthenticatedAdminProductsBulkApprovalRoute
   '/_authenticated/admin/products/settings': typeof AuthenticatedAdminProductsSettingsRoute
   '/api/agent/v1/internal-approval': typeof ApiAgentV1InternalApprovalRoute
   '/api/agent/v1/order-status': typeof ApiAgentV1OrderStatusRoute
@@ -784,6 +794,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/suppliers/'
     | '/admin/catalogs/$slug'
+    | '/admin/products/bulk-approval'
     | '/admin/products/settings'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
@@ -858,6 +869,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/suppliers'
     | '/admin/catalogs/$slug'
+    | '/admin/products/bulk-approval'
     | '/admin/products/settings'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
@@ -934,6 +946,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/suppliers/'
     | '/_authenticated/admin/catalogs/$slug'
+    | '/_authenticated/admin/products/bulk-approval'
     | '/_authenticated/admin/products/settings'
     | '/api/agent/v1/internal-approval'
     | '/api/agent/v1/order-status'
@@ -1378,6 +1391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCatalogsSlugRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/products/bulk-approval': {
+      id: '/_authenticated/admin/products/bulk-approval'
+      path: '/products/bulk-approval'
+      fullPath: '/admin/products/bulk-approval'
+      preLoaderRoute: typeof AuthenticatedAdminProductsBulkApprovalRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/products/settings': {
       id: '/_authenticated/admin/products/settings'
       path: '/products/settings'
@@ -1509,6 +1529,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminCatalogsSlugRoute: typeof AuthenticatedAdminCatalogsSlugRoute
+  AuthenticatedAdminProductsBulkApprovalRoute: typeof AuthenticatedAdminProductsBulkApprovalRoute
   AuthenticatedAdminProductsSettingsRoute: typeof AuthenticatedAdminProductsSettingsRoute
   AuthenticatedAdminCatalogsIndexRoute: typeof AuthenticatedAdminCatalogsIndexRoute
 }
@@ -1522,6 +1543,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminCatalogsSlugRoute: AuthenticatedAdminCatalogsSlugRoute,
+  AuthenticatedAdminProductsBulkApprovalRoute:
+    AuthenticatedAdminProductsBulkApprovalRoute,
   AuthenticatedAdminProductsSettingsRoute:
     AuthenticatedAdminProductsSettingsRoute,
   AuthenticatedAdminCatalogsIndexRoute: AuthenticatedAdminCatalogsIndexRoute,

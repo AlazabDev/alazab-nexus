@@ -53,6 +53,13 @@ export const ADMIN_NAV: AdminNavItem[] = [
     adminOnly: true,
   },
   {
+    to: "/admin/products/bulk-approval",
+    label: "الاعتماد الجماعي",
+    icon: ShieldCheck,
+    section: "general",
+    adminOnly: true,
+  },
+  {
     to: "/admin/catalogs",
     label: "كتالوجات الأعمال",
     icon: FolderOpen,
