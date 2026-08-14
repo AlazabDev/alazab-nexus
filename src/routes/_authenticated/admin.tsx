@@ -14,6 +14,7 @@ import {
   Truck,
   LayoutGrid,
   Package,
+  ShieldCheck,
   FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
