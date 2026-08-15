@@ -102,7 +102,7 @@ export const createProductTool = tool({
  * as an editor/admin by the entry point.
  */
 export function buildProductAgentTools({ canWrite = false }: { canWrite?: boolean } = {}) {
-  const tools: Record<string, unknown> = { searchProducts: searchProductsTool };
+  const tools: Record<string, any> = { searchProducts: searchProductsTool };
   if (canWrite) {
     tools.updateProductPrice = updateProductPriceTool;
     tools.createProduct = createProductTool;
