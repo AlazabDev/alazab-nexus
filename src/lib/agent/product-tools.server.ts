@@ -1,12 +1,15 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { sanitizeSearchTerm } from "@/lib/utils";
 
-// We use the admin client here for tools to bypass RLS, assuming the agent is a trusted server-side entity.
-// If the user wants to enforce RLS per user, we would need to pass a regular user client.
+// Read tools are safe for any authenticated caller.
+// Write tools (price update / product creation) are only exposed when the
+// caller has been verified as an editor/admin (see buildProductAgentTools).
 
 export const searchProductsTool = tool({
-  description: "ابحث عن المنتجات في قاعدة البيانات باستخدام الاسم أو الكود أو الوصف. استخدم هذا للبحث عن منتج معين للتعرف على سعره أو مخزونه.",
+  description:
+    "ابحث عن المنتجات في قاعدة البيانات باستخدام الاسم أو الكود أو الوصف. استخدم هذا للبحث عن منتج معين للتعرف على سعره أو مخزونه.",
   parameters: z.object({
     query: z.string().describe("كلمة البحث مثل اسم المنتج أو كوده"),
     limit: z.number().optional().default(5).describe("الحد الأقصى لعدد النتائج المرجعة"),
@@ -14,19 +17,24 @@ export const searchProductsTool = tool({
   execute: async (args: any) => {
     const { query, limit } = args;
     try {
+      const q = sanitizeSearchTerm(String(query ?? ""));
+      if (!q) return { success: true, products: [] };
+      const safeLimit = Math.min(Math.max(Number(limit) || 5, 1), 25);
+
       const { data, error } = await supabaseAdmin
         .from("products")
         .select("id, az_code, name_ar, name_en, price, category, item_type")
-        .or(`name_ar.ilike.%${query}%,name_en.ilike.%${query}%,az_code.ilike.%${query}%`)
-        .limit(limit);
+        .or(`name_ar.ilike.%${q}%,name_en.ilike.%${q}%,az_code.ilike.%${q}%`)
+        .limit(safeLimit);
 
       if (error) {
         console.error("Error searching products:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: "تعذر تنفيذ البحث" };
       }
       return { success: true, products: data || [] };
     } catch (e) {
-      return { success: false, error: String(e) };
+      console.error("searchProductsTool failed:", e);
+      return { success: false, error: "تعذر تنفيذ البحث" };
     }
   },
 } as any);
@@ -65,7 +73,10 @@ export const createProductTool = tool({
     az_code: z.string().describe("كود المنتج المميز (AZ Code)"),
     price: z.number().describe("سعر المنتج"),
     category: z.string().optional().describe("تصنيف المنتج"),
-    item_type: z.enum(["product", "service", "raw_material"]).default("product").describe("نوع العنصر"),
+    item_type: z
+      .enum(["product", "service", "raw_material"])
+      .default("product")
+      .describe("نوع العنصر"),
   }),
   execute: async (args: any) => {
     try {
@@ -85,8 +96,19 @@ export const createProductTool = tool({
   },
 } as any);
 
-export const productAgentTools = {
-  searchProducts: searchProductsTool,
-  updateProductPrice: updateProductPriceTool,
-  createProduct: createProductTool,
-};
+/**
+ * Build the tool set for an agent call.
+ * Write-capable tools are only included when the caller was verified
+ * as an editor/admin by the entry point.
+ */
+export function buildProductAgentTools({ canWrite = false }: { canWrite?: boolean } = {}) {
+  const tools: Record<string, unknown> = { searchProducts: searchProductsTool };
+  if (canWrite) {
+    tools.updateProductPrice = updateProductPriceTool;
+    tools.createProduct = createProductTool;
+  }
+  return tools;
+}
+
+/** Read-only default tool set. */
+export const productAgentTools = buildProductAgentTools();
