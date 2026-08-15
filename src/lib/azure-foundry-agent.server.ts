@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { createAzure } from "@ai-sdk/azure";
-import { productAgentTools } from "./agent/product-tools.server";
+import { buildProductAgentTools } from "./agent/product-tools.server";
 
 /**
  * Azure AI Foundry / OpenAI Agent Connector.
@@ -38,6 +38,8 @@ export type ProductAgentRequest = {
   /** SessionId is largely ignored since Vercel AI SDK is stateless, but kept for signature compatibility */
   sessionId?: string;
   metadata?: Record<string, unknown>;
+  /** Only true when the entry point verified the caller as editor/admin. */
+  canWrite?: boolean;
 };
 
 export type ProductAgentResponse = {
@@ -53,6 +55,7 @@ export async function callAzureProductAgent({
   input,
   sessionId,
   metadata,
+  canWrite = false,
 }: ProductAgentRequest): Promise<ProductAgentResponse> {
   const cfg = agentConfig();
   
@@ -75,7 +78,7 @@ export async function callAzureProductAgent({
       // @ts-ignore: Version mismatch between ai and @ai-sdk/azure
       model,
       messages,
-      tools: productAgentTools,
+      tools: buildProductAgentTools({ canWrite }),
     });
 
     return {

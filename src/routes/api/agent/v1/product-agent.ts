@@ -17,6 +17,12 @@ const BodySchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
+// Only internal/back-office consumers may use write-capable agent tools.
+const INTERNAL_CHANNELS = ["internal", "erp", "admin", "backoffice"];
+function isInternal(consumer: { channel?: string | null } | null | undefined) {
+  return INTERNAL_CHANNELS.includes((consumer?.channel ?? "").toLowerCase());
+}
+
 export const Route = createFileRoute("/api/agent/v1/product-agent")({
   server: {
     handlers: {
@@ -33,6 +39,7 @@ export const Route = createFileRoute("/api/agent/v1/product-agent")({
             input: body.input,
             sessionId: body.sessionId,
             metadata: body.metadata,
+            canWrite: isInternal(auth.consumer),
           });
 
           return json(
