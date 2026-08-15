@@ -28,6 +28,7 @@ import { Route as AuthenticatedSupplierInventoryRouteImport } from './routes/_au
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as CatalogIndexRouteImport } from './routes/catalog/index'
 import { Route as CatalogAzCodeRouteImport } from './routes/catalog/$azCode'
+import { Route as CatalogQuoteRouteImport } from './routes/catalog/quote'
 import { Route as CatalogsSlugRouteImport } from './routes/catalogs/$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminApiKeysRouteImport } from './routes/_authenticated/admin/api-keys'
@@ -184,6 +185,11 @@ const CatalogIndexRoute = CatalogIndexRouteImport.update({
 const CatalogAzCodeRoute = CatalogAzCodeRouteImport.update({
   id: '/catalog/$azCode',
   path: '/catalog/$azCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogQuoteRoute = CatalogQuoteRouteImport.update({
+  id: '/catalog/quote',
+  path: '/catalog/quote',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogsSlugRoute = CatalogsSlugRouteImport.update({
@@ -525,6 +531,7 @@ export interface FileRoutesByFullPath {
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
+  '/catalog/quote': typeof CatalogQuoteRoute
   '/catalogs/$slug': typeof CatalogsSlugRoute
   '/catalog/': typeof CatalogIndexRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
@@ -600,6 +607,7 @@ export interface FileRoutesByTo {
   '/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
+  '/catalog/quote': typeof CatalogQuoteRoute
   '/catalogs/$slug': typeof CatalogsSlugRoute
   '/catalog': typeof CatalogIndexRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
@@ -678,6 +686,7 @@ export interface FileRoutesById {
   '/_authenticated/supplier-inventory': typeof AuthenticatedSupplierInventoryRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/catalog/$azCode': typeof CatalogAzCodeRoute
+  '/catalog/quote': typeof CatalogQuoteRoute
   '/catalogs/$slug': typeof CatalogsSlugRoute
   '/catalog/': typeof CatalogIndexRoute
   '/_authenticated/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
@@ -756,6 +765,7 @@ export interface FileRouteTypes {
     | '/supplier-inventory'
     | '/support'
     | '/catalog/$azCode'
+    | '/catalog/quote'
     | '/catalogs/$slug'
     | '/catalog/'
     | '/admin/api-keys'
@@ -831,6 +841,7 @@ export interface FileRouteTypes {
     | '/supplier-inventory'
     | '/support'
     | '/catalog/$azCode'
+    | '/catalog/quote'
     | '/catalogs/$slug'
     | '/catalog'
     | '/admin/api-keys'
@@ -908,6 +919,7 @@ export interface FileRouteTypes {
     | '/_authenticated/supplier-inventory'
     | '/_authenticated/support'
     | '/catalog/$azCode'
+    | '/catalog/quote'
     | '/catalogs/$slug'
     | '/catalog/'
     | '/_authenticated/admin/api-keys'
@@ -972,6 +984,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   CatalogAzCodeRoute: typeof CatalogAzCodeRoute
+  CatalogQuoteRoute: typeof CatalogQuoteRoute
   CatalogsSlugRoute: typeof CatalogsSlugRoute
   CatalogIndexRoute: typeof CatalogIndexRoute
   ApiAgentV1InternalApprovalRoute: typeof ApiAgentV1InternalApprovalRoute
@@ -1123,6 +1136,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog/$azCode'
       fullPath: '/catalog/$azCode'
       preLoaderRoute: typeof CatalogAzCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog/quote': {
+      id: '/catalog/quote'
+      path: '/catalog/quote'
+      fullPath: '/catalog/quote'
+      preLoaderRoute: typeof CatalogQuoteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalogs/$slug': {
@@ -1683,6 +1703,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   CatalogAzCodeRoute: CatalogAzCodeRoute,
+  CatalogQuoteRoute: CatalogQuoteRoute,
   CatalogsSlugRoute: CatalogsSlugRoute,
   CatalogIndexRoute: CatalogIndexRoute,
   ApiAgentV1InternalApprovalRoute: ApiAgentV1InternalApprovalRoute,
