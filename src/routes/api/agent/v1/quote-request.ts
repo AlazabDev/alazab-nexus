@@ -3,6 +3,22 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 import { calculateQuotePrice, type DesignData } from "@/lib/pricing-engine";
 
+// IDOR protection: every quote lookup/decision must be scoped to the owning
+// customer or chatbot session, unless the consumer is an internal channel.
+const INTERNAL_CHANNELS = ["internal", "erp", "admin", "backoffice"];
+function isInternal(consumer: { channel?: string | null } | null | undefined) {
+  return INTERNAL_CHANNELS.includes((consumer?.channel ?? "").toLowerCase());
+}
+function ownsQuote(
+  quote: { customer_id?: string | null; chatbot_session_id?: string | null },
+  customerId?: string | null,
+  sessionId?: string | null,
+) {
+  if (customerId && quote.customer_id && quote.customer_id === customerId) return true;
+  if (sessionId && quote.chatbot_session_id && quote.chatbot_session_id === sessionId) return true;
+  return false;
+}
+
 export const Route = createFileRoute("/api/agent/v1/quote-request")({
   server: {
     handlers: {
@@ -157,10 +173,25 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
         const requestId = url.searchParams.get("request_id");
         const quoteId = url.searchParams.get("quote_id");
 
+        const customerId = url.searchParams.get("customer_id");
+        const sessionId = url.searchParams.get("session_id");
+        const internal = isInternal(auth.consumer);
+
         if (!requestId && !quoteId) {
           return json({ success: false, error: "Missing request_id or quote_id" }, 400, {
             request,
           });
+        }
+        if (!internal && !customerId && !sessionId) {
+          return json(
+            {
+              success: false,
+              error: "Missing customer_id or session_id",
+              code: "missing_owner_scope",
+            },
+            400,
+            { request },
+          );
         }
 
         let query = supabaseAdmin.from("quote_requests").select("*");
@@ -172,7 +203,7 @@ export const Route = createFileRoute("/api/agent/v1/quote-request")({
 
         const { data, error } = await query.maybeSingle();
 
-        if (error || !data) {
+        if (error || !data || (!internal && !ownsQuote(data, customerId, sessionId))) {
           return json({ success: false, error: "Quote not found" }, 404, { request });
         }
 

@@ -2,6 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { json, logCall, requireApiKey, corsHeaders } from "@/lib/api-auth";
 
+// IDOR protection: every quote lookup/decision must be scoped to the owning
+// customer or chatbot session, unless the consumer is an internal channel.
+const INTERNAL_CHANNELS = ["internal", "erp", "admin", "backoffice"];
+function isInternal(consumer: { channel?: string | null } | null | undefined) {
+  return INTERNAL_CHANNELS.includes((consumer?.channel ?? "").toLowerCase());
+}
+function ownsQuote(
+  quote: { customer_id?: string | null; chatbot_session_id?: string | null },
+  customerId?: string | null,
+  sessionId?: string | null,
+) {
+  if (customerId && quote.customer_id && quote.customer_id === customerId) return true;
+  if (sessionId && quote.chatbot_session_id && quote.chatbot_session_id === sessionId) return true;
+  return false;
+}
+
 export const Route = createFileRoute("/api/agent/v1/quote-response")({
   server: {
     handlers: {
@@ -50,6 +66,21 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
             );
           }
 
+          const internal = isInternal(auth.consumer);
+          const customerId = body.customer_id ? String(body.customer_id) : null;
+          const sessionId = body.session_id ? String(body.session_id) : null;
+          if (!internal && !customerId && !sessionId) {
+            return json(
+              {
+                success: false,
+                error: "Missing customer_id or session_id",
+                code: "missing_owner_scope",
+              },
+              400,
+              { request },
+            );
+          }
+
           let query = supabaseAdmin.from("quote_requests").select("*");
           query = body.quote_id
             ? query.eq("id", body.quote_id)
@@ -57,6 +88,13 @@ export const Route = createFileRoute("/api/agent/v1/quote-response")({
           const { data: quote, error: quoteError } = await query.maybeSingle();
 
           if (quoteError || !quote) {
+            return json(
+              { success: false, error: "Quote not found", code: "quote_not_found" },
+              404,
+              { request },
+            );
+          }
+          if (!internal && !ownsQuote(quote, customerId, sessionId)) {
             return json(
               { success: false, error: "Quote not found", code: "quote_not_found" },
               404,
