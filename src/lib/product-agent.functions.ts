@@ -78,10 +78,18 @@ export const askProductAgent = createServerFn({ method: "POST" })
       ...data.messages.filter((m) => m.role !== "system"),
     ];
 
+    // Write-capable agent tools require an explicit editor/admin role.
+    const [{ data: isAdmin }, { data: isEditor }] = await Promise.all([
+      context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" }),
+      context.supabase.rpc("has_role", { _user_id: context.userId, _role: "editor" }),
+    ]);
+    const canWrite = Boolean(isAdmin || isEditor);
+
     const result = await callAzureProductAgent({
       input,
       sessionId: data.sessionId,
       metadata: { productId: data.productId ?? null, userId: context.userId },
+      canWrite,
     });
 
     const patch = extractJsonBlock(result.outputText);
